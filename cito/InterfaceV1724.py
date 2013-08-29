@@ -1,29 +1,37 @@
-import pymongo
-import time
-import numpy as np
-import snappy
-#import cy_break_block
-from scipy import signal
+"""Interface to Caen V1724
 
-#if current_channel not in results:
-# Samples are actually 14 bit
-SAMPLE_TYPE = np.uint16
-# 14 bit ADC samples
-MAX_ADC_VALUE = 2**14
-WORD_SIZE_IN_BYTES = 4
+Flash ADC board
+"""
+
+import pymongo
+import numpy as np
+
+SAMPLE_TYPE = np.uint16 # Samples are actually 14 bit
+MAX_ADC_VALUE = 2 ** 14   # 14 bit ADC samples
+SAMPLE_TIME_STEP = 1    # 10 ns
+WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
+
 
 def get_word(data):
+    """Generator for words
+    """
     word_size_in_bytes = 4
 
     number_of_words = int(len(data) / word_size_in_bytes)
     for i in range(number_of_words):
         yield get_word_by_index(data, i)
 
-def get_word_by_index(data, i):
-    #if len(data) == 0:
-    #    print("Warning: data has zero length")
-    #if i > int(len(data)/4):
-    #    raise IndexError('i does not exist')
+
+def get_word_by_index(data, i, do_checks=True):
+    """Get 32-bit word by index
+
+    This function is called often so be sure to check
+    """
+    if do_checks:
+        if len(data) == 0:
+            print("Warning: data has zero length")
+        if i > int(len(data) / 4):
+            raise IndexError('i does not exist')
 
     i0 = i*WORD_SIZE_IN_BYTES
     i1 = (i+1)*WORD_SIZE_IN_BYTES
@@ -72,9 +80,11 @@ def get_waveform(data, module, offset=0):
 
     pnt =  1
 
-    word_chan_mask = get_word_by_index(data, pnt)
+    word_chan_mask = get_word_by_index(data, pnt, False)
     chan_mask = word_chan_mask & 0xFF
     pnt += 3
+
+    max_time = None
 
     for j in range(number_of_channels_in_digitizer):
         if ((chan_mask>>j)&1):
@@ -83,7 +93,7 @@ def get_waveform(data, module, offset=0):
             print("Skipping channel", j)
             continue
 
-        words_in_channel_payload = get_word_by_index(data, pnt)
+        words_in_channel_payload = get_word_by_index(data, pnt, False)
 
         pnt += 1
 
@@ -91,7 +101,7 @@ def get_waveform(data, module, offset=0):
         wavecounter_within_channel_payload = 0
 
         while ( counter_within_channel_payload <= words_in_channel_payload ):
-            word_control = get_word_by_index(data, pnt)
+            word_control = get_word_by_index(data, pnt, False)
 
             if (word_control >> 28) == 0x8:
                 this_occurence = {'samples': [],
@@ -105,11 +115,11 @@ def get_waveform(data, module, offset=0):
                 counter_within_channel_payload = counter_within_channel_payload + 1
 
                 for k in range(num_words_in_channel_payload):
-                    double_sample = get_word_by_index(data, pnt)
+                    double_sample = get_word_by_index(data, pnt, False)
                     sample_1 = double_sample & 0xFFFF
                     sample_2 = (double_sample >> 16) & 0xFFFF
 
-                    sample_1 = sample_1 * -1 + MAX_ADC_VALUE
+                    sample_1 = sample_1 * -1 + MAX_ADC_VALUE # TODO: do this elsewhere?
                     sample_2 = sample_2 * -1 + MAX_ADC_VALUE
 
                     this_occurence['samples'].append(sample_1)
@@ -121,80 +131,17 @@ def get_waveform(data, module, offset=0):
 
                 this_occurence['time_end'] = ttt + wavecounter_within_channel_payload # off by 1?
                 this_occurence['samples'] = np.array(this_occurence['samples'], dtype=SAMPLE_TYPE)
+                if max_time == None or wavecounter_within_channel_payload > max_time:
+                    max_time = wavecounter_within_channel_payload
+
                 occurences.append(this_occurence)
 
             else:
-                if word_control != 0xFFFFFFFF:
-                    wavecounter_within_channel_payload += 2 * words_in_channel_payload + 1
-                    pnt = pnt + 1
-                    counter_within_channel_payload = counter_within_channel_payload + 1
-                else:
-                    raise("Fuckup")
+                wavecounter_within_channel_payload += 2 * words_in_channel_payload + 1
+                pnt = pnt + 1
+                counter_within_channel_payload = counter_within_channel_payload + 1
 
+    print('max time', max_time)
     return occurences
-
-def invert_pulses(results):
-    # 14 bit ADC samples
-    max_adc_value = 2**14
-    for key in results:
-        results[key]['samples'] = results[key]['samples'] * -1 + max_adc_value
-    return results
-
-def sum_pulses(results, combined_data):
-    # TODO: Can use some numpy routine here?
-    for result in results:
-        #combined_data[]
-        time_start = result['time_start']
-
-        for i, sample in enumerate(result['samples']):
-            combined_data[time_start + i] = sample
-
-    return combined_data
-
-def find_peak(x, y):
-    peakind = signal.find_peaks_cwt(y, np.array([100]))
-
-    threshold = 10000
-    peaks = []
-
-    for a, b in zip(x[peakind], y[peakind]):
-        if b > threshold:
-            peaks.append(a)
-    
-    return np.array(peaks)
-
-
-def process(data, module, snappy=False, offset=0):
-    if snappy:
-        print('snappy')
-        data = snappy.uncompress(data)
-    #print('ttt', get_trigger_time_tag(data))
-
-    #t0 = time.time()
-    #results = cy_break_block.get_waveform(data)
-    #t1 = time.time()
-    results = get_waveform(data, module, offset)
-    #t2 = time.time()
-    #print('Cython', t1-t0, 'Python', t2-t1)
-    return results
-
-
-
-if __name__ == "__main__":
-    c = pymongo.MongoClient()
-    db = c.data
-    collection = db.test
-    
-
-
-    for doc in collection.find({'block_splitting' : 'todo'}):
-                                        #update= {'$set' : {'block_splitting' : 'in_progress'}})
-        if 'data' in doc:
-            results = process(doc)
-            collection.insert(results)
-        else:
-            print(doc)
-
-        #collection.save(doc)
 
 

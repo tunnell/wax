@@ -4,8 +4,8 @@ import pymongo
 import numpy as np
 import json
 import time
-import combine_blocks
-import block_operations as bo
+import cito.combine_blocks
+import cito.InterfaceV1724 as bo
 
 
 def connect_and_run(f, size_parm = None):

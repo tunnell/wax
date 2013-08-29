@@ -1,34 +1,58 @@
 import pymongo
 import numpy as np
-import json
-import time
-from scipy import signal
-import block_operations as bo
+import snappy
+import InterfaceV1724 as bo
 
 # TODO: some of this stuff should really be broken out into a Caen Python API.
 
-#if current_channel not in results:
-# Samples are actually 14 bit
-SAMPLE_TYPE = np.uint16
-SAMPLE_TIME_STEP = 1 # units of 10 ns
+SAMPLE_TYPE = bo.SAMPLE_TYPE
 CHUNK_SIZE =    10**8 # units of 10 ns, 0.5 s
-# 10^-3, 15.82697319984436, 10^-4 0.6667842864990234
 
-def check_document_sanity(doc):
+def sum_pulses(results, combined_data):
+    # TODO: Can use some numpy routine here?
+    for result in results:
+        #combined_data[]
+        time_start = result['time_start']
+
+        for i, sample in enumerate(result['samples']):
+            combined_data[time_start + i] = sample
+
+    return combined_data
+
+def find_peak(x, y):
+    peakind = signal.find_peaks_cwt(y, np.array([100]))
+
+    threshold = 10000
+    peaks = []
+
+    for a, b in zip(x[peakind], y[peakind]):
+        if b > threshold:
+            peaks.append(a)
+
+    return np.array(peaks)
+
+def get_data_from_doc(doc):
     data = doc['data']
     assert(len(data) != 0)
+
+    if doc['zipped']:
+        data = snappy.uncompress(data)
+
     assert(bo.get_trigger_time_tag(data) == doc['triggertime'])
     bo.check_header(data)
+    return data
 
 def get_occurences(cursor, offset):
     occurences = []
 
     for doc in cursor:
-        #print(doc)
-        check_document_sanity(doc)
-        data = doc['data']
-        occurences += bo.process(data, doc['module'], doc['zipped'],
-                                               offset)
+        try:
+            data = get_data_from_doc(doc)
+        except:
+            continue
+
+        occurences += bo.get_waveform(data, doc['module'], offset)
+
     return occurences
 
 
