@@ -10,6 +10,7 @@ from scipy import signal
 SAMPLE_TYPE = np.uint16
 # 14 bit ADC samples
 MAX_ADC_VALUE = 2**14
+WORD_SIZE_IN_BYTES = 4
 
 def get_word(data):
     word_size_in_bytes = 4
@@ -19,15 +20,15 @@ def get_word(data):
         yield get_word_by_index(data, i)
 
 def get_word_by_index(data, i):
-    word_size_in_bytes = 4
+    #if len(data) == 0:
+    #    print("Warning: data has zero length")
+    #if i > int(len(data)/4):
+    #    raise IndexError('i does not exist')
 
-    if i > int(len(data)/4):
-        return None
+    i0 = i*WORD_SIZE_IN_BYTES
+    i1 = (i+1)*WORD_SIZE_IN_BYTES
 
-    i0 = i*word_size_in_bytes
-    i1 = (i+1)*word_size_in_bytes
-
-    word = int.from_bytes(data[i0:i1],'little')
+    word = int.from_bytes(data[i0:i1], 'little')
 
     return word
 
@@ -54,6 +55,8 @@ def get_trigger_time_tag(data):
     return word
 
 def get_waveform(data, module, offset=0):
+    # TODO: maybe make an 8 by N_SAMPLES array?  Makes easier to use numpy routines.
+
     # Each 'occurence' is a continous sequence of ADC samples for a given
     # channel.  Due to zero suppression, there can be multiple occurences for
     # a given channel.  Each item in this array is a dictionary that will be
@@ -106,7 +109,8 @@ def get_waveform(data, module, offset=0):
                     sample_1 = double_sample & 0xFFFF
                     sample_2 = (double_sample >> 16) & 0xFFFF
 
-                    sample_1, sample_2 = [x * -1 + MAX_ADC_VALUE for x in [sample_1, sample_2]]
+                    sample_1 = sample_1 * -1 + MAX_ADC_VALUE
+                    sample_2 = sample_2 * -1 + MAX_ADC_VALUE
 
                     this_occurence['samples'].append(sample_1)
                     this_occurence['samples'].append(sample_2)
@@ -116,6 +120,7 @@ def get_waveform(data, module, offset=0):
                     counter_within_channel_payload = counter_within_channel_payload + 1
 
                 this_occurence['time_end'] = ttt + wavecounter_within_channel_payload # off by 1?
+                this_occurence['samples'] = np.array(this_occurence['samples'], dtype=SAMPLE_TYPE)
                 occurences.append(this_occurence)
 
             else:
@@ -136,6 +141,7 @@ def invert_pulses(results):
     return results
 
 def sum_pulses(results, combined_data):
+    # TODO: Can use some numpy routine here?
     for result in results:
         #combined_data[]
         time_start = result['time_start']
@@ -160,6 +166,7 @@ def find_peak(x, y):
 
 def process(data, module, snappy=False, offset=0):
     if snappy:
+        print('snappy')
         data = snappy.uncompress(data)
     #print('ttt', get_trigger_time_tag(data))
 
