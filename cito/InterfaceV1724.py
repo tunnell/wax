@@ -10,6 +10,8 @@ SAMPLE_TYPE = np.uint16 # Samples are actually 14 bit
 MAX_ADC_VALUE = 2 ** 14   # 14 bit ADC samples
 SAMPLE_TIME_STEP = 1    # 10 ns
 WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
+MAX_SAMPLES_PER_BLOCK = 400 # TODO: check this
+N_CHANNELS_IN_DIGITIZER = 8 # number of channels in digitizer board
 
 
 def get_word(data):
@@ -69,12 +71,9 @@ def get_waveform(data, module, offset=0):
     # channel.  Due to zero suppression, there can be multiple occurences for
     # a given channel.  Each item in this array is a dictionary that will be
     # returned.
-    occurences = []
 
     # trigger time tag
     ttt = get_trigger_time_tag(data) - offset
-
-    number_of_channels_in_digitizer = 8
 
     check_header(data)
 
@@ -86,10 +85,11 @@ def get_waveform(data, module, offset=0):
 
     max_time = None
 
-    for j in range(number_of_channels_in_digitizer):
-        if ((chan_mask>>j)&1):
-            current_channel = j
-        else:
+    samples = np.zeros((N_CHANNELS_IN_DIGITIZER, MAX_SAMPLES_PER_BLOCK),
+                       dtype=SAMPLE_TYPE)
+
+    for j in range(N_CHANNELS_IN_DIGITIZER):
+        if not ((chan_mask>>j)&1):
             print("Skipping channel", j)
             continue
 
@@ -104,12 +104,6 @@ def get_waveform(data, module, offset=0):
             word_control = get_word_by_index(data, pnt, False)
 
             if (word_control >> 28) == 0x8:
-                this_occurence = {'samples': [],
-                                  'channel': j,
-                                  'module' : module,
-                                  'time_start' : ttt + wavecounter_within_channel_payload}
-
-
                 num_words_in_channel_payload = word_control & 0xFFFFFFF
                 pnt = pnt + 1
                 counter_within_channel_payload = counter_within_channel_payload + 1
@@ -119,29 +113,32 @@ def get_waveform(data, module, offset=0):
                     sample_1 = double_sample & 0xFFFF
                     sample_2 = (double_sample >> 16) & 0xFFFF
 
-                    sample_1 = sample_1 * -1 + MAX_ADC_VALUE # TODO: do this elsewhere?
-                    sample_2 = sample_2 * -1 + MAX_ADC_VALUE
+                    #sample_1 = sample_1 * -1 + MAX_ADC_VALUE # TODO: do this elsewhere?
+                    #sample_2 = sample_2 * -1 + MAX_ADC_VALUE
 
-                    this_occurence['samples'].append(sample_1)
-                    this_occurence['samples'].append(sample_2)
+                    samples[j][wavecounter_within_channel_payload] = sample_1
+                    wavecounter_within_channel_payload += 1
+
+                    samples[j][wavecounter_within_channel_payload] = sample_1
+                    wavecounter_within_channel_payload += 1
 
                     pnt = pnt + 1
-                    wavecounter_within_channel_payload = wavecounter_within_channel_payload + 2
                     counter_within_channel_payload = counter_within_channel_payload + 1
 
-                this_occurence['time_end'] = ttt + wavecounter_within_channel_payload # off by 1?
-                this_occurence['samples'] = np.array(this_occurence['samples'], dtype=SAMPLE_TYPE)
                 if max_time == None or wavecounter_within_channel_payload > max_time:
                     max_time = wavecounter_within_channel_payload
-
-                occurences.append(this_occurence)
 
             else:
                 wavecounter_within_channel_payload += 2 * words_in_channel_payload + 1
                 pnt = pnt + 1
                 counter_within_channel_payload = counter_within_channel_payload + 1
 
-    print('max time', max_time)
-    return occurences
+
+    # This drops off any zeros at the rightward colums
+    samples = np.compress(max_time * [True], samples, axis=1)
+
+    return (samples, ttt)
+
+
 
 

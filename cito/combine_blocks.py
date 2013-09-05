@@ -1,12 +1,12 @@
 import pymongo
 import numpy as np
 import snappy
-import InterfaceV1724 as bo
+import cInterfaceV1724 as bo
 
 # TODO: some of this stuff should really be broken out into a Caen Python API.
 
 SAMPLE_TYPE = bo.SAMPLE_TYPE
-CHUNK_SIZE =    10**8 # units of 10 ns, 0.5 s
+CHUNK_SIZE =  10**8 # units of 10 ns, 0.5 s
 
 def sum_pulses(results, combined_data):
     # TODO: Can use some numpy routine here?
@@ -43,7 +43,7 @@ def get_data_from_doc(doc):
     return data
 
 def get_occurences(cursor, offset):
-    occurences = []
+    occurences = np.zeros([CHUNK_SIZE], dtype=SAMPLE_TYPE)
 
     for doc in cursor:
         try:
@@ -51,7 +51,19 @@ def get_occurences(cursor, offset):
         except:
             continue
 
-        occurences += bo.get_waveform(data, doc['module'], offset)
+        #if doc['module'] != 770:
+        #    continue
+
+        result, ttt = bo.get_waveform(data, occurences)
+        ttt -= offset
+
+        result *= -1
+        result += bo.MAX_ADC_VALUE
+        result = np.sum(result, axis=0)
+
+        occurences[ttt: ttt + result.size] += result
+
+        #print(result, ttt)
 
     return occurences
 
@@ -124,9 +136,10 @@ def determine_data_to_store(occurences, peaks):
 def combine_blocks(cursor, offset):
     occurences = get_occurences(cursor, offset)
 
+
     combined_data = np.zeros([1.3*CHUNK_SIZE], dtype = SAMPLE_TYPE)
 
-    bo.sum_pulses(occurences, combined_data)
+    #bo.sum_pulses(occurences, combined_data)
     peaks = 1 # signal.find_peaks_cwt(combined_data, np.array([100]))
 
     return occurences, peaks
@@ -152,6 +165,9 @@ if __name__ == "__main__":
     db = c.data
     collection = db.test
 
+    # TODO: move this elsewhere.  We don't use capped collections because we want to shard.
+    # but tailable collections may be useful for writing to disk?
+
     BIG_NUMBER = 100000
     for i in range(BIG_NUMBER):
         t0 = i * CHUNK_SIZE
@@ -170,7 +186,7 @@ if __name__ == "__main__":
         new_doc['t1'] = t1
         new_doc['occurences'] = occurences #zdumps(determine_data_to_store(occurences, peaks)) # (
 
-        print(size, len(new_doc['occurences']))
+        #print(size, len(new_doc['occurences']))
         #db.saved.save(new_doc)
 
 

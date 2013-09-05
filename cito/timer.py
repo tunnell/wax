@@ -4,8 +4,8 @@ import pymongo
 import numpy as np
 import json
 import time
-import cito.combine_blocks
-import cito.InterfaceV1724 as bo
+import combine_blocks
+import InterfaceV1724 as bo
 
 
 def connect_and_run(f, size_parm = None):
@@ -20,7 +20,7 @@ def connect_and_run(f, size_parm = None):
     else:
         size = size_parm
 
-    BIG_NUMBER = 1
+    BIG_NUMBER = 20
     for i in range(BIG_NUMBER):
         t0 = i * combine_blocks.CHUNK_SIZE
         t1 = (i+1) * combine_blocks.CHUNK_SIZE
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     s = io.StringIO()
     ps = pstats.Stats(pr, stream=s)
     ps.sort_stats('cumulative')
-    ps.print_stats()
+    ps.print_stats(0.1)
     s.seek(0)
     print(s.read())
 
