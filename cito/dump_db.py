@@ -37,11 +37,10 @@ if __name__ == "__main__":
             # are no documents in the collection...
             print('Using index:', cursor.explain()['indexOnly'])
 
-            # Stats on how the delete worked.  Write concern (w=1) is on.
+            # Stats on how the delete worked. Write concern is on.
             print(json.dumps(collection.remove(query),
                              indent=4,
-                             sort_keys=True,
-                             w=1))
+                             sort_keys=True))
 
             # Wait a second so we don't query the DB too much
             time.sleep(1)
