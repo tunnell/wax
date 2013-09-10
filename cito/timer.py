@@ -1,21 +1,20 @@
 __author__ = 'tunnell'
 
-import pymongo
-import numpy as np
-import json
 import time
+
+import pymongo
+
 import combine_blocks
-import InterfaceV1724 as bo
 
 
-def connect_and_run(f, size_parm = None):
+def connect_and_run(f, size_parm=None):
     c = pymongo.MongoClient()
-    db =    c.data
+    db = c.data
     collection = db.test
 
     timer_start = time.time()
 
-    if size_parm == None:
+    if size_parm is None:
         size = 0
     else:
         size = size_parm
@@ -23,25 +22,25 @@ def connect_and_run(f, size_parm = None):
     BIG_NUMBER = 20
     for i in range(BIG_NUMBER):
         t0 = i * combine_blocks.CHUNK_SIZE
-        t1 = (i+1) * combine_blocks.CHUNK_SIZE
-        query = {'triggertime' : {'$lt' : t1, '$gt' : t0}, 'group': 1}
+        t1 = (i + 1) * combine_blocks.CHUNK_SIZE
+        query = {'triggertime': {'$lt': t1, '$gt': t0}, 'group': 1}
 
         results = collection.find(query)
 
         retval = f(results, offset=(i * combine_blocks.CHUNK_SIZE))
 
-        if size_parm == None:
+        if size_parm is None:
             size += retval
-
 
     dt = time.time() - timer_start
     print("\tTime:", dt, 's')
-    print("\tRate:", float(size)/(dt * 1048576), 'MB/s')
-    print("\tSize:", float(size)/1048576, 'MB')
+    print("\tRate:", float(size) / (dt * 1048576), 'MB/s')
+    print("\tSize:", float(size) / 1048576, 'MB')
 
     return size
 
-def get_size(results, offset ):
+
+def get_size(results, offset):
     size = 0
     for result in results:
         size += len(result['data'])
@@ -60,7 +59,9 @@ if __name__ == "__main__":
 
     print("Profiling")
 
-    import cProfile, pstats, io
+    import cProfile
+    import pstats
+    import io
     pr = cProfile.Profile()
     pr.enable()
     connect_and_run(combine_blocks.combine_blocks, size)
@@ -71,4 +72,3 @@ if __name__ == "__main__":
     ps.print_stats(0.1)
     s.seek(0)
     print(s.read())
-

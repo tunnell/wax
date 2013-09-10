@@ -4,5 +4,5 @@ scipy
 bitstring
 matplotlib
 numpy
-line_profiler
 pint
+

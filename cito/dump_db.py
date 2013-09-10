@@ -4,10 +4,8 @@ __author__ = 'tunnell'
 
 import sys
 import time
-import json
 
 import pymongo
-
 
 
 if __name__ == "__main__":
@@ -31,7 +29,7 @@ if __name__ == "__main__":
         # This try-except catches Ctrl-C and error
         try:
             # Non-sense query that is in index
-            query = {}#{"triggertime": {'$gt': 0}}
+            query = {}  # {"triggertime": {'$gt': 0}}
 
             # Perform query
             cursor = collection.find(query,
@@ -39,13 +37,13 @@ if __name__ == "__main__":
 
             # Are we using index for quick queries?  Not always true if there
             # are no documents in the collection...
-            assert(cursor.explain()['indexOnly'] == True)
+            assert(cursor.explain()['indexOnly'] is True)
 
             # Stats on how the delete worked. Write concern is on.
             result = collection.remove(query)
             print('Deleted %d documents' % result['n'])
             if result['n'] == 0:
-                time_diff = (time.time() - last_event)/60
+                time_diff = (time.time() - last_event) / 60
 
                 if time_diff > 60:
                     sleep_time = 5
@@ -54,8 +52,9 @@ if __name__ == "__main__":
                 else:
                     sleep_time = 0.1
 
-                print("\tWaiting %0.1f second since no docs... no events since %0.2f minute" % (sleep_time,
-                                                                                             time_diff))
+                print('\tWait %0.1f min...',
+                      'no evts since %0.2f minute' % (sleep_time,
+                                                      time_diff))
                 time.sleep(sleep_time)
             else:
                 last_event = time.time()

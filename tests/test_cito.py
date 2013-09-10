@@ -10,7 +10,7 @@ Tests for `cito` module.
 
 import unittest
 
-from cito import cito
+from cito import cito2
 
 
 class TestCito(unittest.TestCase):

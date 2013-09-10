@@ -15,6 +15,7 @@ ureg.define('group = 2^31 * sample')
 
 Q_ = ureg.Quantity
 
+
 def get_default_collection():
     c = pymongo.MongoClient()
     db = c.data
