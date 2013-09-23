@@ -27,23 +27,9 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""Build cInterfaceV1724
+"""Constants for using throughout program
 """
+
+
+
 __author__ = 'tunnell'
-
-from distutils.core import setup
-from distutils.extension import Extension
-
-import numpy
-
-from Cython.Distutils import build_ext
-
-if __name__ == "__main__":
-    setup(
-        cmdclass={'build_ext': build_ext},
-        include_dirs=[numpy.get_include()],
-        ext_modules=[Extension("cInterfaceV1724", ["cInterfaceV1724.pyx"],
-                               extra_compile_args=['-O3']),
-                     Extension("sample_operations", ["sample_operations.pyx"],
-                               extra_compile_args=['-O3'])]
-    )

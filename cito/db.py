@@ -33,7 +33,6 @@
 __author__ = 'tunnell'
 
 import pymongo
-from cito.cito2 import ureg
 import snappy
 
 def get_mongo_db_objects(server='127.0.0.1'):
@@ -52,6 +51,14 @@ def get_mongo_db_objects(server='127.0.0.1'):
     c = pymongo.MongoClient(server)
     db = c.data
     collection = db.test
+
+    collection.ensure_index(get_sort_key(),
+                            background=True)
+
+    # Used for module list finding. TODO: This do anything?
+    collection.ensure_index([('module', pymongo.DESCENDING)],
+                            background=True)
+
     return c, db, collection
 
 def get_pymongo_collection():
@@ -65,37 +72,46 @@ def get_pymongo_collection():
     """
     return get_mongo_db_objects()[2]
 
-def get_max_time(collection, order=pymongo.DESCENDING):
+def get_sort_key():
+    return  [('triggertime', pymongo.DESCENDING),
+             ('module', pymongo.DESCENDING),
+             ('_id', pymongo.DESCENDING)]
+
+def get_max_time(collection, min_time = 0):
     """Get maximum time that has been seen by all boards, unless order is
     changed.
 
     Args:
        collection (Collection):  A pymongo Collection that will be queried
-       order:   Either pymongo.DESCENDING or pymongo.ASDESCENDING.  Useful for
-                finding the earliest time (if need be)
+       min_time (int): Time that the max must be larger than
 
     Returns:
        pint.Quantity or None: A time with units set by pint, or None if none found
 
     """
-    sort_key = [('triggertime', order)]
+    sort_key = get_sort_key()
     modules = collection.distinct('module')
-
     times = {}
 
     for module in modules:
-        query = {'module': module}
+        #print(module)
+        query = {'module': module,
+                 'triggertime' : {'$gt' : min_time}}
 
         cursor = collection.find(query,
-                                 fields=['triggertime'],
-                                 limit=1).sort(sort_key)
+                                 fields=['triggertime', 'module'],
+                                 limit=1,
+                                 sort=sort_key)#.hint(sort_key)
+
+        #assert(cursor.explain()['indexOnly'])
 
         times[module] = next(cursor)['triggertime']
 
     # Want the earliest time (i.e., the min) of all the max times
     # for the boards.
     time = min(times.values())
-    return time * ureg.sample
+    #print(time)
+    return time
 
 def get_data_from_doc(doc):
     """From a mongo document, fetch the data payload and decompress if
@@ -115,3 +131,11 @@ def get_data_from_doc(doc):
         data = snappy.uncompress(data)
 
     return data
+
+def post_result(result):
+    my_db = get_mongo_db_objects()[1]
+    my_collection = my_db.overview
+
+    my_collection.save(result)
+
+    pass

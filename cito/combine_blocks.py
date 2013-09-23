@@ -1,183 +1,136 @@
+# cito - The Xenon1T experiments software trigger
+# Copyright 2013.  All rights reserved.
+# https://github.com/tunnell/cito
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above
+# copyright notice, this list of conditions and the following disclaimer
+# in the documentation and/or other materials provided with the
+# distribution.
+#     * Neither the name of the Xenon experiment, nor the names of its
+# contributors may be used to endorse or promote products derived from
+# this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""Perform operations on sets of blocks
+"""
+
 import pymongo
 import numpy as np
-import snappy
-from cito import cInterfaceV1724 as bo
-from scipy import signal
 
-# TODO: some of this stuff should really be broken out into a Caen Python API.
+try:
+    print("Using Cython")
+    from cito import InterfaceV1724 as bo
+except ImportError:
+    print("Can't find Cython cInterfaceV1724.  Using native Python version")
+    from cito import InterfaceV1724 as bo
+from cito import db
+from scipy import signal
+from scipy.stats import norm
+import scipy
 
 SAMPLE_TYPE = bo.SAMPLE_TYPE
-CHUNK_SIZE = 10 ** 8  # units of 10 ns, 0.5 s
-
-
-def sum_pulses(results, combined_data):
-    # TODO: Can use some numpy routine here?
-    for result in results:
-        # combined_data[]
-        time_start = result['time_start']
-
-        for i, sample in enumerate(result['samples']):
-            combined_data[time_start + i] = sample
-
-    return combined_data
-
-
-def find_peak(x, y):
-    peakind = signal.find_peaks_cwt(y, np.array([100]))
-
-    threshold = 10000
-    peaks = []
-
-    for a, b in zip(x[peakind], y[peakind]):
-        if b > threshold:
-            peaks.append(a)
-
-    return np.array(peaks)
 
 
 
+def filter_samples(values):
+    """Apply a filter
+
+    :rtype : dict
+    :param values: Values to filter
+    :type values: np.array
+    """
+    new_values = np.zeros_like(values)
+
+    print('\tprefilter')
+    my_filter = norm(0, 100) # mu=0, sigma=100
+    filter_values = 600*[0.]
+    for j in range(-300, 300):
+        filter_values[j] = my_filter.pdf(j)
+
+    print('\tapply_filter')
+    for i in range(values.size):
+        for j in range(-300, 300):
+            if j > 0 and j < values.size:
+                new_values += values[i] * filter_values[j]
+
+    return new_values
+
+def find_peaks(values):
+    """Find peaks"""
+    extrema = scipy.signal.argrelmax(values)
+    print(extrema)
+    high_extrema = []
+    for i in extrema:
+        if values[i] > 10000:
+            high_extrema.append(i)
+    return high_extrema
 
 
-def get_occurences(cursor, offset):
-    occurences = np.zeros([CHUNK_SIZE], dtype=SAMPLE_TYPE)
+
+def get_sum_waveform(cursor, offset, n_samples):
+    """Get inverted sum waveform from mongo
+
+    :param cursor: An iterable object of documents containing Caen
+                    blocks.  This can be a pymongo Cursor.
+    :param offset: An integer start time
+    :param n_samples: How many samples to store
+    :rtype : dict
+    """
+    occurences = np.zeros(n_samples, dtype=SAMPLE_TYPE)
+
+    size = 0
 
     for doc in cursor:
-        try:
-            data = get_data_from_doc(doc)
-        except:
-            continue
+        data = db.get_data_from_doc(doc)
 
-        # if doc['module'] != 770:
-        #    continue
+        result = bo.get_waveform(data, int(len(data)/2))
 
-        result, ttt = bo.get_waveform(data, occurences)
-        ttt -= offset
+        time = doc['triggertime'] - offset
 
+        size += len(data)
+
+        result = np.array(result)
+
+
+        # Invert pulse
         result *= -1
         result += bo.MAX_ADC_VALUE
+
+        # Sum all PMTs
         result = np.sum(result, axis=0)
 
-        occurences[ttt: ttt + result.size] += result
+        # Combine with other blocks
+        for i in range(result.size):
+            occurences[time + i] = result[i]
 
-        #print(result, ttt)
+    if size:
+        print('size', size)
 
-    return occurences
-
-
-def get_bins(peaks):
-    status = np.zeros([1.3 * CHUNK_SIZE], dtype=np.dtype(bool))
-
-    for peak in peaks:
-        for i in range(peak - 1000, peak + 1000):
-            status[i] = True
-
-    peaks.sort()
-    bins = [-2 ** 32]
-    last_value = 0
-    for i in range(status.size):
-        if status[i] != last_value:
-            bins.append(i)
-            last_value = status[i]
-    bins += [2 ** 32]
-    bins = np.array(bins)
-    return bins
+    results = {}
+    results['size'] = size
+    results['occurences'] = occurences
 
 
-def determine_data_to_store(occurences, peaks):
-    new_occurences = []
 
-    bins = get_bins(peaks)
+    print(occurences)
 
-    stats = {'saved': 0, 'not_saved': 0}
-    print(bins)
-
-    for occurence in occurences:
-        # Instead of adjusting every sample, we just adjust the bin locations
-        #bins -= occurence['time_start']
-        x = [(occurence['time_start'] + i)
-             for i in range(len(occurence['samples']))]
-        y = occurence['samples']
-        assert(len(x) == len(y))
-
-        new_occurence = None
-
-        inds = np.digitize(x, bins)
-        for n in range(len(x)):
-            must_save = ((inds[n] - 1) % 2 == 1)
-            # print(must_save)
-
-            if must_save and new_occurence is None:
-                new_occurence = {}
-                new_occurence['channel'] = occurence['channel']
-                new_occurence['module'] = occurence['module']
-                new_occurence['time_start'] = x[n]
-                new_occurence['samples'] = []
-
-            if must_save:
-                new_occurence['samples'].append(y[n])
-                stats['saved'] += 1
-            else:
-                stats['not_saved'] += 1
-
-            if not must_save:
-                if new_occurence is not None:
-                    new_occurences.append(new_occurence)
-                    new_occurence = None
-
-    print('stats', stats, new_occurences)
-
-    return new_occurences
+    return results
 
 
-def combine_blocks(cursor, offset):
-    occurences = get_occurences(cursor, offset)
 
-    #combined_data = np.zeros([1.3 * CHUNK_SIZE], dtype=SAMPLE_TYPE)
-
-    #bo.sum_pulses(occurences, combined_data)
-    peaks = 1  # signal.find_peaks_cwt(combined_data, np.array([100]))
-
-    return occurences, peaks
-
-
-import zlib
-import pickle
-
-
-def zdumps(obj):
-    return zlib.compress(pickle.dumps(obj, pickle.HIGHEST_PROTOCOL), 9)
-
-
-def zloads(zstr):
-    return pickle.loads(zlib.decompress(zstr))
-
-if __name__ == "__main__":
-    c = pymongo.MongoClient()
-    db = c.data
-    collection = db.test
-
-    # TODO: move this elsewhere.  We don't use capped collections because
-    # we want to shard. but tailable collections may be useful for writing
-    # to disk?
-
-    BIG_NUMBER = 100000
-    for i in range(BIG_NUMBER):
-        t0 = i * CHUNK_SIZE
-        t1 = (i + 1) * CHUNK_SIZE
-        query = {'triggertime': {'$lt': t1, '$gt': t0}}
-
-        results = collection.find(query)
-
-        print('indexOnly', results.explain())
-
-        print(results.count())
-        occurences, peaks = combine_blocks(results, offset=(i * CHUNK_SIZE))
-
-        new_doc = {}
-        new_doc['t0'] = t0
-        new_doc['t1'] = t1
-        #zdumps(determine_data_to_store(occurences, peaks)) # (
-        new_doc['occurences'] = occurences
-
-        #print(size, len(new_doc['occurences']))
-        # db.saved.save(new_doc)

@@ -1,3 +1,32 @@
+# cito - The Xenon1T experiments software trigger
+# Copyright 2013.  All rights reserved.
+# https://github.com/tunnell/cito
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above
+# copyright notice, this list of conditions and the following disclaimer
+# in the documentation and/or other materials provided with the
+# distribution.
+#     * Neither the name of the Xenon experiment, nor the names of its
+# contributors may be used to endorse or promote products derived from
+# this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Interface to Caen V1724
 
 Flash ADC board
@@ -9,7 +38,6 @@ SAMPLE_TYPE = np.uint16  # Samples are actually 14 bit
 MAX_ADC_VALUE = 2 ** 14   # 14 bit ADC samples
 SAMPLE_TIME_STEP = 1    # 10 ns
 WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
-MAX_SAMPLES_PER_BLOCK = 400  # TODO: check this
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
 
@@ -67,7 +95,7 @@ def get_trigger_time_tag(data):
     return word
 
 
-def get_waveform(data, module, offset=0):
+def get_waveform(data, n_samples):
     # TODO: maybe make an 8 by N_SAMPLES array?  Makes easier to use numpy
     # routines.
 
@@ -75,9 +103,6 @@ def get_waveform(data, module, offset=0):
     # channel.  Due to zero suppression, there can be multiple occurences for
     # a given channel.  Each item in this array is a dictionary that will be
     # returned.
-
-    # trigger time tag
-    ttt = get_trigger_time_tag(data) - offset
 
     check_header(data)
 
@@ -89,12 +114,12 @@ def get_waveform(data, module, offset=0):
 
     max_time = None
 
-    samples = np.zeros((N_CHANNELS_IN_DIGITIZER, MAX_SAMPLES_PER_BLOCK),
+    samples = np.zeros((N_CHANNELS_IN_DIGITIZER, n_samples),
                        dtype=SAMPLE_TYPE)
 
     for j in range(N_CHANNELS_IN_DIGITIZER):
         if not ((chan_mask >> j) & 1):
-            print("Skipping channel", j)
+            #print("Skipping channel", j)
             continue
 
         words_in_channel_payload = get_word_by_index(data, pnt, False)
@@ -138,4 +163,4 @@ def get_waveform(data, module, offset=0):
     # This drops off any zeros at the rightward colums
     samples = np.compress(max_time * [True], samples, axis=1)
 
-    return (samples, ttt)
+    return samples

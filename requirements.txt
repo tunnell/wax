@@ -1,8 +1,8 @@
 pymongo
 python-snappy
 scipy
-bitstring
 matplotlib
 numpy
-pint
-
+celery
+Cython
+anyjson
