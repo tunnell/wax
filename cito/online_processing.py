@@ -113,7 +113,7 @@ class Process(Command):
 
                     current_time_index = time_index
                 else:
-                    sys.log.debug('Waiting')
+                    self.log.debug('Waiting')
                     time.sleep(0.1)
                     #my_db.command('repairDatabase')
                     #break
