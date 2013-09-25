@@ -17,6 +17,9 @@ if sys.argv[-1] == 'publish':
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
+
 setup(
     name='cito',
     version='0.1.0',
@@ -31,7 +34,7 @@ setup(
     ],
     package_dir={'cito': 'cito'},
     include_package_data=True,
-    install_requires=['cliff'],
+    install_requires=required,
     entry_points={
         'console_scripts': [
             'cito = cito.main:main'
