@@ -29,12 +29,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Interface to Celery
 
-Calls celery
+This is the interface to celery.  You must first have done:
+
+  celery worker --app=tasks
+
+
 """
 
 import sys
 
 import os
+import numpy as np
 
 from celery import Celery
 
@@ -75,12 +80,16 @@ def process(t0, t1):
     ureg.define("sigwidth = 1 microsecond")
 
     n_samples = t1 - t0
+    print('nsamples', n_samples)
 
     # $gte and $lt are special mongo functions for greater than and less than
     subset_query = {"triggertime": {'$gte': t0,
                                     '$lt': t1}}
     cursor = collection.find(subset_query, )
     count = cursor.count()
+    print('count', count)
+    if count == 0:
+        return
     #t0.to('s')
     #t1.to('s')
     #if count:
@@ -99,10 +108,11 @@ def process(t0, t1):
 
 
     print('fft')
-    import numpy as np
-    import pyfftw
 
-    z = pyfftw.interfaces.numpy_fft.rfft(y, threads=8)
+    #import pyfftw
+
+    #z = pyfftw.interfaces.numpy_fft.rfft(y, threads=8)
+    z = np.fft.fft(y)
     print('fftw', z)
     res = {}
     res['t0'] = t0

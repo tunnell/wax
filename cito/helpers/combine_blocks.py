@@ -33,12 +33,11 @@
 import numpy as np
 from cito.helpers import xedb
 
-#try:
- #   print("Using Cython")
-
-#except ImportError:
-    #print("Can't find Cython cInterfaceV1724.  Using native Python version")
-from cito.helpers import InterfaceV1724 as bo
+try:
+    print("Using Cython")
+except ImportError:
+    print("Can't find Cython cInterfaceV1724.  Using native Python version")
+    from cito.helpers import InterfaceV1724 as bo
 from scipy import signal
 from scipy.stats import norm
 import scipy

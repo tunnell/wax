@@ -27,24 +27,27 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""Commands for the command line interface for DB operations.
+"""
 
 import logging
 
-from cliff.command import Command
 from cliff.show import ShowOne
 from cito.helpers import xedb, InterfaceV1724
 
-class DBReset(Command):
-    """Reset the database by dropping the default collection.
-    """
 
+class DBBase(ShowOne):
+    """Base class for all DB commands.
+
+    Handles logging, descriptions, and common fuctions.
+    """
     log = logging.getLogger(__name__)
 
     def get_description(self):
         return self.__doc__
 
     def get_parser(self, prog_name):
-        parser = super(DBReset, self).get_parser(prog_name)
+        parser = super(DBBase, self).get_parser(prog_name)
 
         parser.add_argument("--hostname", help="MongoDB database address",
                             type=str,
@@ -52,19 +55,35 @@ class DBReset(Command):
 
         return parser
 
-    def take_action(self, parsed_args):
-        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
-
-        collection_name = collection.name
-
-        my_db.drop_collection(collection.name)
-        error = my_db.error()
+    def get_status(self, db):
+        """Return DB errors, if any"""
+        columns = ['Status']
+        error = db.error()
         if error:
             self.log.error(error)
+            data = [error]
         else:
-            self.log.info('Collection dropped succesfully')
+            data = ['success']
+        return columns, data
 
-class DBRepair(Command):
+class DBReset(DBBase):
+    """Reset the database by dropping the default collection.
+    """
+
+
+    def take_action(self, parsed_args):
+        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+
+        # The pymongo call
+        db.drop_collection(collection.name)
+
+        # TODO: Maybe purge celery too?
+        #from celery.task.control import discard_all
+        #discard_all()
+
+        return self.get_status(db)
+
+class DBRepair(DBBase):
     """Repair DB to regain unused space.
 
     MongoDB can't know how what to do with space after a document is deleted,
@@ -75,56 +94,26 @@ class DBRepair(Command):
     operation of the database.
     """
 
-    log = logging.getLogger(__name__)
-
-    def get_description(self):
-        return self.__doc__
-
-    def get_parser(self, prog_name):
-        parser = super(DBRepair, self).get_parser(prog_name)
-
-        parser.add_argument("--hostname", help="MongoDB database address",
-                            type=str,
-                            default='127.0.0.1')
-
-        return parser
-
     def take_action(self, parsed_args):
-        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
 
-        collection_name = collection.name
+        # The actual pymongo call
+        db.command('repairDatabase')
 
-        my_db.command('repairDatabase')
-        error = my_db.error()
-        if error:
-            self.log.error(error)
-        else:
-            self.log.info('Collection repaired succesfully')
+        return self.get_status(db)
 
 
 
-class DBCount(ShowOne):
+class DBCount(DBBase):
     """Count docs in DB.
     """
 
-    log = logging.getLogger(__name__)
-
-    def get_description(self):
-        return self.__doc__
-
-    def get_parser(self, prog_name):
-        parser = super(DBCount, self).get_parser(prog_name)
-
-        parser.add_argument("--hostname", help="MongoDB database address",
-                            type=str,
-                            default='127.0.0.1')
-
-        return parser
 
     def take_action(self, parsed_args):
-        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
 
         columns = ['Number of documents']
         data = [collection.count()]
 
-        return (columns, data)
+        return columns, data
+

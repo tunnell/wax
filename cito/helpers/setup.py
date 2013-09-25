@@ -38,9 +38,9 @@ import numpy
 
 from Cython.Distutils import build_ext
 
-if __name__ == "__main__":
+if 1:#__name__ == "__main__":
     setup(
-        cmdclass={'build_ext': build_ext},
+        #cmdclass={'build_ext': build_ext},
         include_dirs=[numpy.get_include()],
         ext_modules=[Extension("cInterfaceV1724", ["cInterfaceV1724.pyx"],
                                extra_compile_args=['-O3']),

@@ -88,7 +88,7 @@ class Process(Command):
         # Index for quick query
         collection.create_index(sort_key, dropDups=True)
         current_time_index = int(xedb.get_min_time(collection) / chunk_size)
-        self.log.debug('Current time index,', current_time_index)
+        self.log.debug('Current time index %d', current_time_index)
 
         # Loop until Ctrl-C or error
         while (1):

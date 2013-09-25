@@ -94,12 +94,11 @@ class Inspector(ShowOne):
             self.log.fatal("No document found.")
             return ([], [])
 
-        selection = parsed_args.print,
+        selection = parsed_args.print
         do_checks = parsed_args.checks
 
         output = []
 
-        print("Doc: {")
 
         # For every key in the doc, which is like every 'variable'
         for key in doc:

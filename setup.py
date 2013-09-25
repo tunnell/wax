@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 
+import os
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+
+import numpy
+
+from setuptools import setup
+
+from distutils.extension import Extension
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -19,6 +21,10 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 with open('requirements.txt') as f:
     required = f.read().splitlines()
+
+from Cython.Distutils import build_ext
+module1 = Extension("cito.helpers.cInterfaceV1724", ["cito/helpers/cInterfaceV1724.pyx"],
+                    extra_compile_args=['-O3'])
 
 setup(
     name='cito',
@@ -59,4 +65,7 @@ setup(
         'Programming Language :: Python :: 3.3',
     ],
     test_suite='tests',
+    cmdclass={'build_ext': build_ext},
+    include_dirs=[numpy.get_include()],
+    ext_modules = [module1],
 )
