@@ -68,6 +68,8 @@ class DBBase(ShowOne):
 
 class DBReset(DBBase):
     """Reset the database by dropping the default collection.
+
+    Warning: this cannot be used during a run as it will kill the DAQ writer.
     """
 
 
@@ -80,6 +82,21 @@ class DBReset(DBBase):
         # TODO: Maybe purge celery too?
         #from celery.task.control import discard_all
         #discard_all()
+
+        return self.get_status(db)
+
+class DBPurge(DBBase):
+    """Delete/purge all DAQ documents without deleting collection.
+
+    This can be used during a run.
+    """
+
+
+    def take_action(self, parsed_args):
+        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+
+        # The pymongo call
+        collection.remove({})
 
         return self.get_status(db)
 

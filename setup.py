@@ -48,6 +48,7 @@ setup(
             'db reset = cito.db_operations:DBReset',
             'db inspector = cito.db_operations:DBCount',
             'db repair = cito.db_operations:DBRepair',
+            'db purge = cito.db_operations:DBPurge',
             'process = cito.online_processing:Process'
         ],
     },
