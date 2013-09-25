@@ -81,7 +81,7 @@ class DBRepair(Command):
         return self.__doc__
 
     def get_parser(self, prog_name):
-        parser = super(DBReset, self).get_parser(prog_name)
+        parser = super(DBRepair, self).get_parser(prog_name)
 
         parser.add_argument("--hostname", help="MongoDB database address",
                             type=str,
