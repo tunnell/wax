@@ -67,6 +67,9 @@ class Process(Command):
                             help='Constantly flush the DB of new documents (single thread)')
         parser.add_argument('--single', action='store_true',
                             help='Disable Celery and single thread')
+        parser.add_argument('--wait-time', type=float, dest='waittime',
+                            help='Time to sleep in seconds if no documents to process',
+                            default=0.1)
 
         return parser
 
@@ -97,7 +100,8 @@ class Process(Command):
                 max_time = xedb.get_max_time(collection)
                 time_index = int(max_time / chunk_size)
 
-                print(current_time_index)
+                self.log.debug('Previous chunk %d' % current_time_index)
+                self.log.debug('Current chunk %d' % time_index)
                 if time_index > current_time_index:
                     for i in range(current_time_index, time_index):
                         t0 = (i * chunk_size - padding)
@@ -113,8 +117,8 @@ class Process(Command):
 
                     current_time_index = time_index
                 else:
-                    self.log.debug('Waiting')
-                    time.sleep(0.1)
+                    self.log.debug('Waiting %f seconds' % parsed_args.waittime)
+                    time.sleep(parsed_args.waittime)
                     #my_db.command('repairDatabase')
                     #break
             except StopIteration:
