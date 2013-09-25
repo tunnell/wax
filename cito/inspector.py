@@ -27,65 +27,123 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""Grab DAQ document and print it.
 
-A DAQ document contains the V1724 flash ADC data.  If data in the document is
-compressed, it will decompress it.
-"""
-import db
 import argparse
-import binascii
+import logging
 
-def pretty_print_daq_doc(doc, selection='all'):
-    print("Doc: {")
+import os
 
-    for key in doc:
-        pre_text = '\t %s : ' % key
-        if key == 'data':
-            if selection == 'nondata':
-                continue
-            print(pre_text)
-            data = db.get_data_from_doc(doc)
-            hex_string = binascii.b2a_hex(data)
-            for i in range(0, len(data), 8):
-                print('\t\t%08x' % int((hex_string[i:i+8]), 16))
-            ','
-        elif selection != 'data':
-            print(pre_text, doc[key],',')
-    print('}')
+from cliff.show import ShowOne
+from cito.helpers import xedb, InterfaceV1724
 
 
+class Inspector(ShowOne):
+    """Grab DAQ document from MongoDB and print it.
 
+    A DAQ document contains the V1724 flash ADC data.  If data in the document is
+    compressed, it will decompress it.
+    """
 
-if __name__ == "__main__":
-    #-db DATABSE -u USERNAME -p PASSWORD -size 20
-    parser = argparse.ArgumentParser(description=__doc__)
+    log = logging.getLogger(__name__)
 
-    subparser = parser.add_mutually_exclusive_group(required=True)
-    subparser.add_argument("-s", "--single", action='store_true',
-                           help="Grab single event")
+    def get_description(self):
+        return self.__doc__
 
-    parser.add_argument("-db", "--hostname", help="Database name",
-                        type=str,
-                        default='127.0.0.1')
+    def get_parser(self, prog_name):
+        parser = super(Inspector, self).get_parser(prog_name)
 
-    parser.add_argument('-n', '--newest', action='store_true',
-                        help='Get newest event')
-    parser.add_argument('-p', '--print', type=str,
-                        choices=('data', 'nondata', 'all'),
-                        default='all',
-                        help='Print only certain keys within document(s)')
+        parser.add_argument("--hostname", help="MongoDB database address",
+                            type=str,
+                            default='127.0.0.1')
+        parser.add_argument('--print', type=str,
+                            choices=('data', 'nondata', 'all'),
+                            default='all',
+                            help='Print only certain keys within document(s)')
+        parser.add_argument('--skip-checks', dest='checks', action='store_false',
+                            help='Skip consistency checks on data.')
 
-    args = parser.parse_args()
+        subparser = parser.add_mutually_exclusive_group(required=True)
+        subparser.add_argument('-n', '--newest', action='store_true',
+                               help='Get newest DAQ document')
+        subparser.add_argument('--id', type=str,
+                               help='Get DAQ document by ID')
+        subparser.add_argument('-r', '--random', action='store_true',
+                               help='Grab random DAQ document')
 
-    if args.single:
-        conn, my_db, collection = db.get_mongo_db_objects(args.hostname)
+    #args = parser.parse_args()  # Grab command line args
 
-        if args.newest:
-            time = db.get_max_time(collection)
-            doc = collection.find_one({'triggertime' : time})
-        else:
+        #parser.add_argument('filename', nargs='?', default='.')
+        return parser
+
+    def take_action(self, parsed_args):
+        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+
+        if parsed_args.newest:
+            try:
+                time = xedb.get_max_time(collection)
+                doc = collection.find_one({'triggertime': time})
+            except RuntimeError as e:
+                self.log.fatal('Runtime error: %s' % e)
+                doc = None
+        elif parsed_args.random:
             doc = collection.find_one()
-        pretty_print_daq_doc(doc, args.print)
-    else:
-        parser.print_help()
+        else:  # must be by ID since these args in in mutually exclusive group
+            doc = collection.find_one({'_id': parsed_args.id})
+
+        if doc == None:
+            self.log.fatal("No document found.")
+            return ([], [])
+
+        selection = parsed_args.print,
+        do_checks = parsed_args.checks
+
+        output = []
+
+        print("Doc: {")
+
+        # For every key in the doc, which is like every 'variable'
+        for key in doc:
+            if key == 'data':  # For data, we have a special printing format
+                if selection == 'nondata':
+                    continue
+
+                # Get data from doc (and decompress if necessary)
+                data = xedb.get_data_from_doc(doc)
+
+                # A try/except block to see if the InterfaceV1724 class throwns
+                # any assertion exceptions when checking for data consistency.
+                try:
+                    if do_checks:
+                        output.append(('data(good header?)',
+                                       InterfaceV1724.check_header(data)))
+                    output.append(('data(trigger time tag)',
+                                   InterfaceV1724.get_trigger_time_tag(data)))
+
+                    size = InterfaceV1724.get_event_size(data, do_checks)
+                    output.append(('data(size from header in words)',
+                                   size))
+
+                    # Loop over 32-bits words
+                    for i in range(int(len(data)/4)):
+                        # Print out 8 hex characters. After printing, the rightmost
+                        # character on the string corresponds to the 0th bit.  The
+                        # leftmost then corresponds to the highest 31st bit.
+                        word = InterfaceV1724.get_word_by_index(data, i, do_checks)
+                        output.append(('data[%d]' % i),
+                                      '%08x' % word)
+
+                except AssertionError as e:
+                    # AssertionErrors are thrown when checking, for example, header
+                    # consistency of the data.
+                    self.log.error('!!Bad data. Caught exception: ', e)
+
+                    # This shouldn't happen since the interface was told not to
+                    # raise assertion errors
+                    if not do_checks:
+                        raise e
+
+            elif selection != 'data':  # If not 'data' and data-only printing off
+                output.append((key, doc[key]))
+
+        return zip*(output)
+

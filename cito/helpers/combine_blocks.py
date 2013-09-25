@@ -30,16 +30,15 @@
 """Perform operations on sets of blocks
 """
 
-import pymongo
 import numpy as np
+from cito.helpers import xedb
 
-try:
-    print("Using Cython")
-    from cito import InterfaceV1724 as bo
-except ImportError:
-    print("Can't find Cython cInterfaceV1724.  Using native Python version")
-    from cito import InterfaceV1724 as bo
-from cito import db
+#try:
+ #   print("Using Cython")
+
+#except ImportError:
+    #print("Can't find Cython cInterfaceV1724.  Using native Python version")
+from cito.helpers import InterfaceV1724 as bo
 from scipy import signal
 from scipy.stats import norm
 import scipy
@@ -97,7 +96,7 @@ def get_sum_waveform(cursor, offset, n_samples):
     size = 0
 
     for doc in cursor:
-        data = db.get_data_from_doc(doc)
+        data = xedb.get_data_from_doc(doc)
 
         result = bo.get_waveform(data, int(len(data)/2))
 

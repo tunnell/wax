@@ -70,16 +70,21 @@ def get_word_by_index(data, i, do_checks=True):
     return word
 
 
-def check_header(data):
+def check_header(data, do_checks=True):
     word = get_word_by_index(data, 0)
-    assert(word >> 20 == 0xA00)
+    if do_checks:
+        assert word >> 20 == 0xA00, 'Data header misformated'
+    return True
 
 
-def get_event_size(data):
-    check_header(data)
+def get_event_size(data, do_checks=True):
+    check_header(data, do_checks)
     word = get_word_by_index(data, 0)
-    size = (word & 0x0FFFFFFF)
-    assert(size == int(len(data) / 4))
+    size = (word & 0x0FFFFFFF)  # size in words
+    if do_checks:
+        # len(data) is in bytes, word = 4 bytes
+        assert size == (len(data) / 4), 'Size from header not equal to data size'
+
     return size  # number of words
 
 

@@ -73,9 +73,26 @@ def get_pymongo_collection():
     return get_mongo_db_objects()[2]
 
 def get_sort_key():
+    """Sort key used for MongoDB sorting and indexing.
+
+    """
     return  [('triggertime', pymongo.DESCENDING),
              ('module', pymongo.DESCENDING),
              ('_id', pymongo.DESCENDING)]
+
+def get_min_time(collection):
+    """Get minimum time in collection.
+
+    Minimum time of any document.
+    """
+    distinct_trigger_times = collection.distinct('triggertime')
+
+    if not distinct_trigger_times:
+        raise RuntimeError("No documents/data in which to find most recent document")
+
+    min_time = min(distinct_trigger_times)
+    return min_time
+
 
 def get_max_time(collection, min_time = 0):
     """Get maximum time that has been seen by all boards, unless order is
@@ -91,7 +108,11 @@ def get_max_time(collection, min_time = 0):
     """
     sort_key = get_sort_key()
     modules = collection.distinct('module')
+
     times = {}
+
+    if not modules:
+        raise RuntimeError("No data for any module found")
 
     for module in modules:
         #print(module)

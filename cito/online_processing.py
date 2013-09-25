@@ -31,61 +31,87 @@
 """
 
 __author__ = 'tunnell'
-import pymongo
-from cito import db
-import tasks
+import logging
 import sys
 import time
 
+import pymongo
+from cliff.command import Command
 
-if __name__ == "__main__":
+from cito.helpers import tasks, xedb
 
-    chunk_size = 2 ** 28 #10**9 # 0.01 second in units of 10 ns step
-    padding = 0 # 10 ** 2 # 1 microsecond in units of 10 ns step
 
-    conn, my_db, collection = db.get_mongo_db_objects()
+class Process(Command):
+    """Process data from DB
+    """
 
-    # Key to sort by so we can use an index for quick query
-    sort_key = [
-        ('triggertime', pymongo.DESCENDING),
-        ('module', pymongo.DESCENDING)
-    ]
+    log = logging.getLogger(__name__)
 
-    # Index for quick query
-    collection.create_index(sort_key, dropDups=True)
-    current_time_index = int(3735061640/chunk_size)
+    def get_description(self):
+        return self.__doc__
 
-    # Loop until Ctrl-C or error
-    while (1):
-        # This try-except catches Ctrl-C and error
-        try:
-            # Non-sense query that is in index
-            query = {"triggertime": {'$gt': 0}}
+    def get_parser(self, prog_name):
+        parser = super(Process, self).get_parser(prog_name)
 
-            max_time = db.get_max_time(collection)
-            time_index = int(max_time / chunk_size)
+        parser.add_argument("--hostname", help="MongoDB database address",
+                            type=str,
+                            default='127.0.0.1')
 
-            print(current_time_index)
-            if time_index > current_time_index:
-                for i in range(current_time_index, time_index):
-                    t0 = (i * chunk_size - padding)
-                    t1 = (i + 1) * chunk_size
-                    print('Processing', t0, t1)
-                    tasks.process(t0, t1)
+        parser.add_argument('--chunksize', type=int,
+                            help="Size of data chunks to process [10 ns step]",
+                            default=2 ** 28)
+        parser.add_argument('--padding', type=int,
+                            help='Padding to overlap processing windows [10 ns step]',
+                            default=10 ** 2)
 
-                current_time_index = time_index
-            else:
-                print('.')
-                time.sleep(0.1)
-                #my_db.command('repairDatabase')
-            #break
-        except StopIteration:
-            pass
-        except ValueError as e:
-            #print("ValueError:", e)
-            raise # pass # This means no events left
-        except pymongo.errors.OperationFailure as e:
-            print('MongoDB error:', e)
-        except KeyboardInterrupt:
-            print("Ctrl-C caught so exiting.")
-            sys.exit(0)
+        return parser
+
+    def take_action(self, parsed_args):
+        chunk_size = parsed_args.chunksize
+        padding = parsed_args.padding
+
+        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+
+        # Key to sort by so we can use an index for quick query
+        sort_key = [
+            ('triggertime', pymongo.DESCENDING),
+            ('module', pymongo.DESCENDING)
+        ]
+
+        # Index for quick query
+        collection.create_index(sort_key, dropDups=True)
+        current_time_index = int(xedb.get_min_time(collection) / chunk_size)
+        self.log.debug('Current time index,', current_time_index)
+
+        # Loop until Ctrl-C or error
+        while (1):
+            # This try-except catches Ctrl-C and error
+            try:
+                # Non-sense query that is in index
+                query = {"triggertime": {'$gt': 0}}
+
+                max_time = xedb.get_max_time(collection)
+                time_index = int(max_time / chunk_size)
+
+                print(current_time_index)
+                if time_index > current_time_index:
+                    for i in range(current_time_index, time_index):
+                        t0 = (i * chunk_size - padding)
+                        t1 = (i + 1) * chunk_size
+                        self.log.info('Processing %d %d' % (t0, t1))
+                        tasks.process(t0, t1)
+
+                    current_time_index = time_index
+                else:
+                    sys.log.debug('Waiting')
+                    time.sleep(0.1)
+                    #my_db.command('repairDatabase')
+                    #break
+            except StopIteration:
+                pass
+            except ValueError as e:
+                self.log.exception(e)
+                raise # pass # This means no events left
+            except KeyboardInterrupt:
+                self.log.info("Ctrl-C caught so exiting.")
+                sys.exit(0)

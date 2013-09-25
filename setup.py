@@ -25,13 +25,24 @@ setup(
     author='Christopher Tunnell',
     author_email='ctunnell@nikhef.nl',
     url='https://github.com/tunnell/cito',
+    download_url='https://github.com/tunnell/cito/tarball/master',
     packages=[
-        'cito',
+        'cito', 'cito.helpers',
     ],
     package_dir={'cito': 'cito'},
     include_package_data=True,
-    install_requires=[
-    ],
+    install_requires=['cliff'],
+    entry_points={
+        'console_scripts': [
+            'cito = cito.main:main'
+        ],
+        'cito.main': [
+            'doc inspector = cito.inspector:Inspector',
+            'db reset = cito.db_operations:DBReset',
+            'db inspector = cito.db_operations:DBCount',
+            'process = cito.online_processing:Process'
+        ],
+    },
     license="BSD",
     zip_safe=False,
     keywords='cito',

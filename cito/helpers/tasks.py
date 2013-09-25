@@ -40,12 +40,12 @@ from celery import Celery
 
 sys.path.append(os.path.dirname(os.path.basename(__file__)))
 
-import combine_blocks
-import db
-import sample_operations
+from cito.helpers import combine_blocks
+from cito.helpers import xedb
+#from cito.helpers import sample_operations
 from pint import UnitRegistry
 
-conn, mongo_db_obj, collection = db.get_mongo_db_objects()
+conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
 
 celery = Celery('tasks',
                 broker='mongodb://%s:%d/celery' % (conn.host,
