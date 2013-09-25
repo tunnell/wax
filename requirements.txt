@@ -7,3 +7,4 @@ celery
 Cython
 anyjson
 cliff
+pint

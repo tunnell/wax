@@ -63,6 +63,10 @@ class Process(Command):
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
                             default=10 ** 2)
+        parser.add_argument('--flush', action='store_true',
+                            help='Constantly flush the DB of new documents (single thread)')
+        parser.add_argument('--single', action='store_true',
+                            help='Disable Celery and single thread')
 
         return parser
 
@@ -99,7 +103,13 @@ class Process(Command):
                         t0 = (i * chunk_size - padding)
                         t1 = (i + 1) * chunk_size
                         self.log.info('Processing %d %d' % (t0, t1))
-                        tasks.process(t0, t1)
+                        if parsed_args.flush:
+                            tasks.flush(t0, t1)
+                        else:
+                            if parsed_args.single:
+                                tasks.process(t0, t1)
+                            else:
+                                tasks.process.delay(t0, t1)
 
                     current_time_index = time_index
                 else:

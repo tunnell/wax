@@ -52,6 +52,12 @@ celery = Celery('tasks',
                                                    conn.port))
 
 @celery.task
+def flush(t0, t1):
+    subset_query = {"triggertime": {'$gte': t0,
+                                    '$lt': t1}}
+    collection.remove(subset_query)
+
+@celery.task
 def process(t0, t1):
     """Function for processing data within Celery
 
