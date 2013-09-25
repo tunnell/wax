@@ -18,9 +18,7 @@ if sys.argv[-1] == 'publish':
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
-
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
+required = open('requirements.txt').read().splitlines()
 
 from Cython.Distutils import build_ext
 module1 = Extension("cito.helpers.cInterfaceV1724", ["cito/helpers/cInterfaceV1724.pyx"],
