@@ -34,6 +34,7 @@ import numpy as np
 from cito.helpers import xedb
 
 try:
+    from cito.helpers import cInterfaceV1724 as bo
     print("Using Cython")
 except ImportError:
     print("Can't find Cython cInterfaceV1724.  Using native Python version")
