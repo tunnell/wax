@@ -43,6 +43,7 @@ setup(
             'doc inspector = cito.inspector:Inspector',
             'db reset = cito.db_operations:DBReset',
             'db inspector = cito.db_operations:DBCount',
+            'db repair = cito.db_operations:DBRepair',
             'process = cito.online_processing:Process'
         ],
     },

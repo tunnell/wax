@@ -64,6 +64,42 @@ class DBReset(Command):
         else:
             self.log.info('Collection dropped succesfully')
 
+class DBRepair(Command):
+    """Repair DB to regain unused space.
+
+    MongoDB can't know how what to do with space after a document is deleted,
+    so there can exist small blocks of memory that are too small for new
+    documents but non-zero.  This is called fragmentation.  This command
+    copies all the data into a new database, then replaces the old database
+    with the new one.  This is an expensive operation and will slow down
+    operation of the database.
+    """
+
+    log = logging.getLogger(__name__)
+
+    def get_description(self):
+        return self.__doc__
+
+    def get_parser(self, prog_name):
+        parser = super(DBReset, self).get_parser(prog_name)
+
+        parser.add_argument("--hostname", help="MongoDB database address",
+                            type=str,
+                            default='127.0.0.1')
+
+        return parser
+
+    def take_action(self, parsed_args):
+        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+
+        collection_name = collection.name
+
+        my_db.command('repairDatabase')
+        error = my_db.error()
+        if error:
+            self.log.error(error)
+        else:
+            self.log.info('Collection repaired succesfully')
 
 
 
