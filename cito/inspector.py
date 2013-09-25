@@ -129,8 +129,8 @@ class Inspector(ShowOne):
                         # character on the string corresponds to the 0th bit.  The
                         # leftmost then corresponds to the highest 31st bit.
                         word = InterfaceV1724.get_word_by_index(data, i, do_checks)
-                        output.append(('data[%d]' % i),
-                                      '%08x' % word)
+                        output.append(('data[%d]' % i,
+                                      '%08x' % word))
 
                 except AssertionError as e:
                     # AssertionErrors are thrown when checking, for example, header
@@ -145,5 +145,5 @@ class Inspector(ShowOne):
             elif selection != 'data':  # If not 'data' and data-only printing off
                 output.append((key, doc[key]))
 
-        return zip*(output)
+        return zip(*output)
 
