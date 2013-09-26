@@ -5,8 +5,12 @@ import sys
 
 import os
 
-
-import numpy
+try:
+    import numpy
+    from Cython.Distutils import build_ext
+except ImportError:
+    print("You must install numpy and Cython first (e.g., easy_install numpy Cython)")
+    raise
 
 from setuptools import setup
 
@@ -20,7 +24,7 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 required = open('requirements.txt').read().splitlines()
 
-from Cython.Distutils import build_ext
+
 module1 = Extension("cito.helpers.cInterfaceV1724", ["cito/helpers/cInterfaceV1724.pyx"],
                     extra_compile_args=['-O3'])
 

@@ -59,7 +59,7 @@ class Process(Command):
 
         parser.add_argument('--chunksize', type=int,
                             help="Size of data chunks to process [10 ns step]",
-                            default=2 ** 28)
+                            default=2 ** 17)
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
                             default=10 ** 2)
