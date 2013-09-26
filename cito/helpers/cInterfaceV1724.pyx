@@ -50,15 +50,6 @@ WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
 N_CHANNELS_IN_DIGITIZER = 8 # number of channels in digitizer board
 
 
-def get_word(data):
-    """Generator for words
-    """
-    word_size_in_bytes = 4
-
-    number_of_words = int(len(data) / word_size_in_bytes)
-    for i in range(number_of_words):
-        yield get_word_by_index(data, i)
-
 
 def get_word_by_index(data, i):
     """Get 32-bit word by index
@@ -78,7 +69,7 @@ def check_header(data):
     word = get_word_by_index(data, 0)
     assert(word >> 20 == 0xA00)
 
-def get_event_size(data):
+def get_block_size(data):
     check_header(data)
     word = get_word_by_index(data, 0)
     size = (word & 0x0FFFFFFF)
@@ -96,19 +87,20 @@ def get_trigger_time_tag(data):
 
     return word
 
-def get_waveform(data, Py_ssize_t n_samples):
+def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer = 8):
     """Fetch waveform
 
     :param data: data to analyze
     :param n_samples:   Max number of samples (overestimate!)
     :return: samples
     """
+
     # trigger time tag
     cdef unsigned int word_chan_mask, chan_mask, sample_1, sample_2
 
     check_header(data)
 
-    cdef Py_ssize_t j, k, wavecounter_within_channel_payload, N_CHANNELS_IN_DIGITIZER, words_in_channel_payload, num_words_in_channel_payload
+    cdef Py_ssize_t j, k, wavecounter_within_channel_payload, words_in_channel_payload, num_words_in_channel_payload
     cdef Py_ssize_t counter_within_channel_payload
     cdef Py_ssize_t pnt =  1
 
@@ -116,13 +108,14 @@ def get_waveform(data, Py_ssize_t n_samples):
     chan_mask = word_chan_mask & 0xFF
     pnt += 3
 
-    cdef np.ndarray[np.uint16_t, ndim=2] samples = np.zeros((N_CHANNELS_IN_DIGITIZER, n_samples),
+    cdef np.ndarray[np.uint16_t, ndim=2] samples = np.zeros((n_channels_in_digitizer, n_samples),
                                                             dtype=SAMPLE_TYPE)
 
     # Max time seen, which is used for resizing the samples array
-    cdef Py_ssize_t max_time
+    cdef Py_ssize_t max_time = 0
 
-    for j in range(N_CHANNELS_IN_DIGITIZER):
+
+    for j in range(n_channels_in_digitizer):
         words_in_channel_payload = get_word_by_index(data, pnt)
 
         pnt += 1
@@ -139,7 +132,7 @@ def get_waveform(data, Py_ssize_t n_samples):
                 counter_within_channel_payload = counter_within_channel_payload + 1
 
                 for k in range(num_words_in_channel_payload):
-                    double_sample = get_word_by_index(data, pnt, False)
+                    double_sample = get_word_by_index(data, pnt)
                     sample_1 = double_sample & 0xFFFF
                     sample_2 = (double_sample >> 16) & 0xFFFF
 
@@ -148,8 +141,6 @@ def get_waveform(data, Py_ssize_t n_samples):
 
                     samples[j][wavecounter_within_channel_payload] = sample_2
                     wavecounter_within_channel_payload += 1
-
-                    print('samples', sample_1, sample_2)
 
                     pnt = pnt + 1
                     counter_within_channel_payload = counter_within_channel_payload + 1
@@ -163,7 +154,7 @@ def get_waveform(data, Py_ssize_t n_samples):
                 counter_within_channel_payload = counter_within_channel_payload + 1
 
 
-    # This drops off any zeros at the rightward colums
+    # This drops off any zeros at the rightward colums, does this actually go faster?
     samples = np.compress(max_time * [True], samples, axis=1)
 
     return samples

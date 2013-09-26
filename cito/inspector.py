@@ -118,7 +118,7 @@ class Inspector(ShowOne):
                     output.append(('data(trigger time tag)',
                                    InterfaceV1724.get_trigger_time_tag(data)))
 
-                    size = InterfaceV1724.get_event_size(data, do_checks)
+                    size = InterfaceV1724.get_block_size(data, do_checks)
                     output.append(('data(size from header in words)',
                                    size))
 

@@ -33,12 +33,13 @@
 import numpy as np
 from cito.helpers import xedb
 
-try:
-    from cito.helpers import cInterfaceV1724 as bo
-    print("Using Cython")
-except ImportError:
-    print("Can't find Cython cInterfaceV1724.  Using native Python version")
-    from cito.helpers import InterfaceV1724 as bo
+#try:
+#    from cito.helpers import cInterfaceV1724 as bo
+#    print("Using Cython")
+#except ImportError:
+#    print("Can't find Cython cInterfaceV1724.  Using native Python version")
+from cito.helpers import InterfaceV1724 as bo
+
 from scipy import signal
 from scipy.stats import norm
 import scipy
@@ -118,16 +119,13 @@ def get_sum_waveform(cursor, offset, n_samples):
         for i in range(result.size):
             occurences[time + i] = result[i]
 
-    if size:
-        print('size', size)
-
     results = {}
     results['size'] = size
     results['occurences'] = occurences
 
 
 
-    print(occurences)
+
 
     return results
 

@@ -49,6 +49,7 @@ from cito.helpers import combine_blocks
 from cito.helpers import xedb
 #from cito.helpers import sample_operations
 from pint import UnitRegistry
+import time
 
 conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
 
@@ -74,22 +75,24 @@ def process(t0, t1):
         None
     """
 
-
+    start_time = time.time()
     ureg = UnitRegistry()
     ureg.define("sample = 10 ns")
     ureg.define("sigwidth = 1 microsecond")
 
     n_samples = t1 - t0
-    print('nsamples', n_samples)
+
 
     # $gte and $lt are special mongo functions for greater than and less than
     subset_query = {"triggertime": {'$gte': t0,
                                     '$lt': t1}}
     cursor = collection.find(subset_query, )
     count = cursor.count()
-    print('count', count)
+
     if count == 0:
         return
+    #print('count', count)
+    #print('nsamples', n_samples)
     #t0.to('s')
     #t1.to('s')
     #if count:
@@ -101,7 +104,12 @@ def process(t0, t1):
     results = combine_blocks.get_sum_waveform(cursor, t0,
                                               n_samples)
     y = results['occurences']
+    #print(sum(y), y)
 
+    end_time = time.time()
+    dt = end_time - start_time
+    print('dt', dt, 'speed', float(results['size'])/dt)
+    return
 
     print('shrink')
     #y = sample_operations.shrink(y, int(ureg['sigwidth'].to('sample').magnitude))
@@ -118,9 +126,6 @@ def process(t0, t1):
     res['t0'] = t0
     res['t1'] = t1
     res['fft'] = z
-    #db.post_result(res)
-    import pickle
-    pickle.dump( z, open( "save.p", "wb" ) )
 
     # FFT convolve?
     #wavelet = ricker

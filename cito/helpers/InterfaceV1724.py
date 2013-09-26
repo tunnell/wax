@@ -41,16 +41,6 @@ WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
 
-def get_word(data):
-    """Generator for words
-    """
-    word_size_in_bytes = 4
-
-    number_of_words = int(len(data) / word_size_in_bytes)
-    for i in range(number_of_words):
-        yield get_word_by_index(data, i)
-
-
 def get_word_by_index(data, i, do_checks=True):
     """Get 32-bit word by index
 
@@ -58,7 +48,7 @@ def get_word_by_index(data, i, do_checks=True):
     """
     if do_checks:
         if len(data) == 0:
-            print("Warning: data has zero length")
+            raise IndexError("Data has zero length")
         if i > int(len(data) / 4):
             raise IndexError('i does not exist')
 
@@ -71,13 +61,19 @@ def get_word_by_index(data, i, do_checks=True):
 
 
 def check_header(data, do_checks=True):
+    """Check data header for control bits.
+
+    Throws exception if misformated header.
+    """
     word = get_word_by_index(data, 0)
     if do_checks:
         assert word >> 20 == 0xA00, 'Data header misformated'
     return True
 
 
-def get_event_size(data, do_checks=True):
+def get_block_size(data, do_checks=True):
+    """Get size of block from header.
+    """
     check_header(data, do_checks)
     word = get_word_by_index(data, 0)
     size = (word & 0x0FFFFFFF)  # size in words
