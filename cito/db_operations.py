@@ -95,6 +95,7 @@ class DBPurge(DBBase):
     def take_action(self, parsed_args):
         conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
 
+        self.log.debug("Puring all documents")
         # The pymongo call
         collection.remove({})
 
