@@ -24,7 +24,6 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 required = open('requirements.txt').read().splitlines()
 
-
 module1 = Extension("cito.helpers.cInterfaceV1724", ["cito/helpers/cInterfaceV1724.pyx"],
                     extra_compile_args=['-O3'])
 
@@ -70,5 +69,5 @@ setup(
     test_suite='tests',
     cmdclass={'build_ext': build_ext},
     include_dirs=[numpy.get_include()],
-    ext_modules = [module1],
+    ext_modules=[module1],
 )

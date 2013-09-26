@@ -33,7 +33,7 @@
 import logging
 
 from cliff.show import ShowOne
-from cito.helpers import xedb, InterfaceV1724
+from cito.helpers import xedb
 
 
 class DBBase(ShowOne):
@@ -66,6 +66,7 @@ class DBBase(ShowOne):
             data = ['success']
         return columns, data
 
+
 class DBReset(DBBase):
     """Reset the database by dropping the default collection.
 
@@ -85,6 +86,7 @@ class DBReset(DBBase):
 
         return self.get_status(db)
 
+
 class DBPurge(DBBase):
     """Delete/purge all DAQ documents without deleting collection.
 
@@ -100,6 +102,7 @@ class DBPurge(DBBase):
         collection.remove({})
 
         return self.get_status(db)
+
 
 class DBRepair(DBBase):
     """Repair DB to regain unused space.
@@ -119,7 +122,6 @@ class DBRepair(DBBase):
         db.command('repairDatabase')
 
         return self.get_status(db)
-
 
 
 class DBCount(DBBase):

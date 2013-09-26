@@ -10,10 +10,11 @@ Tests for `cito` module.
 
 import unittest
 
+import numpy as np
+
 from cito.helpers import InterfaceV1724
 from cito.helpers import cInterfaceV1724
-from cito.helpers import xedb
-import numpy as np
+
 
 class BaseInterfaceV1724():
     def _testGoodData(self):
@@ -58,8 +59,6 @@ class BaseInterfaceV1724():
         data = self._testGoodData()
         self.assertEqual(self.interfaceClass.get_word_by_index(data, 0), 2684355084)
         self.assertEqual(self.interfaceClass.get_word_by_index(data, 1), 16777471)
-
-
 
 
     def test_get_waveform(self):
@@ -143,9 +142,11 @@ class TestInterface1724(unittest.TestCase, BaseInterfaceV1724):
                               self.interfaceClass.check_header,
                               data)
 
+
 class TestcInterface1724(unittest.TestCase, BaseInterfaceV1724):
     def setUp(self):
         self.interfaceClass = cInterfaceV1724
+
 
 if __name__ == '__main__':
     unittest.main()

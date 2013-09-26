@@ -31,7 +31,7 @@
 
 This is the interface to celery.  You must first have done:
 
-  celery worker --app=tasks
+  celery worker --app=cito.helpers.tasks
 
 
 """
@@ -57,11 +57,22 @@ celery = Celery('tasks',
                 broker='mongodb://%s:%d/celery' % (conn.host,
                                                    conn.port))
 
+
 @celery.task
 def flush(t0, t1):
+    """Deletes everything in the time window.
+
+    Args:
+        t0 (int):  Start time in units of 10 ns
+        t1 (int):  End time in units of 10 ns
+
+    Returns:
+        None
+    """
     subset_query = {"triggertime": {'$gte': t0,
                                     '$lt': t1}}
     collection.remove(subset_query)
+
 
 @celery.task
 def process(t0, t1):
@@ -91,12 +102,12 @@ def process(t0, t1):
 
     if count == 0:
         return
-    #print('count', count)
-    #print('nsamples', n_samples)
-    #t0.to('s')
-    #t1.to('s')
-    #if count:
-    #    print('\tRange:', t0, t1, 'with %d docs' % count)
+        #print('count', count)
+        #print('nsamples', n_samples)
+        #t0.to('s')
+        #t1.to('s')
+        #if count:
+        #    print('\tRange:', t0, t1, 'with %d docs' % count)
         #cursor = collection.find(subset_query,
     #                         fields=['triggertime', 'module'])
 
@@ -108,7 +119,7 @@ def process(t0, t1):
 
     end_time = time.time()
     dt = end_time - start_time
-    print('dt', dt, 'speed', float(results['size'])/dt)
+    print('dt', dt, 'speed', float(results['size']) / dt)
     return
 
     print('shrink')

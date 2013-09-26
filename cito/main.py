@@ -35,7 +35,6 @@ from cliff.commandmanager import CommandManager
 
 
 class CitoApp(App):
-
     log = logging.getLogger(__name__)
 
     def __init__(self):
@@ -43,7 +42,7 @@ class CitoApp(App):
             description='cito DAQ software.',
             version='0.1',
             command_manager=CommandManager('cito.main'),
-            )
+        )
 
     def initialize_app(self, argv):
         self.log.debug('initialize_app')

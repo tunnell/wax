@@ -42,7 +42,7 @@ from cito.helpers import tasks, xedb
 
 
 class Process(Command):
-    """Process data from DB
+    """Process data from DB online
     """
 
     log = logging.getLogger(__name__)

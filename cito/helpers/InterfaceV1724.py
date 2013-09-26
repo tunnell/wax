@@ -42,9 +42,17 @@ N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
 
 def get_word_by_index(data, i, do_checks=True):
-    """Get 32-bit word by index
+    """Get 32-bit word by index.
 
-    This function is called often so be sure to check
+This function is called often so be sure to check
+
+    Args:
+        data (bytes):  Data bytes to use
+        i (int):  index
+        do_checks (bool): Check that data is good?
+
+    Returns:
+        int:  32-bit word
     """
     if do_checks:
         if len(data) == 0:
@@ -157,7 +165,7 @@ def get_waveform(data, n_samples):
                     max_time = wavecounter_within_channel_payload
             else:
                 wavecounter_within_channel_payload += 2 * \
-                    words_in_channel_payload + 1
+                                                      words_in_channel_payload + 1
                 pnt = pnt + 1
                 counter_within_channel_payload += 1
 

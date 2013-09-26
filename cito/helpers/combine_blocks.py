@@ -35,6 +35,7 @@ from cito.helpers import xedb
 
 try:
     from cito.helpers import cInterfaceV1724 as bo
+
     print("Using Cython")
 except ImportError:
     print("Can't find Cython cInterfaceV1724.  Using native Python version")
@@ -45,7 +46,6 @@ from scipy.stats import norm
 import scipy
 
 SAMPLE_TYPE = bo.SAMPLE_TYPE
-
 
 
 def filter_samples(values):
@@ -59,7 +59,7 @@ def filter_samples(values):
 
     print('\tprefilter')
     my_filter = norm(0, 100) # mu=0, sigma=100
-    filter_values = 600*[0.]
+    filter_values = 600 * [0.]
     for j in range(-300, 300):
         filter_values[j] = my_filter.pdf(j)
 
@@ -71,26 +71,41 @@ def filter_samples(values):
 
     return new_values
 
-def find_peaks(values):
-    """Find peaks"""
+
+def find_peaks(values, threshold=10000):
+    """Find peaks within list of values.
+
+    Uses scipy to find peaks above a threshold.
+
+    Args:
+        values (list):  The 'y' values to find a peak in.
+        threshold (int): Threshold in ADC counts required for peaks.
+
+    Returns:
+       list: Peaks
+
+    """
     extrema = scipy.signal.argrelmax(values)
-    print(extrema)
     high_extrema = []
     for i in extrema:
-        if values[i] > 10000:
+        if values[i] > threshold:
             high_extrema.append(i)
     return high_extrema
-
 
 
 def get_sum_waveform(cursor, offset, n_samples):
     """Get inverted sum waveform from mongo
 
-    :param cursor: An iterable object of documents containing Caen
-                    blocks.  This can be a pymongo Cursor.
-    :param offset: An integer start time
-    :param n_samples: How many samples to store
-    :rtype : dict
+    Args:
+        cursor (iterable):  An iterable object of documents containing Caen
+                           blocks.  This can be a pymongo Cursor.
+        offset (int): An integer start time
+        n_samples (int): How many samples to store
+
+
+    Returns:
+       dict: Results dictionary with key 'size' and 'occurences'
+
     """
     occurences = np.zeros(n_samples, dtype=SAMPLE_TYPE)
 
@@ -106,7 +121,7 @@ def get_sum_waveform(cursor, offset, n_samples):
 
         size += len(data)
 
-        result = np.array(result)
+        #result = np.array(result)
 
 
         # Invert pulse
@@ -123,10 +138,6 @@ def get_sum_waveform(cursor, offset, n_samples):
     results = {}
     results['size'] = size
     results['occurences'] = occurences
-
-
-
-
 
     return results
 

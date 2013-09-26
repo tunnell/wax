@@ -28,10 +28,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 import logging
-
-import os
 
 from cliff.show import ShowOne
 from cito.helpers import xedb, InterfaceV1724
@@ -70,9 +67,6 @@ class Inspector(ShowOne):
         subparser.add_argument('-r', '--random', action='store_true',
                                help='Grab random DAQ document')
 
-    #args = parser.parse_args()  # Grab command line args
-
-        #parser.add_argument('filename', nargs='?', default='.')
         return parser
 
     def take_action(self, parsed_args):
@@ -123,13 +117,13 @@ class Inspector(ShowOne):
                                    size))
 
                     # Loop over 32-bits words
-                    for i in range(int(len(data)/4)):
+                    for i in range(int(len(data) / 4)):
                         # Print out 8 hex characters. After printing, the rightmost
                         # character on the string corresponds to the 0th bit.  The
                         # leftmost then corresponds to the highest 31st bit.
                         word = InterfaceV1724.get_word_by_index(data, i, do_checks)
                         output.append(('data[%d]' % i,
-                                      '%08x' % word))
+                                       '%08x' % word))
 
                 except AssertionError as e:
                     # AssertionErrors are thrown when checking, for example, header

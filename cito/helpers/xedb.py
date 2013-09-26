@@ -35,11 +35,12 @@ __author__ = 'tunnell'
 import pymongo
 import snappy
 
+
 def get_mongo_db_objects(server='127.0.0.1'):
     """This function returns pymongo objects
 
     Args:
-       server (str):  The server hosting MongoDB.
+       server (str):  The server IP or DNS name MongoDB.
 
     Returns:
        [Connection, Database, Collection]
@@ -61,8 +62,9 @@ def get_mongo_db_objects(server='127.0.0.1'):
 
     return c, db, collection
 
+
 def get_pymongo_collection():
-    """Returns a pymongo collection
+    """Returns the current pymongo collection.
 
     Args:
         None
@@ -72,18 +74,31 @@ def get_pymongo_collection():
     """
     return get_mongo_db_objects()[2]
 
+
 def get_sort_key():
     """Sort key used for MongoDB sorting and indexing.
 
+    Args:
+       None
+
+    Returns:
+       list:  Returns, per pymongo format, a list of (variable, order) pairs.
+
     """
-    return  [('triggertime', pymongo.DESCENDING),
-             ('module', pymongo.DESCENDING),
-             ('_id', pymongo.DESCENDING)]
+    return [('triggertime', pymongo.DESCENDING),
+            ('module', pymongo.DESCENDING),
+            ('_id', pymongo.DESCENDING)]
+
 
 def get_min_time(collection):
     """Get minimum time in collection.
 
-    Minimum time of any document.
+    Args:
+       collection (Collection):  A pymongo Collection that will be queried
+
+    Returns:
+       int:  A time in units of 10 ns
+
     """
     distinct_trigger_times = collection.distinct('triggertime')
 
@@ -94,16 +109,15 @@ def get_min_time(collection):
     return min_time
 
 
-def get_max_time(collection, min_time = 0):
-    """Get maximum time that has been seen by all boards, unless order is
-    changed.
+def get_max_time(collection, min_time=0):
+    """Get maximum time that has been seen by all boards.
 
     Args:
        collection (Collection):  A pymongo Collection that will be queried
        min_time (int): Time that the max must be larger than
 
     Returns:
-       pint.Quantity or None: A time with units set by pint, or None if none found
+       int:  A time in units of 10 ns
 
     """
     sort_key = get_sort_key()
@@ -117,7 +131,7 @@ def get_max_time(collection, min_time = 0):
     for module in modules:
         #print(module)
         query = {'module': module,
-                 'triggertime' : {'$gt' : min_time}}
+                 'triggertime': {'$gt': min_time}}
 
         cursor = collection.find(query,
                                  fields=['triggertime', 'module'],
@@ -131,8 +145,9 @@ def get_max_time(collection, min_time = 0):
     # Want the earliest time (i.e., the min) of all the max times
     # for the boards.
     time = min(times.values())
-    #print(time)
+
     return time
+
 
 def get_data_from_doc(doc):
     """From a mongo document, fetch the data payload and decompress if
@@ -142,21 +157,13 @@ def get_data_from_doc(doc):
        doc (dictionary):  Document from mongodb to analyze
 
     Returns:
-       bytes: data
+       bytes: decompressed data
 
     """
     data = doc['data']
-    assert(len(data) != 0)
+    assert (len(data) != 0)
 
     if doc['zipped']:
         data = snappy.uncompress(data)
 
     return data
-
-def post_result(result):
-    my_db = get_mongo_db_objects()[1]
-    my_collection = my_db.overview
-
-    my_collection.save(result)
-
-    pass

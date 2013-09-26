@@ -14,7 +14,6 @@ from cito import cito2
 
 
 class TestCito(unittest.TestCase):
-
     def setUp(self):
         pass
 
@@ -23,6 +22,7 @@ class TestCito(unittest.TestCase):
 
     def tearDown(self):
         pass
+
 
 if __name__ == '__main__':
     unittest.main()

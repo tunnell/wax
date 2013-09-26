@@ -155,7 +155,7 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
 
 
     # This drops off any zeros at the rightward colums, does this actually go faster?
-    samples = np.compress(max_time * [True], samples, axis=1)
+    #samples = np.compress(max_time * [True], samples, axis=1)
 
     return samples
 

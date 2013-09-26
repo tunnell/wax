@@ -36,8 +36,6 @@ from distutils.extension import Extension
 
 import numpy
 
-from Cython.Distutils import build_ext
-
 if 1:#__name__ == "__main__":
     setup(
         #cmdclass={'build_ext': build_ext},
