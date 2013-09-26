@@ -123,13 +123,13 @@ def process(t0, t1):
     pickle.dump( z, open( "save.p", "wb" ) )
 
     # FFT convolve?
-    wavelet = ricker
+    #wavelet = ricker
 
     # CWT https://github.com/scipy/scipy/blob/v0.12.0/scipy/signal/wavelets.py#L314
-    output = np.zeros(len(data))
-    wavelet_data = wavelet(min(10 * width, len(data)), width)
-    output = convolve(data, wavelet_data,
-                      mode='same')
+    #output = np.zeros(len(data))
+    #wavelet_data = wavelet(min(10 * width, len(data)), width)
+    #output = convolve(data, wavelet_data,
+    #                  mode='same')
 
     #print(np.fft.fft(y))
     #peaks = combine_blocks.find_peak(results['occurences'])
