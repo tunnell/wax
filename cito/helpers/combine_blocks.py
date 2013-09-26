@@ -99,7 +99,8 @@ def get_sum_waveform(cursor, offset, n_samples):
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
-        result = bo.get_waveform(data, int(len(data)/2))
+        # Is 1024 the max length?
+        result = bo.get_waveform(data, 1024) # int(len(data)/2))
 
         time = doc['triggertime'] - offset
 
