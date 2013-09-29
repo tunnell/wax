@@ -1,10 +1,10 @@
 pymongo
 python-snappy
-scipy
-matplotlib
 numpy
+matplotlib
 celery
 Cython
 anyjson
 cliff
 pint
+scipy
