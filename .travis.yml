@@ -6,10 +6,11 @@ python:
   - "3.3"
 
 virtualenv:
-  system_site_packages: true
+  system_site_packages: false
 before_install:
- - sudo apt-get install -qq python3-numpy python3-scipy
+ - sudo apt-get install -qq python3-numpy python3-scipy cython
  - sudo apt-get install python-snappy libsnappy-dev libsnappy1
+ - pip install numpy Cython
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -r requirements.txt
