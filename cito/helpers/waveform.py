@@ -45,9 +45,6 @@ from scipy import signal
 from scipy.stats import norm
 import scipy
 
-SAMPLE_TYPE = bo.SAMPLE_TYPE
-
-
 def filter_samples(values):
     """Apply a filter
 
@@ -107,7 +104,11 @@ def get_sum_waveform(cursor, offset, n_samples):
        dict: Results dictionary with key 'size' and 'occurences'
 
     """
-    occurences = np.zeros(n_samples, dtype=SAMPLE_TYPE)
+
+    # Longer int since summing many, otherwise wrap around.
+    # TODO: check that unsigned 16 bit doesn't work?  Or bit shift (i.e. avg) or
+    # dividie by some nubmer
+    occurences = np.zeros(n_samples, dtype=np.int32)
 
     size = 0
 
@@ -121,19 +122,15 @@ def get_sum_waveform(cursor, offset, n_samples):
 
         size += len(data)
 
-        #result = np.array(result)
-
-
         # Invert pulse
+        result -= bo.MAX_ADC_VALUE
         result *= -1
-        result += bo.MAX_ADC_VALUE
 
         # Sum all PMTs
         result = np.sum(result, axis=0)
 
         # Combine with other blocks
-        for i in range(result.size):
-            occurences[time + i] = result[i]
+        occurences[time:time + result.size] = result
 
     results = {}
     results['size'] = size

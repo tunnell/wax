@@ -34,12 +34,11 @@ Flash ADC board
 
 import numpy as np
 
-SAMPLE_TYPE = np.uint16  # Samples are actually 14 bit
+SAMPLE_TYPE = np.int16  # Samples are actually 14 bit unsigned, so 16 bit signed fine
 MAX_ADC_VALUE = 2 ** 14   # 14 bit ADC samples
 SAMPLE_TIME_STEP = 1    # 10 ns
 WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
-
 
 def get_word_by_index(data, i, do_checks=True):
     """Get 32-bit word by index.

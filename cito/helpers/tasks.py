@@ -45,7 +45,7 @@ from celery import Celery
 
 sys.path.append(os.path.dirname(os.path.basename(__file__)))
 
-from cito.helpers import combine_blocks
+from cito.helpers import waveform
 from cito.helpers import xedb
 #from cito.helpers import sample_operations
 from pint import UnitRegistry
@@ -112,7 +112,7 @@ def process(t0, t1):
     #                         fields=['triggertime', 'module'])
 
     #print('get_sum_waveform')
-    results = combine_blocks.get_sum_waveform(cursor, t0,
+    results = waveform.get_sum_waveform(cursor, t0,
                                               n_samples)
     y = results['occurences']
     #print(sum(y), y)
@@ -158,7 +158,7 @@ def process(t0, t1):
     #y = sample_operations.filter_samples(results['occurences'])
 
     print('find_peaks')
-    y = combine_blocks.find_peaks(y)
+    y = waveform.find_peaks(y)
 
     print('peaks', y)
 

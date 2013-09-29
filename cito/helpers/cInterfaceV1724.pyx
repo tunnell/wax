@@ -43,7 +43,7 @@ import pyximport
 
 np.import_array()
 
-SAMPLE_TYPE = np.uint16 # Samples are actually 14 bit
+SAMPLE_TYPE = np.int16 # Samples are actually 14 bit unsigned
 MAX_ADC_VALUE = 2 ** 14   # 14 bit ADC samples
 SAMPLE_TIME_STEP = 1    # 10 ns
 WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
@@ -108,7 +108,7 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
     chan_mask = word_chan_mask & 0xFF
     pnt += 3
 
-    cdef np.ndarray[np.uint16_t, ndim=2] samples = np.zeros((n_channels_in_digitizer, n_samples),
+    cdef np.ndarray[np.int16_t, ndim=2] samples = np.zeros((n_channels_in_digitizer, n_samples),
                                                             dtype=SAMPLE_TYPE)
 
     # Max time seen, which is used for resizing the samples array
@@ -155,7 +155,7 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
 
 
     # This drops off any zeros at the rightward colums, does this actually go faster?
-    #samples = np.compress(max_time * [True], samples, axis=1)
+    samples = np.compress(max_time * [True], samples, axis=1)
 
     return samples
 
