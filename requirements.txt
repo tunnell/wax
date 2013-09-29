@@ -1,7 +1,6 @@
 pymongo
 python-snappy
 numpy
-matplotlib
 celery
 Cython
 anyjson
