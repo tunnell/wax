@@ -35,7 +35,6 @@ import logging
 from cito.helpers import xedb
 
 try:
-    #raise ImportError()
     from cito.helpers import cInterfaceV1724 as bo
 except ImportError:
     print("Can't find Cython cInterfaceV1724.  Using native Python version")
@@ -120,7 +119,7 @@ def get_sum_waveform(cursor, offset, n_samples):
 
         #was_exception = False
         #try:
-        result = bo.get_waveform(data, len(data)/2) # 2 bytes are a sample
+        result = bo.get_waveform(data, int(len(data)/2)) # 2 bytes are a sample
         #except Exception as e:
         #    continue
             #was_exception = True
@@ -130,7 +129,7 @@ def get_sum_waveform(cursor, offset, n_samples):
         time = doc['triggertime'] - offset
 
         size += len(data)
-
+        print(result)
         for samples, indecies in result:
             #print(i, samples, indecies)
             occurences[indecies] += samples
