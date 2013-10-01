@@ -148,8 +148,8 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
                     counter_within_channel_payload += 1
 
                     for k in xrange(num_words_in_channel_payload):
-                        i0 = pnt*8
-                        i1 = (pnt+1)*8
+                        i0 = pnt*4
+                        i1 = (pnt+1)*4
 
                         double_sample = int.from_bytes(data[i0:i1], 'little')
 
