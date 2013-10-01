@@ -100,13 +100,15 @@ def get_min_time(collection):
        int:  A time in units of 10 ns
 
     """
-    distinct_trigger_times = collection.distinct('triggertime')
+    sort_key = get_sort_key()
+    sort_key = [(x[0], pymongo.ASCENDING) for x in sort_key]
 
-    if not distinct_trigger_times:
-        raise RuntimeError("No documents/data in which to find most recent document")
+    cursor = collection.find({},
+                            fields=['triggertime'],
+                            limit=1,
+                            sort=sort_key)
 
-    min_time = min(distinct_trigger_times)
-    return min_time
+    return next(cursor)['triggertime']
 
 
 def get_max_time(collection, min_time=0):
@@ -129,14 +131,13 @@ def get_max_time(collection, min_time=0):
         raise RuntimeError("No data for any module found")
 
     for module in modules:
-        #print(module)
         query = {'module': module,
                  'triggertime': {'$gt': min_time}}
 
         cursor = collection.find(query,
                                  fields=['triggertime', 'module'],
                                  limit=1,
-                                 sort=sort_key)#.hint(sort_key)
+                                 sort=sort_key)
 
         #assert(cursor.explain()['indexOnly'])
 

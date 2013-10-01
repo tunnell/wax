@@ -12,8 +12,8 @@ virtualenv:
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq libatlas-base-dev gfortran
- - sudo apt-get install -qq python3-numpy
- - sudo apt-get install -qq python3-scipy
+ - sudo apt-get build_dep -qq python3-numpy
+ - sudo apt-get build_dep -qq python3-scipy
  - sudo apt-get install -qq cython
  - sudo apt-get install -qq python-snappy libsnappy-dev libsnappy1
  - pip install -q numpy Cython

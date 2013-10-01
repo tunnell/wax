@@ -94,9 +94,6 @@ class Process(Command):
         while (1):
             # This try-except catches Ctrl-C and error
             try:
-                # Non-sense query that is in index
-                query = {"triggertime": {'$gt': 0}}
-
                 max_time = xedb.get_max_time(collection)
                 time_index = int(max_time / chunk_size)
 

@@ -1,25 +1,51 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
+# cito - The Xenon1T experiments software trigger
+# Copyright 2013.  All rights reserved.
+# https://github.com/tunnell/cito
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+#     * Redistributions of source code must retain the above copyright
+# notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above
+# copyright notice, this list of conditions and the following disclaimer
+# in the documentation and/or other materials provided with the
+# distribution.
+#     * Neither the name of the Xenon experiment, nor the names of its
+# contributors may be used to endorse or promote products derived from
+# this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""Online processing executable
 """
-test_cito
-----------------------------------
 
-Tests for `cito` module.
-"""
+__author__ = 'tunnell'
+import logging
+import sys
+import time
 
 import unittest
 
 import numpy as np
+import pymongo
 
-from test_InterfaceV1724 import BaseInterfaceV1724
 
 from cito.helpers import InterfaceV1724
 from cito.helpers import cInterfaceV1724
+from cliff.command import Command
 
-import timeit
-
-import time
+from cito.helpers import tasks, xedb
 
 def timeit(func=None,loops=1,verbose=False):
     if func != None:
@@ -50,14 +76,104 @@ def timeit(func=None,loops=1,verbose=False):
             return timeit(func,loops,verbose)
         return partial_inner
 
-@timeit
-def test1():
-    data = BaseInterfaceV1724()._testGoodData()
-    InterfaceV1724.get_word_by_index(data, 0)
+class TimingTask():
+    def process(self, t0, t1, loops=1, verbose = False):
+        sums = 0.0
+        mins = 1.7976931348623157e+308
+        maxs = 0.0
+        print('====%s Timing====' % __name__)
+        for i in range(0,loops):
+            t0 = time.time()
+            result = self.call(t0, t1)
+            dt = time.time() - t0
+            mins = dt if dt < mins else mins
+            maxs = dt if dt > maxs else maxs
+            sums += dt
+            if verbose == True:
+                print('\t%r ran in %2.9f sec on run %s' %(__name__,dt,i))
+        print('%r min run time was %2.9f sec' % (__name__,mins))
+        print('%r max run time was %2.9f sec' % (__name__,maxs))
+        print('%r avg run time was %2.9f sec in %s runs' % (__name__,sums/loops,loops))
+        print('==== end ====')
+        return result
 
-def main():
-    test1()
-    #InterfaceV1724.get_word_by_index(data, 0)
 
-if __name__ == '__main__':
-    main()
+    def get_cursor(self, t0, t1):
+        conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
+
+        # $gte and $lt are special mongo functions for greater than and less than
+        subset_query = {"triggertime": {'$gte': t0,
+                                        '$lt': t1}}
+        return collection.find(subset_query)
+
+    def call(self, t0, t1):
+        raise NotImplementedError()
+
+class Fetch(TimingTask):
+    def call(self, t0, t1):
+        cursor = self.get_cursor(t0, t1)
+        size = 0.0
+        for doc in cursor:
+            size += len(doc['data'])
+        print('count', cursor.count())
+        return size
+
+
+
+class SpeedTest(Command):
+    """Process data from DB online
+    """
+
+    log = logging.getLogger(__name__)
+
+    def get_description(self):
+        return self.__doc__
+
+    def get_parser(self, prog_name):
+        parser = super(SpeedTest, self).get_parser(prog_name)
+
+        parser.add_argument("--hostname", help="MongoDB database address",
+                            type=str,
+                            default='127.0.0.1')
+
+        parser.add_argument('--chunksize', type=int,
+                            help="Size of data chunks to process [10 ns step]",
+                            default=2 ** 17)
+        parser.add_argument('--padding', type=int,
+                            help='Padding to overlap processing windows [10 ns step]',
+                            default=10 ** 2)
+
+        return parser
+
+
+    def get_tasks(self):
+        tasks = []
+        tasks.append(Fetch())
+        return tasks
+
+    def take_action(self, parsed_args):
+        chunk_size = parsed_args.chunksize
+        padding = parsed_args.padding
+
+        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+
+        # Key to sort by so we can use an index for quick query
+        sort_key = [
+            ('triggertime', pymongo.DESCENDING),
+            ('module', pymongo.DESCENDING)
+        ]
+
+        # Index for quick query
+        collection.create_index(sort_key, dropDups=True)
+        t0 = 12643887196 # xedb.get_min_time(collection)
+
+        t1 = t0 + chunk_size
+
+        self.log.info('Processing %d %d' % (t0, t1))
+
+        for task in self.get_tasks():
+            print(task.process(t0, t1))
+
+
+
+
