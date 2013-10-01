@@ -140,7 +140,12 @@ class DBCount(DBBase):
 
 
 class DBDuplicates(DBBase):
-    """Find duplicate payloads.
+    """Find duplicate data and print their IDs.
+
+    Search through all the DAQ document's data payloads (i.e., 'data' key) and
+    if any of these are identical, list the keys so they can be inspected with
+    the document inspector.  A Map-Reduce algorithm is used so the results are
+    stored in MongoDB as the 'dups' collection.
     """
 
 
@@ -155,6 +160,7 @@ class DBDuplicates(DBBase):
                            "return Array.sum(values);"
                            "}")
 
+        # Data to return
         columns = []
         data = []
 
