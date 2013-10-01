@@ -31,12 +31,12 @@
 """
 
 import numpy as np
+import logging
 from cito.helpers import xedb
 
 try:
+    #raise ImportError()
     from cito.helpers import cInterfaceV1724 as bo
-
-    print("Using Cython")
 except ImportError:
     print("Can't find Cython cInterfaceV1724.  Using native Python version")
     from cito.helpers import InterfaceV1724 as bo
@@ -104,10 +104,11 @@ def get_sum_waveform(cursor, offset, n_samples):
        dict: Results dictionary with key 'size' and 'occurences'
 
     """
-
+    log = logging.getLogger('waveform')
     # Longer int since summing many, otherwise wrap around.
     # TODO: check that unsigned 16 bit doesn't work?  Or bit shift (i.e. avg) or
     # dividie by some nubmer
+    log.debug('Number of samples for sum waveform: %d', n_samples)
     occurences = np.zeros(n_samples, dtype=np.int32)
 
     size = 0
@@ -116,21 +117,40 @@ def get_sum_waveform(cursor, offset, n_samples):
         data = xedb.get_data_from_doc(doc)
 
         # Is 1024 the max length?
-        result = bo.get_waveform(data, 1024) # int(len(data)/2))
+
+        #was_exception = False
+        #try:
+        result = bo.get_waveform(data, len(data)/2) # 2 bytes are a sample
+        #except Exception as e:
+        #    continue
+            #was_exception = True
+
+        #print('fyi', doc['datalength'], was_exception, len(data), len(doc['data']))
 
         time = doc['triggertime'] - offset
 
         size += len(data)
 
+        for samples, indecies in result:
+            #print(i, samples, indecies)
+            occurences[indecies] += samples
+
+        #print(occurences, np.sum(occurences))
+        #    indecies -= bo.MAX_ADC_VALUE
+        #    indecies *= -1
+
+
         # Invert pulse
-        result -= bo.MAX_ADC_VALUE
-        result *= -1
+        #result -= bo.MAX_ADC_VALUE
+        #result *= -1
 
         # Sum all PMTs
-        result = np.sum(result, axis=0)
+        #result = np.sum(result, axis=0)
+
+        #for
 
         # Combine with other blocks
-        occurences[time:time + result.size] = result
+        #occurences[time:time + result.size] = result
 
     results = {}
     results['size'] = size

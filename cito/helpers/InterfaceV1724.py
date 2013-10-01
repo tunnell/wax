@@ -104,8 +104,6 @@ def get_trigger_time_tag(data):
 
 
 def get_waveform(data, n_samples):
-    # TODO: maybe make an 8 by N_SAMPLES array?  Makes easier to use numpy
-    # routines.
 
     # Each 'occurence' is a continous sequence of ADC samples for a given
     # channel.  Due to zero suppression, there can be multiple occurences for
@@ -116,59 +114,75 @@ def get_waveform(data, n_samples):
 
     pnt = 1
 
-    word_chan_mask = get_word_by_index(data, pnt, False)
+    word_chan_mask = get_word_by_index(data, pnt)
     chan_mask = word_chan_mask & 0xFF
     pnt += 3
 
-    max_time = None
-
-    samples = np.zeros((N_CHANNELS_IN_DIGITIZER, n_samples),
-                       dtype=SAMPLE_TYPE)
+    data_to_return = []
 
     for j in range(N_CHANNELS_IN_DIGITIZER):
-        if not ((chan_mask >> j) & 1):
-            #print("Skipping channel", j)
-            continue
+        samples = np.zeros(n_samples,  dtype=SAMPLE_TYPE)
+        indecies = np.zeros(n_samples, dtype=np.uint32)
+        index = 0
 
-        words_in_channel_payload = get_word_by_index(data, pnt, False)
+        if ((chan_mask >> j) & 1):
+            words_in_channel_payload = get_word_by_index(data, pnt)
 
-        pnt += 1
+            pnt += 1
 
-        counter_within_channel_payload = 2
-        wavecounter_within_channel_payload = 0
+            counter_within_channel_payload = 2
+            wavecounter_within_channel_payload = 0
 
-        while (counter_within_channel_payload <= words_in_channel_payload):
-            word_control = get_word_by_index(data, pnt, False)
+            while (counter_within_channel_payload <= words_in_channel_payload):
+                word_control = get_word_by_index(data, pnt)
 
-            if (word_control >> 28) == 0x8:
-                num_words_in_channel_payload = word_control & 0xFFFFFFF
-                pnt = pnt + 1
-                counter_within_channel_payload += 1
-
-                for k in range(num_words_in_channel_payload):
-                    double_sample = get_word_by_index(data, pnt, False)
-                    sample_1 = double_sample & 0xFFFF
-                    sample_2 = (double_sample >> 16) & 0xFFFF
-
-                    samples[j][wavecounter_within_channel_payload] = sample_1
-                    wavecounter_within_channel_payload += 1
-
-                    samples[j][wavecounter_within_channel_payload] = sample_2
-                    wavecounter_within_channel_payload += 1
-
+                if (word_control >> 28) == 0x8:
+                    num_words_in_channel_payload = word_control & 0xFFFFFFF
                     pnt = pnt + 1
                     counter_within_channel_payload += 1
 
-                if max_time is None or \
-                        (wavecounter_within_channel_payload > max_time):
-                    max_time = wavecounter_within_channel_payload
-            else:
-                wavecounter_within_channel_payload += 2 * \
-                                                      words_in_channel_payload + 1
-                pnt = pnt + 1
-                counter_within_channel_payload += 1
+                    for k in range(num_words_in_channel_payload):
+                        double_sample = get_word_by_index(data, pnt)
+                        sample_1 = double_sample & 0xFFFF
+                        sample_2 = (double_sample >> 16) & 0xFFFF
 
-    # This drops off any zeros at the rightward colums
-    samples = np.compress(max_time * [True], samples, axis=1)
+                        sample_1 -= MAX_ADC_VALUE
+                        sample_1 *= -1
 
-    return samples
+                        sample_2 -= MAX_ADC_VALUE
+                        sample_2 *= -1
+
+                        samples[index] = sample_1
+                        indecies[index] = wavecounter_within_channel_payload
+                        wavecounter_within_channel_payload += 1
+                        index += 1
+
+                        samples[index] = sample_2
+                        indecies[index] = wavecounter_within_channel_payload
+                        wavecounter_within_channel_payload += 1
+                        index += 1
+
+                        pnt = pnt + 1
+                        counter_within_channel_payload += 1
+                else:
+                    wavecounter_within_channel_payload += 2 * \
+                                                          words_in_channel_payload + 1
+                    pnt = pnt + 1
+                    counter_within_channel_payload += 1
+
+        else:
+            #print('skipping', j)
+            pass
+
+        #compress here
+        if index != 0:
+            #print(n_samples, index)
+            samples = np.compress(index * [True], samples)
+            indecies = np.compress(index * [True], indecies)
+        else:
+            samples = np.array([], dtype=SAMPLE_TYPE)
+            indecies = np.array([], dtype=np.uint32)
+
+        data_to_return.append((samples, indecies))
+
+    return data_to_return
