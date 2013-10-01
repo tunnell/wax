@@ -110,8 +110,10 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
     check_header(data)
 
     cdef Py_ssize_t j, k, wavecounter_within_channel_payload, words_in_channel_payload, num_words_in_channel_payload
-    cdef Py_ssize_t counter_within_channel_payload, index
+    cdef Py_ssize_t counter_within_channel_payload, index, i0, i1
     cdef Py_ssize_t pnt =  1
+
+
 
     word_chan_mask = get_word_by_index(data, pnt)
     chan_mask = word_chan_mask & 0xFF
@@ -124,7 +126,7 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
     # Max time seen, which is used for resizing the samples array
     cdef Py_ssize_t max_time = 0
 
-    for j in range(N_CHANNELS_IN_DIGITIZER):
+    for j in xrange(N_CHANNELS_IN_DIGITIZER):
         samples = np.zeros(n_samples,dtype=SAMPLE_TYPE)
         indecies = np.zeros(n_samples,dtype=np.uint32)
         index = 0
@@ -145,16 +147,14 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
                     pnt = pnt + 1
                     counter_within_channel_payload += 1
 
-                    for k in range(num_words_in_channel_payload):
-                        double_sample = get_word_by_index(data, pnt)
+                    for k in xrange(num_words_in_channel_payload):
+                        i0 = pnt*8
+                        i1 = (pnt+1)*8
+
+                        double_sample = int.from_bytes(data[i0:i1], 'little')
+
                         sample_1 = double_sample & 0xFFFF
                         sample_2 = (double_sample >> 16) & 0xFFFF
-
-                        sample_1 -= max_adc_value
-                        sample_1 *= -1
-
-                        sample_2 -= max_adc_value
-                        sample_2 *= -1
 
                         samples[index] = sample_1
                         indecies[index] = wavecounter_within_channel_payload
@@ -177,6 +177,9 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
         else:
             #print('skipping', j)
             pass
+
+        samples -= max_adc_value
+        samples *= -1
 
         #compress here
         if index != 0:

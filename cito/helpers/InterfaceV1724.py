@@ -146,12 +146,6 @@ def get_waveform(data, n_samples):
                         sample_1 = double_sample & 0xFFFF
                         sample_2 = (double_sample >> 16) & 0xFFFF
 
-                        sample_1 -= MAX_ADC_VALUE
-                        sample_1 *= -1
-
-                        sample_2 -= MAX_ADC_VALUE
-                        sample_2 *= -1
-
                         samples[index] = sample_1
                         indecies[index] = wavecounter_within_channel_payload
                         wavecounter_within_channel_payload += 1
@@ -173,6 +167,9 @@ def get_waveform(data, n_samples):
         else:
             #print('skipping', j)
             pass
+
+        samples -= MAX_ADC_VALUE
+        samples *= -1
 
         #compress here
         if index != 0:

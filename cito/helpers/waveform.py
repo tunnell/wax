@@ -129,7 +129,7 @@ def get_sum_waveform(cursor, offset, n_samples):
         time = doc['triggertime'] - offset
 
         size += len(data)
-        print(result)
+        #print(result)
         for samples, indecies in result:
             #print(i, samples, indecies)
             occurences[indecies] += samples

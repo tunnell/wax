@@ -129,6 +129,13 @@ class Fetch(TimingTask):
         return size
 
 class PySumWaveform(TimingTask):
+    """
+    'PySumWaveform' min run time was 0.635332584 sec
+'PySumWaveform' max run time was 0.650459766 sec
+'PySumWaveform' avg run time was 0.644438839 sec in 10 runs
+'PySumWaveform' size 1 MB 10 runs
+'PySumWaveform' avg speed 1.887291191 MB/s in 10 runs
+    """
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
@@ -228,12 +235,12 @@ class SpeedTest(Command):
 
 
     def get_tasks(self):
-        tasks = [Fetch(),
+        tasks = [#Fetch(),
                  PySumWaveform(),
                  #NumpyFFTWaveform(),
                  #SciPyFindWaveformPeaks(),
                  #FFTWWaveform(),
-                 NumpyRealFFTWaveform(),
+                 #NumpyRealFFTWaveform(),
                  #SciPyFFTWaveform()
                  ]
 
