@@ -50,7 +50,6 @@ WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
 N_CHANNELS_IN_DIGITIZER = 8 # number of channels in digitizer board
 
 
-
 def get_word_by_index(data, i):
     """Get 32-bit word by index
 
@@ -112,8 +111,6 @@ def get_waveform(data, Py_ssize_t n_samples, Py_ssize_t n_channels_in_digitizer 
     cdef Py_ssize_t j, k, wavecounter_within_channel_payload, words_in_channel_payload, num_words_in_channel_payload
     cdef Py_ssize_t counter_within_channel_payload, index, i0, i1
     cdef Py_ssize_t pnt =  1
-
-
 
     word_chan_mask = get_word_by_index(data, pnt)
     chan_mask = word_chan_mask & 0xFF
