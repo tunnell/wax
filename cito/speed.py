@@ -94,6 +94,11 @@ class TimingTask():
         print('%r min run time was %2.9f sec' % (__name__,mins))
         print('%r max run time was %2.9f sec' % (__name__,maxs))
         print('%r avg run time was %2.9f sec in %s runs' % (__name__,sums/loops,loops))
+
+        size = result / 1024 / 1024 # MB
+        print('%r size %d MB %s runs' % (__name__,size,loops))
+        speed = size / (sums/loops)
+        print('%r avg speed %2.9f MB/s in %s runs' % (__name__,speed,loops))
         print('==== end ====')
         return result
 
