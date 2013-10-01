@@ -31,6 +31,7 @@
 """
 
 import logging
+from bson.code import Code
 
 from cliff.show import ShowOne
 from cito.helpers import xedb
@@ -136,4 +137,43 @@ class DBCount(DBBase):
         data = [collection.count()]
 
         return columns, data
+
+
+class DBDuplicates(DBBase):
+    """Find duplicate payloads.
+    """
+
+
+    def take_action(self, parsed_args):
+        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+
+        map_func = Code("function () {"
+                        "  emit(this.data, 1); "
+                        "}")
+
+        reduce_func = Code("function (key, values) {"
+                           "return Array.sum(values);"
+                           "}")
+
+        columns = []
+        data = []
+
+        result = collection.map_reduce(map_func, reduce_func, "dups")
+        for i, doc in enumerate(result.find({'value': {'$gt': 1}})):
+            columns.append('Dup[%d] count' % i)
+            data.append(doc['value'])
+
+            for j, doc2 in enumerate(collection.find({'data' : doc['_id']})):
+                columns.append('Dup[%d][%d] ID' % (i, j))
+                data.append(doc2['_id'])
+
+        if len(columns):
+            columns = ['Status'] + columns
+            data = ['Duplicates found'] + data
+        else:
+            columns = ['Status']
+            data = ['No duplicates']
+
+        return columns, data
+
 

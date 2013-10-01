@@ -52,6 +52,7 @@ setup(
             'db inspector = cito.db_operations:DBCount',
             'db repair = cito.db_operations:DBRepair',
             'db purge = cito.db_operations:DBPurge',
+            'db dups = cito.db_operations:DBDuplicates',
             'process = cito.online_processing:Process'
         ],
     },

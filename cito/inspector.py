@@ -30,6 +30,7 @@
 
 import logging
 
+import bson
 from cliff.show import ShowOne
 from cito.helpers import xedb, InterfaceV1724
 
@@ -82,7 +83,10 @@ class Inspector(ShowOne):
         elif parsed_args.random:
             doc = collection.find_one()
         else:  # must be by ID since these args in in mutually exclusive group
-            doc = collection.find_one({'_id': parsed_args.id})
+            self.log.debug("Building BSON ID from string")
+            id_bson = bson.objectid.ObjectId(parsed_args.id)
+            self.log.debug("ID: %s", parsed_args.id)
+            doc = collection.find_one({'_id': id_bson})
 
         if doc == None:
             self.log.fatal("No document found.")
