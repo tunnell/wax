@@ -39,14 +39,14 @@ def get_waveform(data, n):
     CaenBlockParsing.setup_return_buffer(n)
 
     assert(len(data) != 0)
-    CaenBlockParsing.inplace(a)
+    #CaenBlockParsing.inplace(a)
 
     results = []
     for i in range(8):
         samples = np.zeros(n, dtype='int32')
         indecies = np.zeros(n, dtype='uint32')
 
-        length = CaenBlockParsing.get_data(samples, indecies, i)
+        length = 0#CaenBlockParsing.get_data(samples, indecies, i)
 
         if length > 0:
             #samples = np.compress(length * [True], samples)
