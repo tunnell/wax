@@ -234,7 +234,7 @@ class SpeedTest(Command):
 
 
     def get_tasks(self):
-        tasks = [#Fetch(),
+        tasks = [Fetch(),
                  PySumWaveform(),
                  #NumpyFFTWaveform(),
                  #SciPyFindWaveformPeaks(),
