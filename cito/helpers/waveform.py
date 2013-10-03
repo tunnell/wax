@@ -108,7 +108,7 @@ def get_sum_waveform(cursor, offset, n_samples):
     # TODO: check that unsigned 16 bit doesn't work?  Or bit shift (i.e. avg) or
     # dividie by some nubmer
     log.debug('Number of samples for sum waveform: %d', n_samples)
-    occurences = np.zeros(n_samples, dtype=np.int32)
+    #occurences = np.zeros(n_samples, dtype=np.int32)
 
     size = 0
 
