@@ -115,7 +115,7 @@ def get_sum_waveform(cursor, offset, n_samples):
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
-        result = bo.get_waveform(data, int(len(data)/2)) # 2 bytes are a sample
+        result = bo.get_waveform(data, int(len(data)/2)) #  2 bytes are a sample
 
 
         time_correction = doc['triggertime'] - offset
