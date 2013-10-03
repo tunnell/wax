@@ -51,7 +51,7 @@ def get_mongo_db_objects(server='127.0.0.1'):
     """
     c = pymongo.MongoClient(server)
     db = c.data
-    collection = db.lowrate
+    collection = db.test
 
     collection.ensure_index(get_sort_key(),
                             background=True)
