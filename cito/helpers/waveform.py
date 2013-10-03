@@ -118,7 +118,7 @@ def get_sum_waveform(cursor, offset, n_samples):
 
         # Is 1024 the max length?
 
-        result = bo.get_waveform(data, int(len(data)/2)) # 2 bytes are a sample
+        #result = bo.get_waveform(data, int(len(data)/2)) # 2 bytes are a sample
 
 
         #time = doc['triggertime'] - offset
