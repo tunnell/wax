@@ -35,7 +35,7 @@ import logging
 from cito.helpers import xedb
 
 try:
-    from cito.helpers import cInterfaceV1724 as bo
+    from cito.helpers import InterfaceV1724Swig as bo
 except ImportError:
     print("Can't find Cython cInterfaceV1724.  Using native Python version")
     from cito.helpers import InterfaceV1724 as bo

@@ -13,7 +13,7 @@ import unittest
 import numpy as np
 
 from cito.helpers import InterfaceV1724
-from cito.helpers import cInterfaceV1724
+from cito.helpers import InterfaceV1724Swig
 
 
 class BaseInterfaceV1724():
@@ -144,16 +144,17 @@ class TestCompareV1724(unittest.TestCase):
     def test_compare(self):
         data = BaseInterfaceV1724()._testGoodData()
         result1 = InterfaceV1724.get_waveform(data, 2 * len(data))
-        result2 = cInterfaceV1724.get_waveform(data, 2 * len(data))
+        result2 = InterfaceV1724Swig.get_waveform(data, 2 * len(data))
 
         for i in range(len(result1)):
+            print(result1[i][0], result2[i][0])
             self.assertTrue((result1[i][0] == result2[i][0]).all())
             self.assertTrue((result1[i][1] == result2[i][1]).all())
 
 
-class TestcInterface1724(unittest.TestCase, BaseInterfaceV1724):
-    def setUp(self):
-        self.interfaceClass = cInterfaceV1724
+#class TestInterface1724Swig(unittest.TestCase, BaseInterfaceV1724):
+#    def setUp(self):
+#        self.interfaceClass = InterfaceV1724Swig
 
 
 if __name__ == '__main__':

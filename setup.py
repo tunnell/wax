@@ -12,6 +12,11 @@ except ImportError:
     print("You must install numpy and Cython first (e.g., easy_install numpy Cython)")
     raise
 
+try:
+    numpy_include = numpy.get_include()
+except AttributeError:
+    numpy_include = numpy.get_numpy_include()
+
 from setuptools import setup
 
 from distutils.extension import Extension
@@ -24,8 +29,11 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 required = open('requirements.txt').read().splitlines()
 
-module1 = Extension("cito.helpers.cInterfaceV1724", ["cito/helpers/InterfaceV1724.py"],
-                    extra_compile_args=['-O3'])
+module1 = Extension("cito.helpers._CaenBlockParsing",
+                   ["cito/helpers/CaenBlockParsing.i","cito/helpers/CaenBlockParsing.c"],
+                   extra_compile_args=['-O3'],
+                   include_dirs = [numpy_include],
+                   )
 
 setup(
     name='cito',
