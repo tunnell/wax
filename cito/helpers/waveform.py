@@ -108,24 +108,23 @@ def get_sum_waveform(cursor, offset, n_samples):
     # TODO: check that unsigned 16 bit doesn't work?  Or bit shift (i.e. avg) or
     # dividie by some nubmer
     log.debug('Number of samples for sum waveform: %d', n_samples)
-    occurences = np.zeros(n_samples, dtype=np.int32)
+    occurences = np.zeros(n_samples, dtype=np.int16)
 
     size = 0
 
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
-        for i in range(10):
-        # Is 1024 the max length?
-
-            result = bo.get_waveform(data, int(len(data)/2)) # 2 bytes are a sample
+        result = bo.get_waveform(data, int(len(data)/2)) # 2 bytes are a sample
 
 
-            time = doc['triggertime'] - offset
+        time_correction = doc['triggertime'] - offset
 
-            size += len(data)
-            for samples, indecies in result:
-                occurences[indecies] += samples
+        size += len(data)
+        for samples, indecies in result:
+            indecies -= time_correction
+            samples /= 10
+            occurences[indecies] += samples
 
 
 
