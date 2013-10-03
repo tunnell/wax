@@ -115,41 +115,19 @@ def get_sum_waveform(cursor, offset, n_samples):
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
+
         # Is 1024 the max length?
 
-        #was_exception = False
-        #try:
         result = bo.get_waveform(data, int(len(data)/2)) # 2 bytes are a sample
-        #except Exception as e:
-        #    continue
-            #was_exception = True
 
-        #print('fyi', doc['datalength'], was_exception, len(data), len(doc['data']))
 
-        time = doc['triggertime'] - offset
+        #time = doc['triggertime'] - offset
 
         size += len(data)
-        #print(result)
-        for samples, indecies in result:
-            #print(i, samples, indecies)
-            occurences[indecies] += samples
-
-        #print(occurences, np.sum(occurences))
-        #    indecies -= bo.MAX_ADC_VALUE
-        #    indecies *= -1
+        #for samples, indecies in result:
+        #    occurences[indecies] += samples
 
 
-        # Invert pulse
-        #result -= bo.MAX_ADC_VALUE
-        #result *= -1
-
-        # Sum all PMTs
-        #result = np.sum(result, axis=0)
-
-        #for
-
-        # Combine with other blocks
-        #occurences[time:time + result.size] = result
 
     results = {}
     results['size'] = size
