@@ -10,3 +10,5 @@ int get_data(int *chan_samples,
 	     int channel);
 int inplace(unsigned int *invec, int n);
 
+
+int put_samples_into_occurences(int *chan_samples, int n0, int time_offset, int scale);

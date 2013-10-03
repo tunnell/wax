@@ -43,6 +43,7 @@ except ImportError:
 from scipy import signal
 from scipy.stats import norm
 import scipy
+from cito.helpers import CaenBlockParsing
 
 def filter_samples(values):
     """Apply a filter
@@ -108,15 +109,16 @@ def get_sum_waveform(cursor, offset, n_samples):
     # TODO: check that unsigned 16 bit doesn't work?  Or bit shift (i.e. avg) or
     # dividie by some nubmer
     log.debug('Number of samples for sum waveform: %d', n_samples)
+    import time
+    some_time = time.time()
     occurences = np.zeros(n_samples, dtype=np.int16)
-
+    print('It took', (time.time() - some_time), 'to allocate memory')
     size = 0
 
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
         result = bo.get_waveform(data, int(len(data)/2)) #  2 bytes are a sample
-
 
         time_correction = doc['triggertime'] - offset
 

@@ -1,16 +1,18 @@
 #include "CaenBlockParsing.h"
 
+// TODO: move to shorts?
+
 unsigned int buffer_size = 0;
 int **samples = NULL; // 8xN
 unsigned int **indecies = NULL; // 8xN
 unsigned int *lengths = NULL; // <N
+int nc = 8; // number of channels
 
 int setup_return_buffer(int n){
   // This leaks memory, so don't call continously!  Call once
   if (samples != NULL || indecies != NULL) {
     return 0;
   }
-  int nc = 8; // number of channels
 
   samples=(int **) malloc(nc*sizeof(int*));
   indecies=(unsigned int **) malloc(nc*sizeof(unsigned int*));
@@ -38,6 +40,27 @@ int setup_return_buffer(int n){
   return 1;
 }
 
+int put_samples_into_occurences(int *chan_samples, int n0, int time_offset, int scale) {
+// Cheat.
+   unsigned int corrected_time = 0;
+   int sample = 0;
+  for (int i=0; i < nc; i++) {
+    for (int j=0; j < lengths[i]; j++){
+        corrected_time = indecies[i][j] + time_offset;
+         // check wrap around
+         if ( corrected_time < indecies[i][j]) {
+            continue;
+         }
+         sample = samples[i][j];
+         sample -= 16384;  // 2 ** 14
+         sample *= -1;
+         sample /= scale;
+         chan_samples[corrected_time] = chan_samples[corrected_time] + scale;
+    }
+  }
+
+}
+
 int get_data(int *chan_samples, int n0,
 	     unsigned int *chan_indecies, int n1,
 	     int channel){
@@ -47,7 +70,6 @@ int get_data(int *chan_samples, int n0,
   }
   return lengths[channel];
 }
-
 
 
 int inplace(unsigned int *buff, int n)

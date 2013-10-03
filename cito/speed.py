@@ -239,7 +239,7 @@ class SpeedTest(Command):
                  #NumpyFFTWaveform(),
                  #SciPyFindWaveformPeaks(),
                  #FFTWWaveform(),
-                 #NumpyRealFFTWaveform(),
+                 NumpyRealFFTWaveform(),
                  #SciPyFFTWaveform()
                  ]
 

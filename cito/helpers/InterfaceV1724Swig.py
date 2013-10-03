@@ -40,7 +40,7 @@ def get_waveform(data, n):
 
     assert(len(data) != 0)
     CaenBlockParsing.inplace(a)
-
+    CaenBlockParsing.put_samples_into_occurences
     results = []
     for i in range(8):
         samples = np.zeros(n, dtype='int32')
