@@ -47,7 +47,7 @@ def get_waveform(data, n):
         indecies = np.zeros(n, dtype='uint32')
 
         length = CaenBlockParsing.get_data(samples, indecies, i)
-        print('length', length)
+
         if length > 0:
             #samples = np.compress(length * [True], samples)
             #indecies = np.compress(length * [True], indecies)
