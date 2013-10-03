@@ -55,6 +55,7 @@ def get_word_by_index(data, i):
 
     This function is called often so be sure to check
     """
+
     cdef Py_ssize_t i0, i1
     i0 = i*WORD_SIZE_IN_BYTES
     i1 = (i+1)*WORD_SIZE_IN_BYTES

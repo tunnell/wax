@@ -24,7 +24,7 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 required = open('requirements.txt').read().splitlines()
 
-module1 = Extension("cito.helpers.cInterfaceV1724", ["cito/helpers/cInterfaceV1724.pyx"],
+module1 = Extension("cito.helpers.cInterfaceV1724", ["cito/helpers/InterfaceV1724.py"],
                     extra_compile_args=['-O3'])
 
 setup(

@@ -29,17 +29,29 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Interface to Caen V1724
 
-Flash ADC board
+Flash ADC board.  There are many Cython wrappers, which means that the code
+can be compiled.
 """
 
 import numpy as np
+import cython
 
 SAMPLE_TYPE = np.int16  # Samples are actually 14 bit unsigned, so 16 bit signed fine
 MAX_ADC_VALUE = 2 ** 14   # 14 bit ADC samples
 SAMPLE_TIME_STEP = 1    # 10 ns
-WORD_SIZE_IN_BYTES = 4  # 4 bytes in a 32 bit word
+
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
+if cython.compiled:
+    print("Yep, I'm compiled.")
+    cimport numpy as np
+    np.import_array()
+else:
+    print("Just a lowly interpreted script.")
+
+
+@cython.returns(cython.uint)
+@cython.locals(i=cython.uint, i0=cython.uint, i1=cython.uint, word=cython.uint)
 def get_word_by_index(data, i, do_checks=True):
     """Get 32-bit word by index.
 
@@ -59,14 +71,16 @@ This function is called often so be sure to check
         if i > int(len(data) / 4):
             raise IndexError('i does not exist')
 
-    i0 = i * WORD_SIZE_IN_BYTES
-    i1 = (i + 1) * WORD_SIZE_IN_BYTES
+    # 4 bytes in a 32 bit word
+    i0 = i * 4
+    i1 = (i + 1) * 4
 
     word = int.from_bytes(data[i0:i1], 'little')
 
     return word
 
-
+@cython.returns(cython.bint)
+@cython.locals(word=cython.uint)
 def check_header(data, do_checks=True):
     """Check data header for control bits.
 
@@ -77,7 +91,8 @@ def check_header(data, do_checks=True):
         assert word >> 20 == 0xA00, 'Data header misformated'
     return True
 
-
+@cython.returns(cython.int)
+@cython.locals(size=cython.uint, word=cython.uint)
 def get_block_size(data, do_checks=True):
     """Get size of block from header.
     """
@@ -90,7 +105,8 @@ def get_block_size(data, do_checks=True):
 
     return size  # number of words
 
-
+@cython.returns(cython.int)
+@cython.locals(word=cython.uint)
 def get_trigger_time_tag(data):
     check_header(data)
     word = get_word_by_index(data, 3)
@@ -102,7 +118,20 @@ def get_trigger_time_tag(data):
 
     return word
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+@cython.locals(word_chan_mask=cython.int, double_sample=cython.int,
+               sample_1 = cython.int, sample_2 = cython.int,
+                i = cython.int, j = cython.int,
+                wavecounter_within_channel_payload = cython.int,
+                words_in_channel_payload = cython.int,
+                num_words_in_channel_payload = cython.int,
+                counter_within_channel_payload = cython.int,
+               index = cython.int,pnt = cython.int,
+               n_samples = cython.int,
+               samples = np.ndarray[np.uint16_t],
+               indecies = np.ndarray[np.uint32_t])
 def get_waveform(data, n_samples):
 
     # Each 'occurence' is a continous sequence of ADC samples for a given
@@ -115,8 +144,10 @@ def get_waveform(data, n_samples):
     pnt = 1
 
     word_chan_mask = get_word_by_index(data, pnt)
-    chan_mask = word_chan_mask & 0xFF
+    word_chan_mask = word_chan_mask & 0xFF
     pnt += 3
+
+    max_adc_value = 2 ** 14
 
     data_to_return = []
 
@@ -125,7 +156,7 @@ def get_waveform(data, n_samples):
         indecies = np.zeros(n_samples, dtype=np.uint32)
         index = 0
 
-        if ((chan_mask >> j) & 1):
+        if ((word_chan_mask >> j) & 1):
             words_in_channel_payload = get_word_by_index(data, pnt)
 
             pnt += 1
@@ -168,7 +199,7 @@ def get_waveform(data, n_samples):
             #print('skipping', j)
             pass
 
-        samples -= MAX_ADC_VALUE
+        samples -= 2 ** 14
         samples *= -1
 
         #compress here
