@@ -122,7 +122,7 @@ def get_sum_waveform(cursor, offset, n_samples):
 
         size += len(data)
         for samples, indecies in result:
-            indecies -= time_correction
+            indecies += time_correction
             samples /= 10
             occurences[indecies] += samples
 
