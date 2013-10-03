@@ -131,7 +131,7 @@ def get_sum_waveform(cursor, offset, n_samples):
 
     results = {}
     results['size'] = size
-    results['occurences'] = occurences
+    #results['occurences'] = occurences
 
     return results
 
