@@ -250,3 +250,9 @@ class SpeedTest(Command):
 
         for task in self.get_tasks():
             print(task.process(t0, t1, loops=10))
+
+
+if __name__ == '__main__':
+    """User for profiling"""
+    task = PySumWaveform()
+    task.call(5702, 1000005702)
