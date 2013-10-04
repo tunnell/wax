@@ -86,7 +86,7 @@ def find_peaks(values, threshold=10000):
             high_extrema.append(i)
     return high_extrema
 
-
+#@profile
 def get_sum_waveform(cursor, offset, n_samples):
     """Get inverted sum waveform from mongo
 
@@ -116,11 +116,13 @@ def get_sum_waveform(cursor, offset, n_samples):
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
+        temp_size = InterfaceV1724.get_block_size(data, False)
+
         #  2 bytes are a sample
-        result = InterfaceV1724Swig.get_waveform(data, int(len(data) / 2))
+        result = InterfaceV1724Swig.get_waveform(data, int(temp_size * 2))
 
         time_correction = doc['triggertime'] - offset
-        size += 4 * InterfaceV1724.get_block_size(data, False)
+        size += 4 * temp_size
         #size += len(data)
         for samples, indecies in result:
             indecies += time_correction
