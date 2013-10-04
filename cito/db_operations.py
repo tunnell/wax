@@ -38,6 +38,7 @@ from cito.helpers import xedb
 
 
 class DBBase(ShowOne):
+
     """Base class for all DB commands.
 
     Handles logging, descriptions, and common fuctions.
@@ -69,11 +70,11 @@ class DBBase(ShowOne):
 
 
 class DBReset(DBBase):
+
     """Reset the database by dropping the default collection.
 
     Warning: this cannot be used during a run as it will kill the DAQ writer.
     """
-
 
     def take_action(self, parsed_args):
         conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
@@ -83,17 +84,17 @@ class DBReset(DBBase):
 
         # TODO: Maybe purge celery too?
         #from celery.task.control import discard_all
-        #discard_all()
+        # discard_all()
 
         return self.get_status(db)
 
 
 class DBPurge(DBBase):
+
     """Delete/purge all DAQ documents without deleting collection.
 
     This can be used during a run.
     """
-
 
     def take_action(self, parsed_args):
         conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
@@ -106,6 +107,7 @@ class DBPurge(DBBase):
 
 
 class DBRepair(DBBase):
+
     """Repair DB to regain unused space.
 
     MongoDB can't know how what to do with space after a document is deleted,
@@ -126,9 +128,9 @@ class DBRepair(DBBase):
 
 
 class DBCount(DBBase):
+
     """Count docs in DB.
     """
-
 
     def take_action(self, parsed_args):
         conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
@@ -140,6 +142,7 @@ class DBCount(DBBase):
 
 
 class DBDuplicates(DBBase):
+
     """Find duplicate data and print their IDs.
 
     Search through all the DAQ document's data payloads (i.e., 'data' key) and
@@ -147,7 +150,6 @@ class DBDuplicates(DBBase):
     the document inspector.  A Map-Reduce algorithm is used so the results are
     stored in MongoDB as the 'dups' collection.
     """
-
 
     def take_action(self, parsed_args):
         conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
@@ -169,7 +171,7 @@ class DBDuplicates(DBBase):
             columns.append('Dup[%d] count' % i)
             data.append(doc['value'])
 
-            for j, doc2 in enumerate(collection.find({'data' : doc['_id']})):
+            for j, doc2 in enumerate(collection.find({'data': doc['_id']})):
                 columns.append('Dup[%d][%d] ID' % (i, j))
                 data.append(doc2['_id'])
 
@@ -181,5 +183,3 @@ class DBDuplicates(DBBase):
             data = ['No duplicates']
 
         return columns, data
-
-

@@ -42,6 +42,7 @@ from cito.helpers import tasks, xedb
 
 
 class Process(Command):
+
     """Process data from DB online
     """
 
@@ -77,7 +78,8 @@ class Process(Command):
         chunk_size = parsed_args.chunksize
         padding = parsed_args.padding
 
-        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, my_db, collection = xedb.get_mongo_db_objects(
+            parsed_args.hostname)
 
         # Key to sort by so we can use an index for quick query
         sort_key = [
@@ -116,13 +118,13 @@ class Process(Command):
                 else:
                     self.log.debug('Waiting %f seconds' % parsed_args.waittime)
                     time.sleep(parsed_args.waittime)
-                    #my_db.command('repairDatabase')
-                    #break
+                    # my_db.command('repairDatabase')
+                    # break
             except StopIteration:
                 pass
             except ValueError as e:
                 self.log.exception(e)
-                raise # pass # This means no events left
+                raise  # pass # This means no events left
             except KeyboardInterrupt:
                 self.log.info("Ctrl-C caught so exiting.")
                 sys.exit(0)

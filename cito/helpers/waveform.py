@@ -30,17 +30,17 @@
 """Perform operations on sets of blocks
 """
 
-import numpy as np
 import logging
-from cito.helpers import xedb
 
-from cito.helpers import InterfaceV1724Swig
-from cito.helpers import InterfaceV1724
-
+import numpy as np
 from scipy import signal
 from scipy.stats import norm
 import scipy
-from cito.helpers import CaenBlockParsing
+
+from cito.helpers import xedb
+from cito.helpers import InterfaceV1724Swig
+from cito.helpers import InterfaceV1724
+
 
 def filter_samples(values):
     """Apply a filter
@@ -52,7 +52,7 @@ def filter_samples(values):
     new_values = np.zeros_like(values)
 
     print('\tprefilter')
-    my_filter = norm(0, 100) # mu=0, sigma=100
+    my_filter = norm(0, 100)  # mu=0, sigma=100
     filter_values = 600 * [0.]
     for j in range(-300, 300):
         filter_values[j] = my_filter.pdf(j)
@@ -107,6 +107,7 @@ def get_sum_waveform(cursor, offset, n_samples):
     # dividie by some nubmer
     log.debug('Number of samples for sum waveform: %d', n_samples)
     import time
+
     some_time = time.time()
     occurences = np.zeros(n_samples, dtype=np.int16)
     print('It took', (time.time() - some_time), 'to allocate memory')
@@ -115,7 +116,8 @@ def get_sum_waveform(cursor, offset, n_samples):
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
-        result = InterfaceV1724Swig.get_waveform(data, int(len(data)/2)) #  2 bytes are a sample
+        #  2 bytes are a sample
+        result = InterfaceV1724Swig.get_waveform(data, int(len(data) / 2))
 
         time_correction = doc['triggertime'] - offset
         size += 4 * InterfaceV1724.get_block_size(data, False)
@@ -125,13 +127,8 @@ def get_sum_waveform(cursor, offset, n_samples):
             samples /= 10
             occurences[indecies] += samples
 
-
-
     results = {}
     results['size'] = size
     results['occurences'] = occurences
 
     return results
-
-
-

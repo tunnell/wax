@@ -104,9 +104,9 @@ def get_min_time(collection):
     sort_key = [(x[0], pymongo.ASCENDING) for x in sort_key]
 
     cursor = collection.find({},
-                            fields=['triggertime'],
-                            limit=1,
-                            sort=sort_key)
+                             fields=['triggertime'],
+                             limit=1,
+                             sort=sort_key)
 
     return next(cursor)['triggertime']
 
@@ -139,7 +139,7 @@ def get_max_time(collection, min_time=0):
                                  limit=1,
                                  sort=sort_key)
 
-        #assert(cursor.explain()['indexOnly'])
+        # assert(cursor.explain()['indexOnly'])
 
         times[module] = next(cursor)['triggertime']
 

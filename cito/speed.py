@@ -34,59 +34,27 @@ SciPyFFTWaveform is really freaking slow compared to others.  Same with FFTW.
 
 __author__ = 'tunnell'
 import logging
-import sys
 import time
-
-import unittest
 
 import numpy as np
 #import pyfftw
 import scipy
 import pymongo
 
-
-from cito.helpers import InterfaceV1724
 from cito.helpers import cInterfaceV1724
 from cliff.command import Command
 
-from cito.helpers import tasks, xedb, waveform
+from cito.helpers import xedb, waveform
 
-def timeit(func=None,loops=1,verbose=False):
-    if func != None:
-        def inner(*args,**kwargs):
-
-            sums = 0.0
-            mins = 1.7976931348623157e+308
-            maxs = 0.0
-            print('====%s Timing====' % func.__name__)
-            for i in range(0,loops):
-                t0 = time.time()
-                result = func(*args,**kwargs)
-                dt = time.time() - t0
-                mins = dt if dt < mins else mins
-                maxs = dt if dt > maxs else maxs
-                sums += dt
-                if verbose == True:
-                    print('\t%r ran in %2.9f sec on run %s' %(func.__name__,dt,i))
-            print('%r min run time was %2.9f sec' % (func.__name__,mins))
-            print('%r max run time was %2.9f sec' % (func.__name__,maxs))
-            print('%r avg run time was %2.9f sec in %s runs' % (func.__name__,sums/loops,loops))
-            print('==== end ====')
-            return result
-
-        return inner
-    else:
-        def partial_inner(func):
-            return timeit(func,loops,verbose)
-        return partial_inner
 
 class TimingTask():
-    def process(self, t0, t1, loops=1, verbose = False):
+
+    def process(self, t0, t1, loops=1, verbose=False):
         sums = 0.0
         mins = 1.7976931348623157e+308
         maxs = 0.0
         print('====%s Timing====' % self.__class__.__name__)
-        for i in range(0,loops):
+        for i in range(0, loops):
             start_time = time.time()
             result = self.call(t0, t1)
             dt = time.time() - start_time
@@ -94,18 +62,22 @@ class TimingTask():
             maxs = dt if dt > maxs else maxs
             sums += dt
             if verbose == True:
-                print('\t%r ran in %2.9f sec on run %s' %(self.__class__.__name__,dt,i))
-        print('%r min run time was %2.9f sec' % (self.__class__.__name__,mins))
-        print('%r max run time was %2.9f sec' % (self.__class__.__name__,maxs))
-        print('%r avg run time was %2.9f sec in %s runs' % (self.__class__.__name__,sums/loops,loops))
+                print('\t%r ran in %2.9f sec on run %s' %
+                      (self.__class__.__name__, dt, i))
+        print('%r min run time was %2.9f sec' %
+              (self.__class__.__name__, mins))
+        print('%r max run time was %2.9f sec' %
+              (self.__class__.__name__, maxs))
+        print('%r avg run time was %2.9f sec in %s runs' %
+              (self.__class__.__name__, sums / loops, loops))
 
-        size = result / 1024 / 1024 # MB
-        print('%r size %d MB %s runs' % (self.__class__.__name__,size,loops))
-        speed = size / (sums/loops)
-        print('%r avg speed %2.9f MB/s in %s runs' % (self.__class__.__name__,speed,loops))
+        size = result / 1024 / 1024  # MB
+        print('%r size %d MB %s runs' % (self.__class__.__name__, size, loops))
+        speed = size / (sums / loops)
+        print('%r avg speed %2.9f MB/s in %s runs' %
+              (self.__class__.__name__, speed, loops))
         print('==== end ====')
         return result
-
 
     def get_cursor(self, t0, t1):
         conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
@@ -118,7 +90,9 @@ class TimingTask():
     def call(self, t0, t1):
         raise NotImplementedError()
 
+
 class Fetch(TimingTask):
+
     """Fetch and decompress"""
 
     def call(self, t0, t1):
@@ -128,7 +102,9 @@ class Fetch(TimingTask):
             size += len(xedb.get_data_from_doc(doc))
         return size
 
+
 class PySumWaveform(TimingTask):
+
     """
     'PySumWaveform' min run time was 0.635332584 sec
 'PySumWaveform' max run time was 0.650459766 sec
@@ -136,52 +112,59 @@ class PySumWaveform(TimingTask):
 'PySumWaveform' size 1 MB 10 runs
 'PySumWaveform' avg speed 1.887291191 MB/s in 10 runs
     """
+
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
-                                              t1 - t0)
+                                            t1 - t0)
         return results['size']
 
 
 class NumpyFFTWaveform(TimingTask):
+
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
-                                              t1 - t0)
+                                            t1 - t0)
         y = results['occurences']
         np.fft.fft(y)
         return results['size']
 
+
 class NumpyRealFFTWaveform(TimingTask):
+
     """Use Numpy for Real FFT of sum waveform
 
     Normal Numpy FFT is 25% slower.  SciPyFFTWaveform seems to be more than a
     factor of two slower.  PyFFTW is significantly worse than that.
     """
 
-
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
-                                              t1 - t0)
+                                            t1 - t0)
         y = results['occurences']
         np.fft.rfft(y)
         return results['size']
 
+
 class SciPyFFTWaveform(TimingTask):
+
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
-                                              t1 - t0)
+                                            t1 - t0)
         y = results['occurences']
         scipy.fftpack.fft(y)
         return results['size']
 
+
 class SciPyFindWaveformPeaks(TimingTask):
+
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
-                                              t1 - t0)
+                                            t1 - t0)
         y = results['occurences']
         peakind = waveform.signal.find_peaks_cwt(y, np.array([100]))
         threshold = 10000
@@ -196,7 +179,7 @@ class SciPyFindWaveformPeaks(TimingTask):
 
         return results['size']
 
-#class FFTWWaveform(TimingTask):
+# class FFTWWaveform(TimingTask):
 #    def call(self, t0, t1):
 #        cursor = self.get_cursor(t0, t1)
 #        results = waveform.get_sum_waveform(cursor, t0,
@@ -206,8 +189,8 @@ class SciPyFindWaveformPeaks(TimingTask):
 #        return results['size']
 
 
-
 class SpeedTest(Command):
+
     """Process data from DB online
     """
 
@@ -232,15 +215,14 @@ class SpeedTest(Command):
 
         return parser
 
-
     def get_tasks(self):
         tasks = [Fetch(),
                  PySumWaveform(),
-                 #NumpyFFTWaveform(),
-                 #SciPyFindWaveformPeaks(),
-                 #FFTWWaveform(),
+                 # NumpyFFTWaveform(),
+                 # SciPyFindWaveformPeaks(),
+                 # FFTWWaveform(),
                  NumpyRealFFTWaveform(),
-                 #SciPyFFTWaveform()
+                 # SciPyFFTWaveform()
                  ]
 
         return tasks
@@ -249,7 +231,8 @@ class SpeedTest(Command):
         chunk_size = parsed_args.chunksize
         padding = parsed_args.padding
 
-        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, my_db, collection = xedb.get_mongo_db_objects(
+            parsed_args.hostname)
 
         # Key to sort by so we can use an index for quick query
         sort_key = [
@@ -263,12 +246,7 @@ class SpeedTest(Command):
 
         t1 = t0 + chunk_size
 
-
         self.log.info('Processing %d %d' % (t0, t1))
 
         for task in self.get_tasks():
             print(task.process(t0, t1, loops=10))
-
-
-
-

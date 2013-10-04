@@ -36,7 +36,7 @@ from distutils.extension import Extension
 
 import numpy
 
-if 1:#__name__ == "__main__":
+if 1:  # __name__ == "__main__":
     setup(
         #cmdclass={'build_ext': build_ext},
         include_dirs=[numpy.get_include()],

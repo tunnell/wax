@@ -35,12 +35,12 @@ can be compiled.
 
 import numpy as np
 
-SAMPLE_TYPE = np.int16  # Samples are actually 14 bit unsigned, so 16 bit signed fine
+# Samples are actually 14 bit unsigned, so 16 bit signed fine
+SAMPLE_TYPE = np.int16
 MAX_ADC_VALUE = 2 ** 14   # 14 bit ADC samples
 SAMPLE_TIME_STEP = 1    # 10 ns
 
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
-
 
 
 def get_word_by_index(data, i, do_checks=True):
@@ -70,6 +70,7 @@ This function is called often so be sure to check
 
     return word
 
+
 def check_header(data, do_checks=True):
     """Check data header for control bits.
 
@@ -80,6 +81,7 @@ def check_header(data, do_checks=True):
         assert word >> 20 == 0xA00, 'Data header misformated'
     return True
 
+
 def get_block_size(data, do_checks=True):
     """Get size of block from header.
     """
@@ -88,9 +90,11 @@ def get_block_size(data, do_checks=True):
     size = (word & 0x0FFFFFFF)  # size in words
     if do_checks:
         # len(data) is in bytes, word = 4 bytes
-        assert size == (len(data) / 4), 'Size from header not equal to data size'
+        assert size == (
+            len(data) / 4), 'Size from header not equal to data size'
 
     return size  # number of words
+
 
 def get_trigger_time_tag(data):
     check_header(data)
@@ -105,7 +109,6 @@ def get_trigger_time_tag(data):
 
 
 def get_waveform(data, n_samples):
-
     # Each 'occurence' is a continous sequence of ADC samples for a given
     # channel.  Due to zero suppression, there can be multiple occurences for
     # a given channel.  Each item in this array is a dictionary that will be
@@ -124,7 +127,7 @@ def get_waveform(data, n_samples):
     data_to_return = []
 
     for j in range(N_CHANNELS_IN_DIGITIZER):
-        samples = np.zeros(n_samples,  dtype=SAMPLE_TYPE)
+        samples = np.zeros(n_samples, dtype=SAMPLE_TYPE)
         indecies = np.zeros(n_samples, dtype=np.uint32)
         index = 0
 
@@ -163,7 +166,7 @@ def get_waveform(data, n_samples):
                         counter_within_channel_payload += 1
                 else:
                     wavecounter_within_channel_payload += 2 * \
-                                                          words_in_channel_payload + 1
+                        words_in_channel_payload + 1
                     pnt = pnt + 1
                     counter_within_channel_payload += 1
 
@@ -174,7 +177,7 @@ def get_waveform(data, n_samples):
         samples -= 2 ** 14
         samples *= -1
 
-        #compress here
+        # compress here
         if index != 0:
             samples = np.compress(index * [True], samples)
             indecies = np.compress(index * [True], indecies)

@@ -36,6 +36,7 @@ from cito.helpers import xedb, InterfaceV1724
 
 
 class Inspector(ShowOne):
+
     """Grab DAQ document from MongoDB and print it.
 
     A DAQ document contains the V1724 flash ADC data.  If data in the document is
@@ -57,8 +58,9 @@ class Inspector(ShowOne):
                             choices=('data', 'nondata', 'all'),
                             default='all',
                             help='Print only certain keys within document(s)')
-        parser.add_argument('--skip-checks', dest='checks', action='store_false',
-                            help='Skip consistency checks on data.')
+        parser.add_argument(
+            '--skip-checks', dest='checks', action='store_false',
+            help='Skip consistency checks on data.')
 
         subparser = parser.add_mutually_exclusive_group(required=True)
         subparser.add_argument('-n', '--newest', action='store_true',
@@ -71,7 +73,8 @@ class Inspector(ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        conn, my_db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, my_db, collection = xedb.get_mongo_db_objects(
+            parsed_args.hostname)
 
         if parsed_args.newest:
             try:
@@ -96,7 +99,6 @@ class Inspector(ShowOne):
         do_checks = parsed_args.checks
 
         output = []
-
 
         # For every key in the doc, which is like every 'variable'
         for key in doc:
@@ -125,7 +127,8 @@ class Inspector(ShowOne):
                         # Print out 8 hex characters. After printing, the rightmost
                         # character on the string corresponds to the 0th bit.  The
                         # leftmost then corresponds to the highest 31st bit.
-                        word = InterfaceV1724.get_word_by_index(data, i, do_checks)
+                        word = InterfaceV1724.get_word_by_index(
+                            data, i, do_checks)
                         output.append(('data[%d]' % i,
                                        '%08x' % word))
 
@@ -139,8 +142,8 @@ class Inspector(ShowOne):
                     if not do_checks:
                         raise e
 
-            elif selection != 'data':  # If not 'data' and data-only printing off
+            # If not 'data' and data-only printing off
+            elif selection != 'data':
                 output.append((key, doc[key]))
 
         return zip(*output)
-

@@ -93,7 +93,6 @@ def process(t0, t1):
 
     n_samples = t1 - t0
 
-
     # $gte and $lt are special mongo functions for greater than and less than
     subset_query = {"triggertime": {'$gte': t0,
                                     '$lt': t1}}
@@ -104,16 +103,16 @@ def process(t0, t1):
         return
         #print('count', count)
         #print('nsamples', n_samples)
-        #t0.to('s')
-        #t1.to('s')
-        #if count:
+        # t0.to('s')
+        # t1.to('s')
+        # if count:
         #    print('\tRange:', t0, t1, 'with %d docs' % count)
-        #cursor = collection.find(subset_query,
+        # cursor = collection.find(subset_query,
     #                         fields=['triggertime', 'module'])
 
-    #print('get_sum_waveform')
+    # print('get_sum_waveform')
     results = waveform.get_sum_waveform(cursor, t0,
-                                              n_samples)
+                                        n_samples)
     y = results['occurences']
     #print(sum(y), y)
 
@@ -124,7 +123,6 @@ def process(t0, t1):
 
     print('shrink')
     #y = sample_operations.shrink(y, int(ureg['sigwidth'].to('sample').magnitude))
-
 
     print('fft')
 
@@ -144,10 +142,10 @@ def process(t0, t1):
     # CWT https://github.com/scipy/scipy/blob/v0.12.0/scipy/signal/wavelets.py#L314
     #output = np.zeros(len(data))
     #wavelet_data = wavelet(min(10 * width, len(data)), width)
-    #output = convolve(data, wavelet_data,
+    # output = convolve(data, wavelet_data,
     #                  mode='same')
 
-    #print(np.fft.fft(y))
+    # print(np.fft.fft(y))
     #peaks = combine_blocks.find_peak(results['occurences'])
     #print('occurences', results['occurences'])
 
@@ -164,5 +162,5 @@ def process(t0, t1):
 
     #func(collection, cursor)
 
-    #collection.remove(subset_query)
+    # collection.remove(subset_query)
     return results['size']

@@ -34,11 +34,12 @@ Flash ADC board.
 import numpy as np
 from cito.helpers import CaenBlockParsing
 
+
 def get_waveform(data, n):
     a = np.fromstring(data, dtype='uint32')
     CaenBlockParsing.setup_return_buffer(n)
 
-    assert(len(data) != 0)
+    assert (len(data) != 0)
     CaenBlockParsing.inplace(a)
     CaenBlockParsing.put_samples_into_occurences
     results = []
