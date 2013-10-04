@@ -34,11 +34,8 @@ import numpy as np
 import logging
 from cito.helpers import xedb
 
-try:
-    from cito.helpers import InterfaceV1724Swig as bo
-except ImportError:
-    print("Can't find Cython cInterfaceV1724.  Using native Python version")
-    from cito.helpers import InterfaceV1724 as bo
+from cito.helpers import InterfaceV1724Swig
+from cito.helpers import InterfaceV1724
 
 from scipy import signal
 from scipy.stats import norm
@@ -118,11 +115,11 @@ def get_sum_waveform(cursor, offset, n_samples):
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
 
-        result = bo.get_waveform(data, int(len(data)/2)) #  2 bytes are a sample
+        result = InterfaceV1724Swig.get_waveform(data, int(len(data)/2)) #  2 bytes are a sample
 
         time_correction = doc['triggertime'] - offset
-
-        size += len(data)
+        size += 4 * InterfaceV1724.get_block_size(data, False)
+        #size += len(data)
         for samples, indecies in result:
             indecies += time_correction
             samples /= 10
