@@ -92,7 +92,7 @@ int put_samples_into_occurences(int time_offset, int scale) {
          sample -= 16384;  // 2 ** 14
          sample *= -1;
          sample /= scale;
-         sum_waveform[corrected_time] = sum_waveform[corrected_time] + scale;
+         sum_waveform[corrected_time] += sample;
     }
   }
 }
