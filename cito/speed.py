@@ -37,19 +37,16 @@ import logging
 import time
 
 import numpy as np
-import pyfftw
-import sys
 import scipy
 import pymongo
-
-from cito.helpers import cInterfaceV1724
 from cliff.command import Command
 
+import pyfftw
+from cito.helpers import cInterfaceV1724
 from cito.helpers import xedb, waveform
 
 
 class TimingTask():
-
     def process(self, t0, t1, loops=1, verbose=False):
         sums = 0.0
         mins = 1.7976931348623157e+308
@@ -93,7 +90,6 @@ class TimingTask():
 
 
 class Fetch(TimingTask):
-
     """Fetch and decompress"""
 
     def call(self, t0, t1):
@@ -105,7 +101,6 @@ class Fetch(TimingTask):
 
 
 class PySumWaveform(TimingTask):
-
     """
     'PySumWaveform' min run time was 0.635332584 sec
 'PySumWaveform' max run time was 0.650459766 sec
@@ -122,7 +117,6 @@ class PySumWaveform(TimingTask):
 
 
 class NumpyFFTWaveform(TimingTask):
-
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
@@ -133,7 +127,6 @@ class NumpyFFTWaveform(TimingTask):
 
 
 class NumpyRealFFTWaveform(TimingTask):
-
     """Use Numpy for Real FFT of sum waveform
 
     Normal Numpy FFT is 25% slower.  SciPyFFTWaveform seems to be more than a
@@ -150,7 +143,6 @@ class NumpyRealFFTWaveform(TimingTask):
 
 
 class SciPyFFTWaveform(TimingTask):
-
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
@@ -161,7 +153,6 @@ class SciPyFFTWaveform(TimingTask):
 
 
 class SciPyFindWaveformPeaks(TimingTask):
-
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
@@ -180,18 +171,18 @@ class SciPyFindWaveformPeaks(TimingTask):
 
         return results['size']
 
+
 class FFTWWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
-                                              t1 - t0)
+                                            t1 - t0)
         y = results['occurences']
         pyfftw.interfaces.numpy_fft.rfft(y, threads=1)
         return results['size']
 
 
 class SpeedTest(Command):
-
     """Process data from DB online
     """
 
@@ -224,7 +215,7 @@ class SpeedTest(Command):
                  FFTWWaveform(),
                  NumpyRealFFTWaveform(),
                  # SciPyFFTWaveform()
-                 ]
+        ]
 
         return tasks
 
@@ -255,4 +246,4 @@ class SpeedTest(Command):
 
 if __name__ == '__main__':
     x = PySumWaveform()
-    x.call(0, 10**8)
+    x.call(0, 10 ** 8)
