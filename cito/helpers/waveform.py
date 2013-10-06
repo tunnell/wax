@@ -123,14 +123,9 @@ def get_sum_waveform(cursor, offset, n_samples):
 
         temp_size = InterfaceV1724.get_block_size(data, False)
 
-        #  2 bytes are a sample
-        #result = InterfaceV1724Swig.get_waveform(data, )
-
         n = int(temp_size * 2)
         a = np.fromstring(data, dtype='uint32')
 
-        #assert (len(data) != 0)
-        print(doc['_id'])
         CaenBlockParsing.inplace(a)
         CaenBlockParsing.put_samples_into_occurences(time_correction, scale)
 
