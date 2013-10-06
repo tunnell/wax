@@ -151,10 +151,7 @@ int inplace(unsigned int *buff, int n)
 	wavecnt=0;                          // counter to reconstruct times within waveform
 	while (cnt<=Size)
 	  {
-	   if(pnt >= n){
-	   printf("FAIL overrun: pnt %d %d\n", pnt, lengths[j]);
 
-	   }
 //printf("pnt %d\n", pnt);
 	      // check for invalids just after good samples
 
