@@ -180,7 +180,7 @@ class SciPyFindWaveformPeaks(TimingTask):
 
         return results['size']
 
- class FFTWWaveform(TimingTask):
+class FFTWWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
