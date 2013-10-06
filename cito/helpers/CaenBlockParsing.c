@@ -3,17 +3,17 @@
 // TODO: move to shorts?
 
 unsigned int buffer_size = 0;
-int **samples = NULL; // 8xN
+short **samples = NULL; // 8xN
 unsigned int **indecies = NULL; // 8xN
 unsigned int *lengths = NULL; // <N
 int nc = 8; // number of channels
 
-unsigned int *sum_waveform = NULL; // LONG!
+short *sum_waveform = NULL; // LONG!
 unsigned int length_sum_waveform = 0;
 
 int setup_sum_waveform_buffer(int n){
 
-    sum_waveform = (unsigned int *) malloc(n*sizeof(unsigned int));
+    sum_waveform = (short *) malloc(n*sizeof(short));
     if (sum_waveform == NULL) {
         return 0;
     }
@@ -51,7 +51,7 @@ int setup_return_buffer(int n){
     return 0;
   }
 
-  samples=(int **) malloc(nc*sizeof(int*));
+  samples=(short **) malloc(nc*sizeof(short*));
   indecies=(unsigned int **) malloc(nc*sizeof(unsigned int*));
 
   lengths = (unsigned int *) malloc(nc*sizeof(unsigned int));
@@ -62,7 +62,7 @@ int setup_return_buffer(int n){
 
   unsigned int size = n* sizeof(unsigned int); // size of channel data
   for(int i=0;i<nc;i++){
-    samples[i]=(int*) malloc(size);
+    samples[i]=(short*) malloc(size);
     indecies[i] = (unsigned int*) malloc(size);
     memset(samples[i],0,size);
     memset(indecies[i],0,size);
@@ -97,13 +97,13 @@ int put_samples_into_occurences(int time_offset, int scale) {
   }
 }
 
-int get_sum_waveform(unsigned int *sum_waveform_out, int n) {
+int get_sum_waveform(short *sum_waveform_out, int n) {
     for(int i=0; i < length_sum_waveform; i++){
         sum_waveform_out[i] = sum_waveform[i];
     }
 }
 
-int get_data(int *chan_samples, int n0,
+int get_data(short *chan_samples, int n0,
 	     unsigned int *chan_indecies, int n1,
 	     int channel){
   for (int i=0; i < lengths[channel]; i++){

@@ -6,10 +6,10 @@ void cleanup_sum_waveform_buffer();
 void cleanup_return_buffer();
 void cleanup();
 int setup_sum_waveform_buffer(int n);
-int get_sum_waveform(unsigned int *sum_waveform_out, int n);
+int get_sum_waveform(short *sum_waveform_out, int n);
 
 int setup_return_buffer(int n);
-int get_data(int *chan_samples,
+int get_data(short *chan_samples,
 	     int n0,
 	     unsigned int *chan_indecies,
 	     int n1,
