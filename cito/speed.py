@@ -38,6 +38,7 @@ import time
 
 import numpy as np
 #import pyfftw
+import sys
 import scipy
 import pymongo
 
@@ -249,10 +250,9 @@ class SpeedTest(Command):
         self.log.info('Processing %d %d' % (t0, t1))
 
         for task in self.get_tasks():
-            print(task.process(t0, t1, loops=100))
+            print(task.process(t0, t1, loops=10))
 
 
 if __name__ == '__main__':
-    """User for profiling"""
-    task = PySumWaveform()
-    task.call(5702, 10005702)
+    x = PySumWaveform()
+    x.call(0, 10**8)
