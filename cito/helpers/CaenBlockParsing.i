@@ -14,5 +14,7 @@
 %apply (unsigned int* INPLACE_ARRAY1, int DIM1) {(unsigned int* invec, int n)}
 %apply (int* INPLACE_ARRAY1, int DIM1) {(int* chan_samples, int n0)}
 %apply (unsigned int* INPLACE_ARRAY1, int DIM1) {(unsigned int* chan_indecies, int n1)}
+%apply (int* ARGOUT_ARRAY1, int DIM1) {(unsigned int *sum_waveform_out, int n)}
+
 %include "CaenBlockParsing.h"
 

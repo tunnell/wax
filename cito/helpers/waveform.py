@@ -40,6 +40,7 @@ import scipy
 from cito.helpers import xedb
 from cito.helpers import InterfaceV1724Swig
 from cito.helpers import InterfaceV1724
+from cito.helpers import CaenBlockParsing
 
 
 def filter_samples(values):
@@ -105,32 +106,43 @@ def get_sum_waveform(cursor, offset, n_samples):
     # Longer int since summing many, otherwise wrap around.
     # TODO: check that unsigned 16 bit doesn't work?  Or bit shift (i.e. avg) or
     # dividie by some nubmer
-    log.debug('Number of samples for sum waveform: %d', n_samples)
+    #log.debug('Number of samples for sum waveform: %d', n_samples)
     import time
 
     some_time = time.time()
-    occurences = np.zeros(n_samples, dtype=np.int16)
-    print('It took', (time.time() - some_time), 'to allocate memory')
+    #occurences = np.zeros(n_samples, dtype=np.int16)
+    #print('It took', (time.time() - some_time), 'to allocate memory')
     size = 0
+    scale = 10 # how to scale samples
+    assert CaenBlockParsing.setup_sum_waveform_buffer(n_samples);
+    CaenBlockParsing.setup_return_buffer(1000)
 
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
+        time_correction = doc['triggertime'] - offset
 
         temp_size = InterfaceV1724.get_block_size(data, False)
 
         #  2 bytes are a sample
-        result = InterfaceV1724Swig.get_waveform(data, int(temp_size * 2))
+        #result = InterfaceV1724Swig.get_waveform(data, )
 
-        time_correction = doc['triggertime'] - offset
+        n = int(temp_size * 2)
+        a = np.fromstring(data, dtype='uint32')
+
+#        assert (len(data) != 0)
+        CaenBlockParsing.inplace(a)
+        CaenBlockParsing.put_samples_into_occurences(time_correction, scale)
+
         size += 4 * temp_size
-        #size += len(data)
-        for samples, indecies in result:
-            indecies += time_correction
-            samples /= 10
-            occurences[indecies] += samples
 
+    occurences = CaenBlockParsing.get_sum_waveform(n_samples)
+    #print("size", size)
+    #print('len', len(occurences[1]), n_samples)
     results = {}
     results['size'] = size
-    results['occurences'] = occurences
+    results['occurences'] = occurences[1]
+    #raise ValueError()
+    #print(occurences)
+    #print('sum', np.sum(occurences[1]))
 
     return results

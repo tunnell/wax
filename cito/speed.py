@@ -255,4 +255,4 @@ class SpeedTest(Command):
 if __name__ == '__main__':
     """User for profiling"""
     task = PySumWaveform()
-    task.call(5702, 1000005702)
+    task.call(5702, 10005702)

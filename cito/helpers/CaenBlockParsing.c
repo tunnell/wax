@@ -8,6 +8,43 @@ unsigned int **indecies = NULL; // 8xN
 unsigned int *lengths = NULL; // <N
 int nc = 8; // number of channels
 
+unsigned int *sum_waveform = NULL; // LONG!
+unsigned int length_sum_waveform = 0;
+
+int setup_sum_waveform_buffer(int n){
+
+    sum_waveform = (unsigned int *) malloc(n*sizeof(unsigned int));
+    if (sum_waveform == NULL) {
+        return 0;
+    }
+    length_sum_waveform = n;
+    return 1;
+}
+
+void cleanup(){
+    cleanup_sum_waveform_buffer();
+    cleanup_return_buffer();
+}
+
+void cleanup_sum_waveform_buffer(){
+    free(sum_waveform);
+}
+
+void cleanup_return_buffer(){
+    if ( samples == NULL || indecies == NULL) {
+        return;
+    }
+
+    for(int i=0;i<nc;i++){
+        free(samples[i]);
+        free(indecies[i]);
+    }
+
+    free(samples);
+    free(indecies);
+}
+
+
 int setup_return_buffer(int n){
   // This leaks memory, so don't call continously!  Call once
   if (samples != NULL || indecies != NULL) {
@@ -40,7 +77,7 @@ int setup_return_buffer(int n){
   return 1;
 }
 
-int put_samples_into_occurences(int *chan_samples, int n0, int time_offset, int scale) {
+int put_samples_into_occurences(int time_offset, int scale) {
 // Cheat.
    unsigned int corrected_time = 0;
    int sample = 0;
@@ -55,10 +92,15 @@ int put_samples_into_occurences(int *chan_samples, int n0, int time_offset, int 
          sample -= 16384;  // 2 ** 14
          sample *= -1;
          sample /= scale;
-         chan_samples[corrected_time] = chan_samples[corrected_time] + scale;
+         sum_waveform[corrected_time] = sum_waveform[corrected_time] + scale;
     }
   }
+}
 
+int get_sum_waveform(unsigned int *sum_waveform_out, int n) {
+    for(int i=0; i < length_sum_waveform; i++){
+        sum_waveform_out[i] = sum_waveform[i];
+    }
 }
 
 int get_data(int *chan_samples, int n0,

@@ -34,6 +34,7 @@ __author__ = 'tunnell'
 
 import pymongo
 import snappy
+import logging
 
 
 def get_mongo_db_objects(server='127.0.0.1'):
@@ -107,8 +108,9 @@ def get_min_time(collection):
                              fields=['triggertime'],
                              limit=1,
                              sort=sort_key)
-
-    return next(cursor)['triggertime']
+    time = next(cursor)['triggertime']
+    logging.debug("Minimum time: %d", time)
+    return time
 
 
 def get_max_time(collection, min_time=0):
