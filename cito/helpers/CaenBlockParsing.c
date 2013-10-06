@@ -116,10 +116,10 @@ int get_data(short *chan_samples, int n0,
 
 int inplace(unsigned int *buff, int n)
 {
-    int pnt=0; 
-    int CurrentChannel;
-    int Size, cnt, wavecnt;
-    int GoodWords;
+    unsigned int pnt=0;
+    unsigned int CurrentChannel;
+    unsigned int Size, cnt, wavecnt;
+    unsigned int GoodWords;
   
     // error handling if there is an invalid entry after an event
     if (buff[0]==0xFFFFFFFF) pnt++;
@@ -128,7 +128,7 @@ int inplace(unsigned int *buff, int n)
     // check header
     if ((buff[pnt]>>20)==0xA00) { //  && (buff[pnt+1]>>20)==0x0) {  // 2nd condition omitted since boardId is stored at this place
       pnt++;
-      int ChannelMask=buff[pnt] & 0xFF;          pnt++;
+      unsigned int ChannelMask=buff[pnt] & 0xFF;          pnt++;
 
       pnt+=2; 
       
