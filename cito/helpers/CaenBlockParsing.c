@@ -141,7 +141,7 @@ int inplace(unsigned int *buff, int n)
 
 
 	Size=buff[pnt];              // size of next waveform
-	printf("size! %d", Size);
+	printf("size! %u", Size);
 	//if (CurrentChannel!=channel) { pnt+=Size; continue; }
 	//else pnt++;
 	//if (j>channel) return 0;      
