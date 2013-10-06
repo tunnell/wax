@@ -41,7 +41,6 @@ import scipy
 import pymongo
 from cliff.command import Command
 
-import pyfftw
 from cito.helpers import cInterfaceV1724
 from cito.helpers import xedb, waveform
 
@@ -172,16 +171,6 @@ class SciPyFindWaveformPeaks(TimingTask):
         return results['size']
 
 
-class FFTWWaveform(TimingTask):
-    def call(self, t0, t1):
-        cursor = self.get_cursor(t0, t1)
-        results = waveform.get_sum_waveform(cursor, t0,
-                                            t1 - t0)
-        y = results['occurences']
-        pyfftw.interfaces.numpy_fft.rfft(y, threads=1)
-        return results['size']
-
-
 class SpeedTest(Command):
     """Process data from DB online
     """
@@ -210,11 +199,10 @@ class SpeedTest(Command):
     def get_tasks(self):
         tasks = [Fetch(),
                  PySumWaveform(),
-                 # NumpyFFTWaveform(),
+                 NumpyFFTWaveform(),
                  # SciPyFindWaveformPeaks(),
-                 FFTWWaveform(),
                  NumpyRealFFTWaveform(),
-                 # SciPyFFTWaveform()
+                 SciPyFFTWaveform()
         ]
 
         return tasks
