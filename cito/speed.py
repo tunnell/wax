@@ -249,7 +249,7 @@ class SpeedTest(Command):
         self.log.info('Processing %d %d' % (t0, t1))
 
         for task in self.get_tasks():
-            print(task.process(t0, t1, loops=10))
+            print(task.process(t0, t1, loops=100))
 
 
 if __name__ == '__main__':
