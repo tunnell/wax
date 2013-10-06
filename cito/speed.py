@@ -68,7 +68,9 @@ class TimingTask():
         print('%r avg run time was %2.9f sec in %s runs' %
               (self.__class__.__name__, sums / loops, loops))
 
-        size = result / 1024 / 1024  # MB
+        size = result / 1024
+        print('%r size %d kB %s runs' % (self.__class__.__name__, size, loops))
+        size = size / 1024  # MB
         print('%r size %d MB %s runs' % (self.__class__.__name__, size, loops))
         speed = size / (sums / loops)
         print('%r avg speed %2.9f MB/s in %s runs' %
