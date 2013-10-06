@@ -52,7 +52,7 @@ def get_mongo_db_objects(server='127.0.0.1'):
     """
     c = pymongo.MongoClient(server)
     db = c.data
-    collection = db.test
+    collection = db.bettermaybe
 
     collection.ensure_index(get_sort_key(),
                             background=True)

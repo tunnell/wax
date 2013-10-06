@@ -108,6 +108,7 @@ class Inspector(ShowOne):
 
                 # Get data from doc (and decompress if necessary)
                 data = xedb.get_data_from_doc(doc)
+                self.log.debug("Data: %s", str(data))
 
                 # A try/except block to see if the InterfaceV1724 class throwns
                 # any assertion exceptions when checking for data consistency.
@@ -121,6 +122,17 @@ class Inspector(ShowOne):
                     size = InterfaceV1724.get_block_size(data, do_checks)
                     output.append(('data(size from header in words)',
                                    size))
+
+                    try:
+                        result = InterfaceV1724.get_waveform(data, 10000)
+                        output.append(('data(processing exception)',
+                                       'none'))
+                        print(result)
+                    except Exception as e:
+                        output.append(('data(processing exception)',
+                                       str(e)))
+
+
 
                     # Loop over 32-bits words
                     for i in range(int(len(data) / 4)):
