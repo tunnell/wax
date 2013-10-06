@@ -180,14 +180,14 @@ class SciPyFindWaveformPeaks(TimingTask):
 
         return results['size']
 
-# class FFTWWaveform(TimingTask):
-#    def call(self, t0, t1):
-#        cursor = self.get_cursor(t0, t1)
-#        results = waveform.get_sum_waveform(cursor, t0,
-#                                              t1 - t0)
-#        y = results['occurences']
-#        pyfftw.interfaces.numpy_fft.rfft(y, threads=1)
-#        return results['size']
+ class FFTWWaveform(TimingTask):
+    def call(self, t0, t1):
+        cursor = self.get_cursor(t0, t1)
+        results = waveform.get_sum_waveform(cursor, t0,
+                                              t1 - t0)
+        y = results['occurences']
+        pyfftw.interfaces.numpy_fft.rfft(y, threads=1)
+        return results['size']
 
 
 class SpeedTest(Command):
