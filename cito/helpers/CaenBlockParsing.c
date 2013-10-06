@@ -148,8 +148,13 @@ int inplace(unsigned int *buff, int n)
 	wavecnt=0;                          // counter to reconstruct times within waveform
 	while (cnt<=Size)
 	  {
-	    // check for invalids just after good samples
-	    printf("pnt %d %d\n", pnt, lengths[j]);
+	   if(pnt >= n){
+	   printf("FAIL overrun: pnt %d %d\n", pnt, lengths[j]);
+	   return -2;
+	   }
+
+	      // check for invalids just after good samples
+
 	    if ((buff[pnt]>>28)==0x8) { // good data
 	      GoodWords=buff[pnt]&0xFFFFFFF;        pnt++;  cnt++;
               
