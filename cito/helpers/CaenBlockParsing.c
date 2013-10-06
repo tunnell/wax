@@ -149,6 +149,7 @@ int inplace(unsigned int *buff, int n)
 	while (cnt<=Size)
 	  {
 	    // check for invalids just after good samples
+	    printf("pnt %d %d\n", pnt, lengths[j]);
 	    if ((buff[pnt]>>28)==0x8) { // good data
 	      GoodWords=buff[pnt]&0xFFFFFFF;        pnt++;  cnt++;
               

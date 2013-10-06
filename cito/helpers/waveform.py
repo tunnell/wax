@@ -115,7 +115,7 @@ def get_sum_waveform(cursor, offset, n_samples):
     size = 0
     scale = 10 # how to scale samples
     assert CaenBlockParsing.setup_sum_waveform_buffer(n_samples);
-    CaenBlockParsing.setup_return_buffer(10000)
+    CaenBlockParsing.setup_return_buffer(1000)
 
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
