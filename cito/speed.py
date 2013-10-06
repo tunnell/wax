@@ -37,7 +37,7 @@ import logging
 import time
 
 import numpy as np
-#import pyfftw
+import pyfftw
 import sys
 import scipy
 import pymongo
@@ -221,7 +221,7 @@ class SpeedTest(Command):
                  PySumWaveform(),
                  # NumpyFFTWaveform(),
                  # SciPyFindWaveformPeaks(),
-                 # FFTWWaveform(),
+                 FFTWWaveform(),
                  NumpyRealFFTWaveform(),
                  # SciPyFFTWaveform()
                  ]
