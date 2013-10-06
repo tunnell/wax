@@ -130,6 +130,7 @@ def get_sum_waveform(cursor, offset, n_samples):
         a = np.fromstring(data, dtype='uint32')
 
         assert (len(data) != 0)
+        print(doc['_id'])
         CaenBlockParsing.inplace(a)
         CaenBlockParsing.put_samples_into_occurences(time_correction, scale)
 

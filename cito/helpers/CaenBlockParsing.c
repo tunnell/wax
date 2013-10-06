@@ -155,14 +155,14 @@ int inplace(unsigned int *buff, int n)
 	   printf("FAIL overrun: pnt %d %d\n", pnt, lengths[j]);
 
 	   }
-printf("pnt %d\n", pnt);
+//printf("pnt %d\n", pnt);
 	      // check for invalids just after good samples
 
 	    if ((buff[pnt]>>28)==0x8) { // good data
 	      GoodWords=buff[pnt]&0xFFFFFFF;        pnt++;  cnt++;
 
 
-            printf("goodwords %d\n", GoodWords);
+      //      printf("goodwords %d\n", GoodWords);
               
 	      // save waveform in histogram
 	      for (int i=0; i<GoodWords; i++) {
