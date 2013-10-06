@@ -137,8 +137,11 @@ int inplace(unsigned int *buff, int n)
 	// read only the channels given in ChannelMask
 	if ((ChannelMask>>j)&1) CurrentChannel=j;
 	else continue;
-	
+
+
+
 	Size=buff[pnt];              // size of next waveform
+	printf("size! %d", Size);
 	//if (CurrentChannel!=channel) { pnt+=Size; continue; }
 	//else pnt++;
 	//if (j>channel) return 0;      
