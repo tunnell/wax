@@ -85,7 +85,7 @@ int put_samples_into_occurences(int time_offset, int scale) {
     for (int j=0; j < lengths[i]; j++){
         corrected_time = indecies[i][j] + time_offset;
          // check wrap around
-         if ( corrected_time < indecies[i][j]) {
+         if ( corrected_time < lengths[i]) {
             continue;
          }
          sample = samples[i][j];
