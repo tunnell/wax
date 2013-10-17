@@ -95,12 +95,14 @@ int put_samples_into_occurences(int time_offset, int scale) {
          sum_waveform[corrected_time] += sample;
     }
   }
+  return 0;
 }
 
 int get_sum_waveform(short *sum_waveform_out, int n) {
     for(int i=0; i < length_sum_waveform; i++){
         sum_waveform_out[i] = sum_waveform[i];
     }
+    return 0;
 }
 
 int get_data(short *chan_samples, int n0,

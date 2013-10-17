@@ -32,7 +32,7 @@ required = open('requirements.txt').read().splitlines()
 module1 = Extension("cito.helpers._CaenBlockParsing",
                     ["cito/helpers/CaenBlockParsing.i",
                      "cito/helpers/CaenBlockParsing.c"],
-                    extra_compile_args=['-O3', '-std=c99'],
+                    extra_compile_args=['-O3', '-std=c99', '-ftree-vectorizer-verbose=2', '-ftree-vectorize'],
                     include_dirs=[numpy_include],
                     )
 
