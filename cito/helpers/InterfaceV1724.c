@@ -1,57 +1,18 @@
-#include "CaenBlockParsing.h"
-
-// TODO: move to shorts?
+#include "inplace.h"
 
 unsigned int buffer_size = 0;
-short **samples = NULL; // 8xN
+unsigned int **samples = NULL; // 8xN
 unsigned int **indecies = NULL; // 8xN
 unsigned int *lengths = NULL; // <N
-int nc = 8; // number of channels
-
-short *sum_waveform = NULL; // LONG!
-unsigned int length_sum_waveform = 0;
-
-int setup_sum_waveform_buffer(int n){
-
-    sum_waveform = (short *) malloc(n*sizeof(short));
-    if (sum_waveform == NULL) {
-        return 0;
-    }
-    length_sum_waveform = n;
-    return 1;
-}
-
-void cleanup(){
-    cleanup_sum_waveform_buffer();
-    cleanup_return_buffer();
-}
-
-void cleanup_sum_waveform_buffer(){
-    free(sum_waveform);
-}
-
-void cleanup_return_buffer(){
-    if ( samples == NULL || indecies == NULL) {
-        return;
-    }
-
-    for(int i=0;i<nc;i++){
-        free(samples[i]);
-        free(indecies[i]);
-    }
-
-    free(samples);
-    free(indecies);
-}
-
 
 int setup_return_buffer(int n){
   // This leaks memory, so don't call continously!  Call once
   if (samples != NULL || indecies != NULL) {
     return 0;
   }
+  int nc = 8; // number of channels
 
-  samples=(short **) malloc(nc*sizeof(short*));
+  samples=(unsigned int **) malloc(nc*sizeof(unsigned int*));
   indecies=(unsigned int **) malloc(nc*sizeof(unsigned int*));
 
   lengths = (unsigned int *) malloc(nc*sizeof(unsigned int));
@@ -62,7 +23,7 @@ int setup_return_buffer(int n){
 
   unsigned int size = n* sizeof(unsigned int); // size of channel data
   for(int i=0;i<nc;i++){
-    samples[i]=(short*) malloc(size);
+    samples[i]=(unsigned int*) malloc(size);
     indecies[i] = (unsigned int*) malloc(size);
     memset(samples[i],0,size);
     memset(indecies[i],0,size);
@@ -77,33 +38,7 @@ int setup_return_buffer(int n){
   return 1;
 }
 
-int put_samples_into_occurences(int time_offset, int scale) {
-// Cheat.
-   unsigned int corrected_time = 0;
-   int sample = 0;
-  for (int i=0; i < nc; i++) {
-    for (int j=0; j < lengths[i]; j++){
-        corrected_time = indecies[i][j] + time_offset;
-         // check wrap around
-         if ( corrected_time >= lengths[i]) {
-            continue;
-         }
-         sample = samples[i][j];
-         sample -= 16384;  // 2 ** 14
-         sample *= -1;
-         sample /= scale;
-         sum_waveform[corrected_time] += sample;
-    }
-  }
-}
-
-int get_sum_waveform(short *sum_waveform_out, int n) {
-    for(int i=0; i < length_sum_waveform; i++){
-        sum_waveform_out[i] = sum_waveform[i];
-    }
-}
-
-int get_data(short *chan_samples, int n0,
+int get_data(unsigned int *chan_samples, int n0,
 	     unsigned int *chan_indecies, int n1,
 	     int channel){
   for (int i=0; i < lengths[channel]; i++){
@@ -114,12 +49,13 @@ int get_data(short *chan_samples, int n0,
 }
 
 
+
 int inplace(unsigned int *buff, int n)
 {
-    unsigned int pnt=0;
-    unsigned int CurrentChannel;
-    unsigned int Size, cnt, wavecnt;
-    unsigned int GoodWords;
+    int pnt=0; 
+    int CurrentChannel;
+    int Size, cnt, wavecnt;
+    int GoodWords;
   
     // error handling if there is an invalid entry after an event
     if (buff[0]==0xFFFFFFFF) pnt++;
@@ -128,7 +64,7 @@ int inplace(unsigned int *buff, int n)
     // check header
     if ((buff[pnt]>>20)==0xA00) { //  && (buff[pnt+1]>>20)==0x0) {  // 2nd condition omitted since boardId is stored at this place
       pnt++;
-      unsigned int ChannelMask=buff[pnt] & 0xFF;          pnt++;
+      int ChannelMask=buff[pnt] & 0xFF;          pnt++;
 
       pnt+=2; 
       
@@ -137,11 +73,8 @@ int inplace(unsigned int *buff, int n)
 	// read only the channels given in ChannelMask
 	if ((ChannelMask>>j)&1) CurrentChannel=j;
 	else continue;
-
-
-
+	
 	Size=buff[pnt];              // size of next waveform
-
 	//if (CurrentChannel!=channel) { pnt+=Size; continue; }
 	//else pnt++;
 	//if (j>channel) return 0;      
@@ -151,15 +84,9 @@ int inplace(unsigned int *buff, int n)
 	wavecnt=0;                          // counter to reconstruct times within waveform
 	while (cnt<=Size)
 	  {
-
-//printf("pnt %d\n", pnt);
-	      // check for invalids just after good samples
-
+	    // check for invalids just after good samples
 	    if ((buff[pnt]>>28)==0x8) { // good data
 	      GoodWords=buff[pnt]&0xFFFFFFF;        pnt++;  cnt++;
-
-
-      //      printf("goodwords %d\n", GoodWords);
               
 	      // save waveform in histogram
 	      for (int i=0; i<GoodWords; i++) {
@@ -186,8 +113,7 @@ int inplace(unsigned int *buff, int n)
       } // end for-loop
     } // end Check Header 
     else { printf("Header\n%x\n%x",buff[pnt],buff[pnt+1]); return -2; }
-
-    return 1;
+    
 }
 
 
