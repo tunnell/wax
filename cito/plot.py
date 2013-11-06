@@ -27,21 +27,66 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""Build cInterfaceV1724
+"""Plot waveform
+
+Make a plot of the sum waveform for a time range.
 """
+
 __author__ = 'tunnell'
+import logging
 
-from distutils.core import setup
-from distutils.extension import Extension
+import pymongo
+from cito.base import CitoContinousCommand, TimingTask
 
-import numpy
 
-if __name__ == "__main__":
-    setup(
-        #cmdclass={'build_ext': build_ext},
-        include_dirs=[numpy.get_include()],
-        ext_modules=[Extension("cInterfaceV1724", ["cInterfaceV1724.pyx"],
-                               extra_compile_args=['-O3']),
-                     Extension("sample_operations", ["sample_operations.pyx"],
-                               extra_compile_args=['-O3'])]
-    )
+from cito.helpers import  waveform
+
+
+
+class PlotWaveform(TimingTask):
+    """
+    'PySumWaveform' min run time was 0.635332584 sec
+'PySumWaveform' max run time was 0.650459766 sec
+'PySumWaveform' avg run time was 0.644438839 sec in 10 runs
+'PySumWaveform' size 1 MB 10 runs
+'PySumWaveform' avg speed 1.887291191 MB/s in 10 runs
+    """
+
+    def call(self, t0, t1):
+        cursor = self.get_cursor(t0, t1)
+        results = waveform.get_sum_waveform(cursor, t0,
+                                            t1 - t0)
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.title('Time from %d till %d' % (t0, t1))
+        plt.plot(results['occurences'])
+        plt.xlim((t0, t1))
+        plt.show()
+        print(results)
+        return results['size']
+
+
+
+
+class PlotWaveformSingleCommand(CitoContinousCommand):
+    """Plot the sum waveform
+    """
+
+
+    def get_tasks(self):
+        tasks = [#Fetch(),
+                 PlotWaveform(),
+                 #NumpyFFTWaveform(),
+                 # SciPyFindWaveformPeaks(),
+                 #NumpyRealFFTWaveform(),
+                 #SciPyFFTWaveform()
+                ]
+
+        return tasks
+
+
+
+
+if __name__ == '__main__':
+    x = PlotWaveform()
+    x.call(0, 10 ** 8)

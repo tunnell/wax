@@ -63,7 +63,8 @@ setup(
             'db purge = cito.db_operations:DBPurge',
             'duplicates = cito.db_operations:DBDuplicates',
             'process = cito.online_processing:Process',
-            'speedtest = cito.speed:SpeedTest'
+            'speedtest = cito.speed:SpeedTestSingleCommand',
+            'plot = cito.plot:PlotWaveformSingleCommand'
 
         ],
     },

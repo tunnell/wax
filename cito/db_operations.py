@@ -33,43 +33,13 @@
 import logging
 from bson.code import Code
 
-from cliff.show import ShowOne
 from cito.helpers import xedb
+from cito.base import CitoShowOne
 
 
-class DBBase(ShowOne):
-
-    """Base class for all DB commands.
-
-    Handles logging, descriptions, and common fuctions.
-    """
-    log = logging.getLogger(__name__)
-
-    def get_description(self):
-        return self.__doc__
-
-    def get_parser(self, prog_name):
-        parser = super(DBBase, self).get_parser(prog_name)
-
-        parser.add_argument("--hostname", help="MongoDB database address",
-                            type=str,
-                            default='127.0.0.1')
-
-        return parser
-
-    def get_status(self, db):
-        """Return DB errors, if any"""
-        columns = ['Status']
-        error = db.error()
-        if error:
-            self.log.error(error)
-            data = [error]
-        else:
-            data = ['success']
-        return columns, data
 
 
-class DBReset(DBBase):
+class DBReset(CitoShowOne):
 
     """Reset the database by dropping the default collection.
 
@@ -89,7 +59,7 @@ class DBReset(DBBase):
         return self.get_status(db)
 
 
-class DBPurge(DBBase):
+class DBPurge(CitoShowOne):
 
     """Delete/purge all DAQ documents without deleting collection.
 
@@ -106,7 +76,7 @@ class DBPurge(DBBase):
         return self.get_status(db)
 
 
-class DBRepair(DBBase):
+class DBRepair(CitoShowOne):
 
     """Repair DB to regain unused space.
 
@@ -127,7 +97,7 @@ class DBRepair(DBBase):
         return self.get_status(db)
 
 
-class DBCount(DBBase):
+class DBCount(CitoShowOne):
 
     """Count docs in DB.
     """
@@ -141,7 +111,7 @@ class DBCount(DBBase):
         return columns, data
 
 
-class DBDuplicates(DBBase):
+class DBDuplicates(CitoShowOne):
 
     """Find duplicate data and print their IDs.
 

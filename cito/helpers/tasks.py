@@ -43,7 +43,7 @@ import numpy as np
 
 from celery import Celery
 
-sys.path.append(os.path.dirname(os.path.basename(__file__)))
+#sys.path.append(os.path.dirname(os.path.basename(__file__)))
 
 from cito.helpers import waveform
 from cito.helpers import xedb
@@ -51,12 +51,15 @@ from cito.helpers import xedb
 from pint import UnitRegistry
 import time
 
-conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
 
-celery = Celery('tasks',
-                broker='mongodb://%s:%d/celery' % (conn.host,
-                                                   conn.port))
 
+if __name__ == '__main__':
+    conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
+    celery = Celery('tasks',
+                    broker='mongodb://%s:%d/celery' % (conn.host,
+                                                       conn.port))
+else:
+    celery = Celery('tasks')
 
 @celery.task
 def flush(t0, t1):

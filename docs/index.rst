@@ -17,6 +17,7 @@ Contents:
    contributing
    authors
    history
+   data_format
 
 Indices and tables
 ==================

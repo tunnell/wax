@@ -50,9 +50,23 @@ def get_mongo_db_objects(server='127.0.0.1'):
        pymongo.errors.PyMongoError
 
     """
+    db_name = 'data'
+    collection_name = 'pulses'
+
     c = pymongo.MongoClient(server)
-    db = c.data
-    collection = db.bettermaybe
+
+    db = c[db_name]
+    collection = db[collection_name]
+
+    num_docs_in_collection = collection.count()
+    if num_docs_in_collection == 0:
+        raise RuntimeError("Collection %s.%s contains no events; can't continue" % (db_name, collection_name))
+    else:
+        logging.debug("In %s.%s, there are %d documents" % (db_name,
+                                                            collection_name,
+                                                            collection.count()))
+
+
 
     collection.ensure_index(get_sort_key(),
                             background=True)

@@ -41,54 +41,9 @@ import scipy
 import pymongo
 from cliff.command import Command
 
-from cito.helpers import cInterfaceV1724
+#from cito.helpers import cInterfaceV1724
 from cito.helpers import xedb, waveform
-
-
-class TimingTask():
-    def process(self, t0, t1, loops=1, verbose=False):
-        sums = 0.0
-        mins = 1.7976931348623157e+308
-        maxs = 0.0
-        print('====%s Timing====' % self.__class__.__name__)
-        for i in range(0, loops):
-            start_time = time.time()
-            result = self.call(t0, t1)
-            dt = time.time() - start_time
-            mins = dt if dt < mins else mins
-            maxs = dt if dt > maxs else maxs
-            sums += dt
-            if verbose == True:
-                print('\t%r ran in %2.9f sec on run %s' %
-                      (self.__class__.__name__, dt, i))
-        print('%r min run time was %2.9f sec' %
-              (self.__class__.__name__, mins))
-        print('%r max run time was %2.9f sec' %
-              (self.__class__.__name__, maxs))
-        print('%r avg run time was %2.9f sec in %s runs' %
-              (self.__class__.__name__, sums / loops, loops))
-
-        size = result / 1024
-        print('%r size %d kB %s runs' % (self.__class__.__name__, size, loops))
-        size = size / 1024  # MB
-        print('%r size %d MB %s runs' % (self.__class__.__name__, size, loops))
-        speed = size / (sums / loops)
-        print('%r avg speed %2.9f MB/s in %s runs' %
-              (self.__class__.__name__, speed, loops))
-        print('==== end ====')
-        return result
-
-    def get_cursor(self, t0, t1):
-        conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
-
-        # $gte and $lt are special mongo functions for greater than and less than
-        subset_query = {"triggertime": {'$gte': t0,
-                                        '$lt': t1}}
-        return collection.find(subset_query)
-
-    def call(self, t0, t1):
-        raise NotImplementedError()
-
+from cito.base import CitoSingleCommand, TimingTask
 
 class Fetch(TimingTask):
     """Fetch and decompress"""
@@ -173,30 +128,9 @@ class SciPyFindWaveformPeaks(TimingTask):
         return results['size']
 
 
-class SpeedTest(Command):
-    """Process data from DB online
+class SpeedTestSingleCommand(CitoSingleCommand):
+    """Perform a speed test
     """
-
-    log = logging.getLogger(__name__)
-
-    def get_description(self):
-        return self.__doc__
-
-    def get_parser(self, prog_name):
-        parser = super(SpeedTest, self).get_parser(prog_name)
-
-        parser.add_argument("--hostname", help="MongoDB database address",
-                            type=str,
-                            default='127.0.0.1')
-
-        parser.add_argument('--chunksize', type=int,
-                            help="Size of data chunks to process [10 ns step]",
-                            default=2 ** 17)
-        parser.add_argument('--padding', type=int,
-                            help='Padding to overlap processing windows [10 ns step]',
-                            default=10 ** 2)
-
-        return parser
 
     def get_tasks(self):
         tasks = [Fetch(),
@@ -209,29 +143,6 @@ class SpeedTest(Command):
 
         return tasks
 
-    def take_action(self, parsed_args):
-        chunk_size = parsed_args.chunksize
-        padding = parsed_args.padding
-
-        conn, my_db, collection = xedb.get_mongo_db_objects(
-            parsed_args.hostname)
-
-        # Key to sort by so we can use an index for quick query
-        sort_key = [
-            ('triggertime', pymongo.DESCENDING),
-            ('module', pymongo.DESCENDING)
-        ]
-
-        # Index for quick query
-        collection.create_index(sort_key, dropDups=True)
-        t0 = xedb.get_min_time(collection)
-
-        t1 = t0 + chunk_size
-
-        self.log.info('Processing %d %d' % (t0, t1))
-
-        for task in self.get_tasks():
-            print(task.process(t0, t1, loops=10))
 
 
 if __name__ == '__main__':

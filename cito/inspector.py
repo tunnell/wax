@@ -49,6 +49,7 @@ class Inspector(ShowOne):
         return self.__doc__
 
     def get_parser(self, prog_name):
+        """Define what command line arguments we want this to be able to do"""
         parser = super(Inspector, self).get_parser(prog_name)
 
         parser.add_argument("--hostname", help="MongoDB database address",
@@ -58,9 +59,8 @@ class Inspector(ShowOne):
                             choices=('data', 'nondata', 'all'),
                             default='all',
                             help='Print only certain keys within document(s)')
-        parser.add_argument(
-            '--skip-checks', dest='checks', action='store_false',
-            help='Skip consistency checks on data.')
+        parser.add_argument('--skip-checks', dest='checks', action='store_false',
+                            help='Skip consistency checks on data.')
 
         subparser = parser.add_mutually_exclusive_group(required=True)
         subparser.add_argument('-n', '--newest', action='store_true',
