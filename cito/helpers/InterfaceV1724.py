@@ -78,7 +78,7 @@ def check_header(data, do_checks=True):
     """
     word = get_word_by_index(data, 0)
     if do_checks:
-        assert word >> 20 == 0xA00, 'Data header misformated'
+        assert word >> 20 == 0xA00, 'Data header misformated %s' % hex(word)
     return True
 
 

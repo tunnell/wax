@@ -113,23 +113,36 @@ def get_sum_waveform(cursor, offset, n_samples):
     #occurences = np.zeros(n_samples, dtype=np.int16)
     #print('It took', (time.time() - some_time), 'to allocate memory')
     size = 0
-    scale = 10 # how to scale samples
+    scale = 1 # how to scale samples
     assert CaenBlockParsing.setup_sum_waveform_buffer(n_samples);
-    CaenBlockParsing.setup_return_buffer(1000)
+    print(CaenBlockParsing.setup_return_buffer(8505*2))
 
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
+        print('fuck %08x' % InterfaceV1724.get_word_by_index(data, 0))
         time_correction = doc['triggertime'] - offset
 
-        temp_size = InterfaceV1724.get_block_size(data, False)
+        data_size = int(len(data) / 4)
+        log.debug("Tempsize %d", data_size)
 
-        n = int(temp_size * 2)
-        a = np.fromstring(data, dtype='uint32')
+        n = int(data_size * 2)
 
-        CaenBlockParsing.inplace(a)
+        # This is really fucking slow, but sick of dealing with weird byte orderings
+        a2 = np.fromstring(data, '<u4')
+        a = np.zeros(data_size, dtype=np.uint32)
+        for i in range(data_size):
+            a[i] = a2[i]
+
+        #  Assert zeros in samoples?  Figure out some way to do ZLE
+        # Give up on C++ interface for now
+
+        #a.byteswap(True)
+        CaenBlockParsing.inplace(a, 1)
+
         CaenBlockParsing.put_samples_into_occurences(time_correction, scale)
 
-        size += 4 * temp_size
+        size += 4 * data_size
+        break
 
     occurences = CaenBlockParsing.get_sum_waveform(n_samples)
     #print("size", size)

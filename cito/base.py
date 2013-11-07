@@ -21,10 +21,8 @@ class CitoCommand(Command):
     """
 
     log = logging.getLogger(__name__)
-
-    def __init__(self):
-        # Key to sort by so we can use an index for quick query
-        self.sort_key = [
+    # Key to sort by so we can use an index for quick query
+    sort_key = [
             ('triggertime', pymongo.DESCENDING),
             ('module', pymongo.DESCENDING)
         ]
@@ -132,13 +130,16 @@ class CitoContinousCommand(CitoCommand):
                         t0 = (i * chunk_size - padding)
                         t1 = (i + 1) * chunk_size
                         self.log.info('Processing %d %d' % (t0, t1))
-                        if parsed_args.flush:
-                            tasks.flush(t0, t1)
-                        else:
-                            if parsed_args.single:
-                                tasks.process(t0, t1)
-                            else:
-                                tasks.process.delay(t0, t1)
+                        #if parsed_args.flush:
+                        #    tasks.flush(t0, t1)
+                        #else:
+                        #if parsed_args.single:
+                        for task in self.get_tasks():
+                            task.process(t0, t1)
+
+
+                            #else:
+                            #    tasks.process.delay(t0, t1)
 
                     current_time_index = time_index
                 else:

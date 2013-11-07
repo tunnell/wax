@@ -52,17 +52,20 @@ class PlotWaveform(TimingTask):
 'PySumWaveform' avg speed 1.887291191 MB/s in 10 runs
     """
 
-    def call(self, t0, t1):
+    def process(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
                                             t1 - t0)
+
         import matplotlib.pyplot as plt
         plt.figure()
         plt.title('Time from %d till %d' % (t0, t1))
         plt.plot(results['occurences'])
-        plt.xlim((t0, t1))
+        #plt.xlim((t0, t1))
         plt.show()
         print(results)
+        raw_input()
+        raise ValueError()
         return results['size']
 
 
@@ -72,15 +75,8 @@ class PlotWaveformSingleCommand(CitoContinousCommand):
     """Plot the sum waveform
     """
 
-
     def get_tasks(self):
-        tasks = [#Fetch(),
-                 PlotWaveform(),
-                 #NumpyFFTWaveform(),
-                 # SciPyFindWaveformPeaks(),
-                 #NumpyRealFFTWaveform(),
-                 #SciPyFFTWaveform()
-                ]
+        tasks = [PlotWaveform()]
 
         return tasks
 
@@ -89,4 +85,4 @@ class PlotWaveformSingleCommand(CitoContinousCommand):
 
 if __name__ == '__main__':
     x = PlotWaveform()
-    x.call(0, 10 ** 8)
+    x.process(400, 10 ** 3)
