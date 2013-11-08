@@ -136,6 +136,18 @@ def get_index_mask_for_trigger(size, peaks,
 
 
 def split_boolean_array(bool_array):
+    """For boolean arrays, something similar to Python native string split()
+
+    Will return the boundaries of contingous True ranges.
+
+    Args:
+        bool_array (np.array(dtype=np.bool)):  Boolean array to search
+
+    Returns:
+       list: A 2tuple of boundaries for True ranges
+
+    """
+
     ranges = []
 
     start = None
@@ -150,10 +162,10 @@ def split_boolean_array(bool_array):
             if start == None:
                 start = i
 
+    # Were we searching for the end of Trues but found end of array?
     if start != None:
-
         ranges.append((start, len(bool_array)))
-    #print(ranges)
+
     return ranges
 
 def get_sum_waveform(cursor, offset, n_samples):

@@ -33,37 +33,16 @@ Make a plot of the sum waveform for a time range.
 """
 
 __author__ = 'tunnell'
-import logging
 
-import pymongo
 from cito.base import CitoContinousCommand, TimingTask
-import matplotlib.pyplot as plt
+
 
 from cito.helpers import  waveform
 
 
 
 class PlotWaveform(TimingTask):
-    def plot(self, t0, t1, peak_indecies, results, save_range):
-        fig = plt.figure(figsize=(7,5))
-        #plt.title('Time from %d till %d' % (t0, t1))
-        plt.plot(results['indecies'], results['samples'])
-        plt.xlabel("Time [10 ns adc steps]")
-        plt.ylabel("Sum charge [adc counts]")
 
-        if t0 is not None and t1 is not None:
-            plt.xlim((t0, t1))
-
-        for peak_i in peak_indecies:
-            peak_index = results['indecies'][peak_i]
-            peak_value = results['samples'][peak_i]
-
-            plt.vlines(peak_index, 0, peak_value, colors='r')
-            plt.hlines(peak_value, peak_index - save_range, peak_index + save_range, colors='r')
-
-        plt.savefig('peak_finding_%s_%s.eps' % (str(t0), str(t1)))
-        plt.close(fig)
-        #plt.show()
 
     def process(self, t0, t1):  # doesn't this need to know what the padding is?
         save_range = 100
@@ -74,15 +53,22 @@ class PlotWaveform(TimingTask):
         peak_indecies = waveform.find_peaks_in_data(results['indecies'], results['samples'])
         peaks = results['indecies'][peak_indecies]
 
-        for peak in peaks:
-            self.plot(peak - 5 * save_range, peak + 5 * save_range,
-                      peak_indecies, results, save_range)
+        #for peak in peaks:
+        #    self.plot(peak - 5 * save_range, peak + 5 * save_range,
+        #              peak_indecies, results, save_range)
+        #self.plot(None, None, peak_indecies, results, save_range)
 
-        self.plot(None, None, peak_indecies, results, save_range)
-
-        waveform.get_index_mask_for_trigger(t1 - t0, peaks, range_around_trigger=(-1*save_range, save_range))
+        #waveform.get_index_mask_for_trigger(t1 - t0, peaks, range_around_trigger=(-1*save_range, save_range))
         all_data = results['all_data']
-
+        import pickle
+        f = open( "save.p", "wb" )
+        print(all_data)
+        pickle.dump(t0,f )
+        pickle.dump(t1,f )
+        pickle.dump(peaks,f)
+        pickle.dump( all_data, f)
+        f.close()
+        raise ValueError
         return results['size']
 
 
