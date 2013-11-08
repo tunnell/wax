@@ -5,6 +5,39 @@ import unittest
 import numpy as np
 from cito.helpers import waveform
 
+class Test_split_boolean_array(unittest.TestCase):
+    def setUp(self):
+        self.answer = {}
+        self.answer[(True, True, True)] = [(0, 3)]
+        self.answer[(True, True, False)] = [(0, 2)]
+        self.answer[(True, False, True)] = [(0, 1), (2, 3)]
+        self.answer[(True, False, False)] = [(0, 1)]
+        self.answer[(False, True, True)] = [(1, 3)]
+        self.answer[(False, True, False)] = [(1, 2)]
+        self.answer[(False, False, True)] = [(2, 3)]
+        self.answer[(False, False, False)] = []
+
+    def test_length3(self):
+        f = waveform.split_boolean_array
+        for i in [True, False]:
+            for j in [True, False]:
+                for k in [True, False]:
+                    self.assertEqual(f((i,j,k)),
+                                     self.answer[(i,j,k)])
+
+    def test_length6(self):
+        f = waveform.split_boolean_array
+        for i in [True, False]:
+            for j in [True, False]:
+                for k in [True, False]:
+                    new_answer = [(2*a, 2*b) for a, b in self.answer[(i,j,k)]]
+                    self.assertEqual(f((i,i,j,j,k,k)),
+                                     new_answer)
+
+
+
+
+
 
 class Test_save_time_range(unittest.TestCase):
     def setUp(self):
@@ -13,36 +46,74 @@ class Test_save_time_range(unittest.TestCase):
 
 
     def test_single_peak_int(self):
-        x = waveform.save_time_range(10, 5, self.range_around_trigger).tolist()
+        x = waveform.get_index_mask_for_trigger(10, 5, self.range_around_trigger).tolist()
         self.assertEqual(self.single,
                          x)
 
     def test_single_peak_list(self):
-        x = waveform.save_time_range(10, 5, self.range_around_trigger).tolist()
+        x = waveform.get_index_mask_for_trigger(10, 5, self.range_around_trigger).tolist()
         self.assertEqual(self.single,
                          x)
 
     def test_multi_peak_list_no_overlap(self):
-        x = waveform.save_time_range(10, [2, 9], self.range_around_trigger).tolist()
+        x = waveform.get_index_mask_for_trigger(10, [2, 9], self.range_around_trigger).tolist()
         self.assertEqual([True, True, True, True, True, False, True, True, True, True],
                          x)
     def test_multi_peak_list_overlap(self):
-        x = waveform.save_time_range(10, [5, 15], self.range_around_trigger).tolist()
+        x = waveform.get_index_mask_for_trigger(10, [5, 15], self.range_around_trigger).tolist()
         self.assertEqual(self.single,
                          x)
 
     def test_overrun(self):
-        x = waveform.save_time_range(10, [0], self.range_around_trigger).tolist()
+        x = waveform.get_index_mask_for_trigger(10, [0], self.range_around_trigger).tolist()
         self.assertEqual([True, True, True, False, False, False, False, False, False, False],
                          x)
 
     def test_single_peak_float_exception(self):
          with self.assertRaises(ValueError):
-            waveform.save_time_range(10, 5.0, self.range_around_trigger)
+            waveform.get_index_mask_for_trigger(10, 5.0, self.range_around_trigger)
 
     def test_size_not_int(self):
          with self.assertRaises(ValueError):
-            waveform.save_time_range([10], 5, self.range_around_trigger)
+            waveform.get_index_mask_for_trigger([10], 5, self.range_around_trigger)
+
+class Test_save_time_range(unittest.TestCase):
+    def setUp(self):
+        self.single = [False, False,  True,  True,  True,  True,  True,  True, False, False]
+        self.range_around_trigger = (-3, 3)
+
+
+    def test_single_peak_int(self):
+        x = waveform.get_index_mask_for_trigger(10, 5, self.range_around_trigger).tolist()
+        self.assertEqual(self.single,
+                         x)
+
+    def test_single_peak_list(self):
+        x = waveform.get_index_mask_for_trigger(10, 5, self.range_around_trigger).tolist()
+        self.assertEqual(self.single,
+                         x)
+
+    def test_multi_peak_list_no_overlap(self):
+        x = waveform.get_index_mask_for_trigger(10, [2, 9], self.range_around_trigger).tolist()
+        self.assertEqual([True, True, True, True, True, False, True, True, True, True],
+                         x)
+    def test_multi_peak_list_overlap(self):
+        x = waveform.get_index_mask_for_trigger(10, [5, 15], self.range_around_trigger).tolist()
+        self.assertEqual(self.single,
+                         x)
+
+    def test_overrun(self):
+        x = waveform.get_index_mask_for_trigger(10, [0], self.range_around_trigger).tolist()
+        self.assertEqual([True, True, True, False, False, False, False, False, False, False],
+                         x)
+
+    def test_single_peak_float_exception(self):
+         with self.assertRaises(ValueError):
+            waveform.get_index_mask_for_trigger(10, 5.0, self.range_around_trigger)
+
+    def test_size_not_int(self):
+         with self.assertRaises(ValueError):
+            waveform.get_index_mask_for_trigger([10], 5, self.range_around_trigger)
 
 
 class Test_get_sum_waveform(unittest.TestCase):
@@ -73,7 +144,6 @@ class Test_get_sum_waveform(unittest.TestCase):
                                                  self.size)
 
     def test_get_sum_waveform_nonzero(self):
-        print(self.result)
         self.assertNotAlmostEqual(np.sum(self.result['indecies']), # sample
                                   0)
         self.assertNotAlmostEqual(np.sum(self.result['samples']), # indec

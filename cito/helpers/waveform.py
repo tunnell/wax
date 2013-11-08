@@ -94,10 +94,23 @@ def find_peaks(values, threshold=10000, cwt_width=20):
     return np.array(peaks_over_threshold, dtype=np.uint32)
 
 
-def save_time_range(size, peaks,
+
+
+def get_index_mask_for_trigger(size, peaks,
                     range_around_trigger = (-10, 10)):
-    """
-    There should be no wrap around.
+    """Returns a boolean array designating if an index/sample should be saved.
+
+    Args:
+        size (int):  An iterable object of documents containing Caen
+                           blocks.  This can be a pymongo Cursor.
+        peaks (list or int): The index or indecies of the peaks
+        range_around_trigger (tuple): The range around the peak to save.  Note that there
+                                      is no wrap around.
+
+    Returns:
+       np.ndarray(dtype=np.bool):  Boolean array of length size which says whether or not
+                                    to save a certain index.
+
     """
     # Bureaucracy
     log = logging.getLogger('waveform')
@@ -109,11 +122,8 @@ def save_time_range(size, peaks,
         raise ValueError("peaks must be a list of integers (i.e., not a float)")
 
     # Physics
-    to_save = np.zeros(size, dtype=np.bool)
-    for peak in peaks:
-        log.debug('Flagging peak around %d' % peak)
-
-
+    to_save = np.zeros(size, dtype=np.bool)  # False means don't save, true means save
+    for peak in peaks:  # For each triggered peak
         # The 'min' and 'max' are used to prevent wrap around
         this_range = np.arange(max(peak + range_around_trigger[0], 0),
                                min(peak + range_around_trigger[1], size))
@@ -122,8 +132,29 @@ def save_time_range(size, peaks,
         to_save[this_range] = True
 
     log.debug('Save range: ', to_save)
-
     return to_save
+
+
+def split_boolean_array(bool_array):
+    ranges = []
+
+    start = None
+    for i, value in enumerate(bool_array):
+        if value == False:
+            if start == None:
+                continue
+            elif bool_array[i-1] == True:
+                ranges.append((start, i))
+                start = None
+        else: # value is True
+            if start == None:
+                start = i
+
+    if start != None:
+
+        ranges.append((start, len(bool_array)))
+    #print(ranges)
+    return ranges
 
 def get_sum_waveform(cursor, offset, n_samples):
     """Get inverted sum waveform from mongo
@@ -152,20 +183,25 @@ def get_sum_waveform(cursor, offset, n_samples):
 
     sum_data = {}  # index -> sample
 
+    # What is output format?
+    #  starttime, endtime -> channel, board, indecies
+    all_data = {}
+
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
+        num_board = doc['module']
+
         size += len(data)
 
         time_correction = doc['triggertime'] - offset
 
         this_board = InterfaceV1724.get_waveform(data, n_samples)
 
-        for channel, samples, indecies in this_board:
+        for num_channel, samples, indecies in this_board:
             indecies += time_correction
 
             # Compute baseline with first 3 and last 3 samples
             baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()#
-            print(channel, np.concatenate([samples[0:3], samples[-3:-1]]))
 
             # i is for what is returned by get_waveform
             # sample_index is the index in detector time
@@ -181,6 +217,11 @@ def get_sum_waveform(cursor, offset, n_samples):
                 else:
                     sum_data[sample_index] = sample
 
+            start, stop = np.min(indecies), np.max(indecies)
+
+            # Store everything (used later for saving to DB)
+            all_data[(start, stop, num_board, num_channel)] = (indecies, samples)
+
 
     new_indecies = list(sum_data.keys())
     new_indecies.sort()
@@ -193,5 +234,6 @@ def get_sum_waveform(cursor, offset, n_samples):
     results['size'] = size
     results['indecies'] =  np.array(new_indecies, dtype=np.int32)
     results['samples'] = np.array(new_samples, dtype=np.int32)
+    results['all_data'] = all_data
 
     return results

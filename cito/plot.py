@@ -74,13 +74,14 @@ class PlotWaveform(TimingTask):
         peak_indecies = waveform.find_peaks_in_data(results['indecies'], results['samples'])
         peaks = results['indecies'][peak_indecies]
 
-
         for peak in peaks:
-            waveform.save_time_range(peak - save_range, peak + save_range)
             self.plot(peak - 5 * save_range, peak + 5 * save_range,
                       peak_indecies, results, save_range)
 
         self.plot(None, None, peak_indecies, results, save_range)
+
+        waveform.get_index_mask_for_trigger(t1 - t0, peaks, range_around_trigger=(-1*save_range, save_range))
+        all_data = results['all_data']
 
         return results['size']
 
