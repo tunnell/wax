@@ -34,40 +34,46 @@ import logging
 
 import numpy as np
 from scipy import signal
-from scipy.stats import norm
 import scipy
 
 from cito.helpers import xedb
-from cito.helpers import InterfaceV1724Swig
 from cito.helpers import InterfaceV1724
-from cito.helpers import CaenBlockParsing
 
 
-def filter_samples(values):
-    """Apply a filter
+def find_peaks_in_data(indecies, samples):
+    peaks = []
 
-    :rtype : dict
-    :param values: Values to filter
-    :type values: np.array
-    """
-    new_values = np.zeros_like(values)
+    if len(indecies) == len(samples) == 0:
+        return []
 
-    print('\tprefilter')
-    my_filter = norm(0, 100)  # mu=0, sigma=100
-    filter_values = 600 * [0.]
-    for j in range(-300, 300):
-        filter_values[j] = my_filter.pdf(j)
+    i_start = 0
+    index_last = None
+    for i, index in enumerate(indecies):
+        if index_last == None or (index - index_last) == 1:
+            index_last = index_last
+        elif index <= index_last:
+            raise ValueError("Indecies must be monotonically increasing: %d, %d!",
+                             index,
+                             index_last)
+        elif index - index_last > 1:
+            high_extrema = find_peaks(samples[i_start:i-1])
+            for value in high_extrema:
+                peaks.append(value)
+            i_start = i
+        else:
+            raise RuntimeError()
 
-    print('\tapply_filter')
-    for i in range(values.size):
-        for j in range(-300, 300):
-            if j > 0 and j < values.size:
-                new_values += values[i] * filter_values[j]
+    if i_start < (len(indecies) - 1):  #If events still to process
+        high_extrema = find_peaks(samples[i_start:-1])
+        for value in high_extrema:
+            peaks.append(value)
 
-    return new_values
+    return peaks
 
 
-def find_peaks(values, threshold=10000):
+
+
+def find_peaks(values, threshold=10000, cwt_width=20):
     """Find peaks within list of values.
 
     Uses scipy to find peaks above a threshold.
@@ -75,19 +81,50 @@ def find_peaks(values, threshold=10000):
     Args:
         values (list):  The 'y' values to find a peak in.
         threshold (int): Threshold in ADC counts required for peaks.
+        cwt_width (float): The width of the wavelet that is convolved
 
     Returns:
-       list: Peaks
+       np.array: Array of peak indecies
 
     """
-    extrema = scipy.signal.argrelmax(values)
-    high_extrema = []
-    for i in extrema:
-        if values[i] > threshold:
-            high_extrema.append(i)
-    return high_extrema
 
-#@profile
+    # 20 is the wavelet width
+    peakind = scipy.signal.find_peaks_cwt(values, np.array([cwt_width]))
+    peaks_over_threshold = [x for x in peakind if values[x] > threshold]
+    return np.array(peaks_over_threshold, dtype=np.uint32)
+
+
+def save_time_range(size, peaks,
+                    range_around_trigger = (-10, 10)):
+    """
+    There should be no wrap around.
+    """
+    # Bureaucracy
+    log = logging.getLogger('waveform')
+    if not isinstance(size, int):
+        raise ValueError('Size must be int')
+    if isinstance(peaks, int):
+        peaks = [peaks]
+    elif isinstance(peaks, float):
+        raise ValueError("peaks must be a list of integers (i.e., not a float)")
+
+    # Physics
+    to_save = np.zeros(size, dtype=np.bool)
+    for peak in peaks:
+        log.debug('Flagging peak around %d' % peak)
+
+
+        # The 'min' and 'max' are used to prevent wrap around
+        this_range = np.arange(max(peak + range_around_trigger[0], 0),
+                               min(peak + range_around_trigger[1], size))
+
+        #  'True' is set for every index in 'this_range'
+        to_save[this_range] = True
+
+    log.debug('Save range: ', to_save)
+
+    return to_save
+
 def get_sum_waveform(cursor, offset, n_samples):
     """Get inverted sum waveform from mongo
 
@@ -101,57 +138,60 @@ def get_sum_waveform(cursor, offset, n_samples):
     Returns:
        dict: Results dictionary with key 'size' and 'occurences'
 
+    Todo: go through and check all the types
+      - Longer int since summing many, otherwise wrap around.
+      - use 8 bit and divide by num channels?  combine adjacent?
+
     """
     log = logging.getLogger('waveform')
-    # Longer int since summing many, otherwise wrap around.
-    # TODO: check that unsigned 16 bit doesn't work?  Or bit shift (i.e. avg) or
-    # dividie by some nubmer
-    #log.debug('Number of samples for sum waveform: %d', n_samples)
-    import time
 
-    some_time = time.time()
-    #occurences = np.zeros(n_samples, dtype=np.int16)
-    #print('It took', (time.time() - some_time), 'to allocate memory')
+    # dividie by some nubmer
+    log.debug('Number of samples for sum waveform: %d', n_samples)
+
     size = 0
-    scale = 1 # how to scale samples
-    assert CaenBlockParsing.setup_sum_waveform_buffer(n_samples);
-    print(CaenBlockParsing.setup_return_buffer(8505*2))
+
+    sum_data = {}  # index -> sample
 
     for doc in cursor:
         data = xedb.get_data_from_doc(doc)
-        print('fuck %08x' % InterfaceV1724.get_word_by_index(data, 0))
+        size += len(data)
+
         time_correction = doc['triggertime'] - offset
 
-        data_size = int(len(data) / 4)
-        log.debug("Tempsize %d", data_size)
+        this_board = InterfaceV1724.get_waveform(data, n_samples)
 
-        n = int(data_size * 2)
+        for channel, samples, indecies in this_board:
+            indecies += time_correction
 
-        # This is really fucking slow, but sick of dealing with weird byte orderings
-        a2 = np.fromstring(data, '<u4')
-        a = np.zeros(data_size, dtype=np.uint32)
-        for i in range(data_size):
-            a[i] = a2[i]
+            # Compute baseline with first 3 and last 3 samples
+            baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()#
+            print(channel, np.concatenate([samples[0:3], samples[-3:-1]]))
 
-        #  Assert zeros in samoples?  Figure out some way to do ZLE
-        # Give up on C++ interface for now
+            # i is for what is returned by get_waveform
+            # sample_index is the index in detector time
+            for i, sample_index in enumerate(indecies):
+                sample = np.min((samples[i] - baseline), 0)
+                #print('\t', samples[i], sample, np.concatenate([samples[0:3], samples[-3:-1]]).mean())
+                if(samples[i] < 0.0):
+                    print(i, sample_index, samples[i], baseline)
+                    raise ValueError()
 
-        #a.byteswap(True)
-        CaenBlockParsing.inplace(a, 1)
+                if sample_index in sum_data:
+                    sum_data[sample_index] += sample
+                else:
+                    sum_data[sample_index] = sample
 
-        CaenBlockParsing.put_samples_into_occurences(time_correction, scale)
 
-        size += 4 * data_size
-        break
+    new_indecies = list(sum_data.keys())
+    new_indecies.sort()
 
-    occurences = CaenBlockParsing.get_sum_waveform(n_samples)
-    #print("size", size)
-    #print('len', len(occurences[1]), n_samples)
+    new_samples = [sum_data[x] for x in new_indecies]
+
+    log.info("Size of data process in bytes: %d", size)
+
     results = {}
     results['size'] = size
-    results['occurences'] = occurences[1]
-    #raise ValueError()
-    #print(occurences)
-    #print('sum', np.sum(occurences[1]))
+    results['indecies'] =  np.array(new_indecies, dtype=np.int32)
+    results['samples'] = np.array(new_samples, dtype=np.int32)
 
     return results

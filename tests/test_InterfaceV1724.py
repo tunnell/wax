@@ -13,8 +13,6 @@ import unittest
 import numpy as np
 
 from cito.helpers import InterfaceV1724
-from cito.helpers import InterfaceV1724Swig
-
 
 class BaseInterfaceV1724():
     def _testGoodData(self):
@@ -79,9 +77,10 @@ class BaseInterfaceV1724():
             self.assertIsInstance(result[i],
                                   tuple)
             self.assertEqual(len(result[i]),
-                             2)
-            self.assertIsInstance(result[i][0], np.ndarray)
+                             3)
+            self.assertIsInstance(result[i][0], int)
             self.assertIsInstance(result[i][1], np.ndarray)
+            self.assertIsInstance(result[i][2], np.ndarray)
 
         expected_result = (np.array([ 383,  385,  386,  384,  384,  386,  383,  383,  386,  386,  383,
         384,  385,  386,  386,  384,  383,  383,  384,  385,  384,  383,
@@ -105,7 +104,7 @@ class BaseInterfaceV1724():
        235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247,
        248, 249, 250, 251, 252]))
 
-        x, y = result[4]
+        i, x, y = result[4]
         self.assertEqual(x.size, y.size)
 
         for i in range(x.size):
@@ -145,22 +144,6 @@ class TestInterface1724(unittest.TestCase, BaseInterfaceV1724):
             self.assertRaises(AssertionError,
                               self.interfaceClass.check_header,
                               data)
-
-class TestCompareV1724(unittest.TestCase):
-    def test_compare(self):
-        data = BaseInterfaceV1724()._testGoodData()
-        result1 = InterfaceV1724.get_waveform(data, 2 * len(data))
-        result2 = InterfaceV1724Swig.get_waveform(data, 2 * len(data))
-
-        for i in range(len(result1)):
-            print(result1[i][0], result2[i][0])
-            self.assertTrue((result1[i][0] == result2[i][0]).all())
-            self.assertTrue((result1[i][1] == result2[i][1]).all())
-
-
-#class TestInterface1724Swig(unittest.TestCase, BaseInterfaceV1724):
-#    def setUp(self):
-#        self.interfaceClass = InterfaceV1724Swig
 
 
 if __name__ == '__main__':

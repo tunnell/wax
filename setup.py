@@ -2,24 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
 import os
-
-try:
-    import numpy
-    from Cython.Distutils import build_ext
-except ImportError:
-    print("You must install numpy and Cython first (e.g., easy_install numpy Cython)")
-    raise
-
-try:
-    numpy_include = numpy.get_include()
-except AttributeError:
-    numpy_include = numpy.get_numpy_include()
-
 from setuptools import setup
-
-from distutils.extension import Extension
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -28,13 +12,6 @@ if sys.argv[-1] == 'publish':
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 required = open('requirements.txt').read().splitlines()
-
-module1 = Extension("cito.helpers._CaenBlockParsing",
-                    ["cito/helpers/CaenBlockParsing.i",
-                     "cito/helpers/CaenBlockParsing.c"],
-                    extra_compile_args=['-O3', '-std=c99', '-ftree-vectorizer-verbose=2', '-ftree-vectorize'],
-                    include_dirs=[numpy_include],
-                    )
 
 setup(
     name='cito',
@@ -80,7 +57,5 @@ setup(
         'Programming Language :: Python :: 3.3',
     ],
     test_suite='tests',
-    cmdclass={'build_ext': build_ext},
-    include_dirs=[numpy.get_include()],
-    ext_modules=[module1],
+
 )

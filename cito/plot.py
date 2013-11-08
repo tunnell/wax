@@ -37,35 +37,51 @@ import logging
 
 import pymongo
 from cito.base import CitoContinousCommand, TimingTask
-
+import matplotlib.pyplot as plt
 
 from cito.helpers import  waveform
 
 
 
 class PlotWaveform(TimingTask):
-    """
-    'PySumWaveform' min run time was 0.635332584 sec
-'PySumWaveform' max run time was 0.650459766 sec
-'PySumWaveform' avg run time was 0.644438839 sec in 10 runs
-'PySumWaveform' size 1 MB 10 runs
-'PySumWaveform' avg speed 1.887291191 MB/s in 10 runs
-    """
+    def plot(self, t0, t1, peak_indecies, results, save_range):
+        fig = plt.figure(figsize=(7,5))
+        #plt.title('Time from %d till %d' % (t0, t1))
+        plt.plot(results['indecies'], results['samples'])
+        plt.xlabel("Time [10 ns adc steps]")
+        plt.ylabel("Sum charge [adc counts]")
 
-    def process(self, t0, t1):
+        if t0 is not None and t1 is not None:
+            plt.xlim((t0, t1))
+
+        for peak_i in peak_indecies:
+            peak_index = results['indecies'][peak_i]
+            peak_value = results['samples'][peak_i]
+
+            plt.vlines(peak_index, 0, peak_value, colors='r')
+            plt.hlines(peak_value, peak_index - save_range, peak_index + save_range, colors='r')
+
+        plt.savefig('peak_finding_%s_%s.eps' % (str(t0), str(t1)))
+        plt.close(fig)
+        #plt.show()
+
+    def process(self, t0, t1):  # doesn't this need to know what the padding is?
+        save_range = 100
+
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
                                             t1 - t0)
+        peak_indecies = waveform.find_peaks_in_data(results['indecies'], results['samples'])
+        peaks = results['indecies'][peak_indecies]
 
-        import matplotlib.pyplot as plt
-        plt.figure()
-        plt.title('Time from %d till %d' % (t0, t1))
-        plt.plot(results['occurences'])
-        #plt.xlim((t0, t1))
-        plt.show()
-        print(results)
-        raw_input()
-        raise ValueError()
+
+        for peak in peaks:
+            waveform.save_time_range(peak - save_range, peak + save_range)
+            self.plot(peak - 5 * save_range, peak + 5 * save_range,
+                      peak_indecies, results, save_range)
+
+        self.plot(None, None, peak_indecies, results, save_range)
+
         return results['size']
 
 

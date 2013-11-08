@@ -100,14 +100,6 @@ class CitoContinousCommand(CitoCommand):
         self.log.debug("Setting up parser")
         parser = super(CitoContinousCommand, self).get_parser(prog_name)
 
-        parser.add_argument('--flush', action='store_true',
-                            help='Constantly flush the DB of new documents (single thread)')
-        parser.add_argument('--single', action='store_true',
-                            help='Disable Celery and single thread')
-        parser.add_argument('--wait-time', type=float, dest='waittime',
-                            help='Time to sleep in seconds if no documents to process',
-                            default=0.1)
-
         self.log.debug("Parser setup")
 
         return parser
@@ -130,16 +122,9 @@ class CitoContinousCommand(CitoCommand):
                         t0 = (i * chunk_size - padding)
                         t1 = (i + 1) * chunk_size
                         self.log.info('Processing %d %d' % (t0, t1))
-                        #if parsed_args.flush:
-                        #    tasks.flush(t0, t1)
-                        #else:
-                        #if parsed_args.single:
+
                         for task in self.get_tasks():
                             task.process(t0, t1)
-
-
-                            #else:
-                            #    tasks.process.delay(t0, t1)
 
                     current_time_index = time_index
                 else:

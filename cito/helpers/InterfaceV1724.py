@@ -60,7 +60,7 @@ This function is called often so be sure to check
         if len(data) == 0:
             raise IndexError("Data has zero length")
         if i > int(len(data) / 4):
-            raise IndexError('i does not exist')
+            raise IndexError('i does not exist: %d' % i)
 
     # 4 bytes in a 32 bit word
     i0 = i * 4
@@ -90,8 +90,7 @@ def get_block_size(data, do_checks=True):
     size = (word & 0x0FFFFFFF)  # size in words
     if do_checks:
         # len(data) is in bytes, word = 4 bytes
-        assert size == (
-            len(data) / 4), 'Size from header not equal to data size'
+        assert size == (len(data) / 4), 'Size from header not equal to data size'
 
     return size  # number of words
 
@@ -122,8 +121,6 @@ def get_waveform(data, n_samples):
     word_chan_mask = word_chan_mask & 0xFF
     pnt += 3
 
-    max_adc_value = 2 ** 14
-
     data_to_return = []
 
     for j in range(N_CHANNELS_IN_DIGITIZER):
@@ -149,6 +146,10 @@ def get_waveform(data, n_samples):
 
                     for k in range(num_words_in_channel_payload):
                         double_sample = get_word_by_index(data, pnt)
+
+                        # the 32nd, 31st, 15th, and 16th bits should be zero
+                        assert (double_sample & 0x0C000C000) == 0, "Sample format incorrect"
+
                         sample_1 = double_sample & 0xFFFF
                         sample_2 = (double_sample >> 16) & 0xFFFF
 
@@ -185,6 +186,6 @@ def get_waveform(data, n_samples):
             samples = np.array([], dtype=SAMPLE_TYPE)
             indecies = np.array([], dtype=np.uint32)
 
-        data_to_return.append((samples, indecies))
+        data_to_return.append((j, samples, indecies))
 
     return data_to_return

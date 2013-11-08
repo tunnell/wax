@@ -1,20 +1,51 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-"""
-test_cito
-----------------------------------
-
-Tests for `cito` module.
-"""
 
 import unittest
 
-from cito.helpers import waveform
 import numpy as np
+from cito.helpers import waveform
 
 
-class TestCombineBlocks(unittest.TestCase):
+class Test_save_time_range(unittest.TestCase):
+    def setUp(self):
+        self.single = [False, False,  True,  True,  True,  True,  True,  True, False, False]
+        self.range_around_trigger = (-3, 3)
+
+
+    def test_single_peak_int(self):
+        x = waveform.save_time_range(10, 5, self.range_around_trigger).tolist()
+        self.assertEqual(self.single,
+                         x)
+
+    def test_single_peak_list(self):
+        x = waveform.save_time_range(10, 5, self.range_around_trigger).tolist()
+        self.assertEqual(self.single,
+                         x)
+
+    def test_multi_peak_list_no_overlap(self):
+        x = waveform.save_time_range(10, [2, 9], self.range_around_trigger).tolist()
+        self.assertEqual([True, True, True, True, True, False, True, True, True, True],
+                         x)
+    def test_multi_peak_list_overlap(self):
+        x = waveform.save_time_range(10, [5, 15], self.range_around_trigger).tolist()
+        self.assertEqual(self.single,
+                         x)
+
+    def test_overrun(self):
+        x = waveform.save_time_range(10, [0], self.range_around_trigger).tolist()
+        self.assertEqual([True, True, True, False, False, False, False, False, False, False],
+                         x)
+
+    def test_single_peak_float_exception(self):
+         with self.assertRaises(ValueError):
+            waveform.save_time_range(10, 5.0, self.range_around_trigger)
+
+    def test_size_not_int(self):
+         with self.assertRaises(ValueError):
+            waveform.save_time_range([10], 5, self.range_around_trigger)
+
+
+class Test_get_sum_waveform(unittest.TestCase):
     def _testGoodDocs(self):
         #  Not nice to include raw data in a file, but this ensures the test and raw data are in sync.
         #  This data is already unzipped
@@ -32,9 +63,7 @@ class TestCombineBlocks(unittest.TestCase):
         docs.append({'zipped': True,
                      'data': b'\x90\t\x88$\x01\x00\xa0\xff\x00\x00\x01\x00\x00\x16\x00\xa2\xf0B\xe8$\x00\x00\x00\x7f\x00\x00\x00!\x00\x00\x80\x81>\x81>\x82>\x82\r\x06\x01\n\x0c\x82>\x83>\x01\x16\x01\x04\x08\x80>\x83\x05\x14\x08\x81>\x83\x05\x02(\x80>\x82>\x85>\x81>\x84>\x84\x05\x18\x01\x10\x014\x01D\x01*\x00\x83\x05\x18\x01\x16\x01\x12\x00\x80\x05\n\x88\x82>{:\xd8)g%\xa8$\x87$\x7f$v$t$A5\xe0<L>|>\x81>\x85>\x84>\x83>$\x1d\x90\x18\x80>~>\x81>\x80\r~\x01\x0e\x00\x82\x05\x10\x04\x7f>\x01N\x11\x18\x08\x81>\x7f\x05\x18\x11*\x08\x82>~\x05 \x10\x82>\x80>\x7f\x05<\t\x1a\x014\x01\x14\x01\x1e\x01\xd0\x01\x16h\x7f>\x05:\xc1)\x81%\xcc$\xad$\xa2$\x99$\x9f$\x995\xea<H>y>~\x05f\x00\x7f:\x90\x00\x01R\x01\x88\x00\x7f\x05F\x01\x0e\x01\xa2\x01\x90\x010\x00}\r\n\x01\x0c\x01\x04\x10\x7f>\x7f>|\x05\x14\x01\n\x01&\x01\x04\x01\x80\x01\x04\x10\x80>}>}\x05(\x01\x0e\x01\x1a\x01&XS:\xcb)Z%\x9e$}$q$h$g$G5\xda<K>|\x05\xe2\x01\xf2.\xb0\x01\x00\x82%b!^!p!|!\xae)x\x11\x06\x01\x16\x01\xea)\xb4\x01\x06!f\x01\x04\x014!\xbc\x08\x85>\x85%\xe8\x01\x1c\t\x04\tX)\xd6X\x90:\xe8)n%\xae$\x90$\x84${$t$;5\xdc<K>}\x05>\x01\\.\x90\x00!\x16.\x04\x01\x01\xde!\x08\x01\x14\x00\x7f\x05\x0e\t\x12\x01\x06\x00}%\x1a\x01\x1a!\x06\x01\x04!\x06\x00~\r\x02\t\x10\x00{\r*\x01&!\xe6\x01\x08X|:%){$\xb3#\x91#\x84#{#n#_4\xad<A>x-\x966\xb0\x01\x01\x90\x01R!\\!<\x01\x84!d\x00\x80\x05\x16!\xbeA \x01\x12A\x10\x01\x10\x01\xae\x01.\x01\x08\x01\x90\x19*A>\x01\x04\x08\x81>~\x05\x88\x01&\x01\x10X\x80:\xa6)-%o$N$A$9$.$\xea4\xce<I>z\x05\x1c\x01\x80. \x01\x00\x85%`!n)\\a^!\x86I\xfa\x01\x0e\x00\x84\x05\xa8\x01\x8e!\\\x01\x12\x01 !\x96!\x94!\xae\x01\x0ca\x82\x01\x10\x01\x0c!\xe8\x00\x85m\\\x01\x10XQ:\x04)z$\xbd#\x9c#\x91#\x86#}#\xa54\xc3<H>}e\xac\x01,.\x90\x00(\x87>\x87>\x89>\x86>\x87>\x88\x05\x04\x00\x89\x05\x08\x08\x8a>\x88\x05\x02\x0c\x89>\x89>\x01"\x08\x86>\x88\x05\x0c\x01\x16\t*\x11\x12\x01"\x01\x04\x01&\x01\x1a\x01(\x01J\x01\x14\x9c\x89>\x8a>\x86>\x89>\xbd:\xbf)6%u$S$G$>$3$\xd24\xd0<O>\x82>\x86>\x89>\x88>\x89>',
                      'triggertime': 3896701090, 'module': 770, 'datalength': 727})
-        docs.append({'zipped': True,
-                     'data': b'\xf0\x08\x88$\x01\x00\xa0\xff\x00\x00\x01\x00\x00\x16\x00\xa2\xf0B\xe8$\x00\x00\x00\x7f\x00\x00\x00!\x00\x00\x80\x81>\x81>\x82>\x82\r\x06\x01\n\x0c\x82>\x83>\x01\x16\x01\x04\x08\x80>\x83\x05\x14\x08\x81>\x83\x05\x02(\x80>\x82>\x85>\x81>\x84>\x84\x05\x18\x01\x10\x014\x01D\x01*\x00\x83\x05\x18\x01\x16\x01\x12\x00\x80\x05\n\x88\x82>{:\xd8)g%\xa8$\x87$\x7f$v$t$A5\xe0<L>|>\x81>\x85>\x84>\x83>$\x1d\x90\x18\x80>~>\x81>\x80\r~\x01\x0e\x00\x82\x05\x10\x04\x7f>\x01N\x11\x18\x08\x81>\x7f\x05\x18\x11*\x08\x82>~\x05 \x10\x82>\x80>\x7f\x05<\t\x1a\x014\x01\x14\x01\x1e\x01\xd0\x01\x16h\x7f>\x05:\xc1)\x81%\xcc$\xad$\xa2$\x99$\x9f$\x995\xea<H>y>~\x05f\x00\x7f:\x90\x00\x01R\x01\x88\x00\x7f\x05F\x01\x0e\x01\xa2\x01\x90\x010\x00}\r\n\x01\x0c\x01\x04\x10\x7f>\x7f>|\x05\x14\x01\n\x01&\x01\x04\x01\x80\x01\x04\x10\x80>}>}\x05(\x01\x0e\x01\x1a\x01&XS:\xcb)Z%\x9e$}$q$h$g$G5\xda<K>|\x05\xe2\x01\xf2.\xb0\x01\x00\x82%b!^!p!|!\xae)x\x11\x06\x01\x16\x01\xea)\xb4\x01\x06!f\x01\x04\x014!\xbc\x08\x85>\x85%\xe8\x01\x1c\t\x04\tX)\xd6X\x90:\xe8)n%\xae$\x90$\x84${$t$;5\xdc<K>}\x05>\x01\\.\x90\x00!\x16.\x04\x01\x01\xde!\x08\x01\x14\x00\x7f\x05\x0e\t\x12\x01\x06\x00}%\x1a\x01\x1a!\x06\x01\x04!\x06\x00~\r\x02\t\x10\x00{\r*\x01&!\xe6\x01\x08X|:%){$\xb3#\x91#\x84#{#n#_4\xad<A>x-\x966\xb0\x01\x01\x90\x01R!\\!<\x01\x84!d\x00\x80\x05\x16!\xbeA \x01\x12A\x10\x01\x10\x01\xae\x01.\x01\x08\x01\x90\x19*A>\x01\x04\x08\x81>~\x05\x88\x01&\x01\x10X\x80:\xa6)-%o$N$A$9$.$\xea4\xce<I>z\x05\x1c\x01\x80. \x01\x00\x85%`!n)\\a^!\x86I\xfa\x01\x0e\x00\x84\x05\xa8\x01\x8e!\\\x01\x12\x01 !\x96!\x94!\xae\x01\x0ca\x82\x01\x10\x01\x0c!\xe8\x00\x85m\\\x01\x10XQ:\x04)z$\xbd#\x9c#\x91#\x86#}#\xa54\xc3<H>}e\xac\x01,.\x90\x00(\x87>\x87>\x89>\x86>\x87>\x88\x05\x04\x00\x89\x05\x08\x08\x8a>\x88\x05\x02\x0c\x89>\x89>\x01"\x08\x86>\x88\x05\x0c\x01\x16\t*\x11\x12\x01"\x01\x04\x01&\x01\x1a\x01(\x01J,\x89>\x89>\x89>\x8a>\x86>\x89>',
-                     'triggertime': 3896701090, 'module': 770, 'datalength': 697})
+
         return docs
 
     def setUp(self):
@@ -43,29 +72,18 @@ class TestCombineBlocks(unittest.TestCase):
                                                  3896701090,
                                                  self.size)
 
-    def test_get_sum_waveform_positive(self):
-        self.assertGreaterEqual(np.min(self.result['occurences']),
-                                0,
-                                "Positive integer wrap around?")
-
     def test_get_sum_waveform_nonzero(self):
-        self.assertNotAlmostEqual(np.sum(self.result['occurences']),
+        print(self.result)
+        self.assertNotAlmostEqual(np.sum(self.result['indecies']), # sample
+                                  0)
+        self.assertNotAlmostEqual(np.sum(self.result['samples']), # indec
                                   0)
 
     def test_get_sum_waveform_size(self):
-        self.assertEqual(self.result['size'], 5808)
+        self.assertEqual(self.result['size'], 4672)
 
     def test_get_sum_waveform_positive_size(self):
         self.assertGreater(self.result['size'], 0)
-
-
-    def test_get_sum_waveform(self):
-        nonzero_part = 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 131072, 3059, 3063, 3061, 3061, 3062, 3057, 3063, 3058, 3063, 3060, 3062, 3057, 3059, 3060, 3062, 3061, 3060, 3060, 3062, 3066, 3066, 3059, 3058, 3063, 3060, 3059, 3062, 3058, 3061, 3061, 3061, 3059, 3055, 3057, 3057, 3059, 3058, 3063, 3060, 3056, 3062, 3059, 3061, 3064, 3063, 3058, 3059, 3056, 3063, 3059, 26448, 56549, 64558, 65889, 66116, 66196, 66260, 66297, 36022, 22082, 19460, 19107, 19066, 19062, 19065, 19066,
-
-        self.assertTrue((self.result['occurences'][0:len(nonzero_part)] == nonzero_part).all())
-
-        for i in range(len(nonzero_part), self.size):
-            self.assertEqual(self.result['occurences'][i], 0)
 
 
     def tearDown(self):
