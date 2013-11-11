@@ -67,7 +67,7 @@ class PySumWaveform(TimingTask):
 
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_sum_waveform(cursor, t0,
+        results = waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         return results['size']
 
@@ -75,7 +75,7 @@ class PySumWaveform(TimingTask):
 class NumpyFFTWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_sum_waveform(cursor, t0,
+        results = waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
         np.fft.fft(y)
@@ -91,7 +91,7 @@ class NumpyRealFFTWaveform(TimingTask):
 
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_sum_waveform(cursor, t0,
+        results = waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
         np.fft.rfft(y)
@@ -101,7 +101,7 @@ class NumpyRealFFTWaveform(TimingTask):
 class SciPyFFTWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_sum_waveform(cursor, t0,
+        results = waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
         scipy.fftpack.fft(y)
@@ -111,7 +111,7 @@ class SciPyFFTWaveform(TimingTask):
 class SciPyFindWaveformPeaks(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_sum_waveform(cursor, t0,
+        results = waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
         peakind = waveform.signal.find_peaks_cwt(y, np.array([100]))

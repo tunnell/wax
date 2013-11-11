@@ -109,8 +109,8 @@ def process(t0, t1):
         # cursor = collection.find(subset_query,
     #                         fields=['triggertime', 'module'])
 
-    # print('get_sum_waveform')
-    results = waveform.get_sum_waveform(cursor, t0,
+    # print('get_data_and_sum_waveform')
+    results = waveform.get_data_and_sum_waveform(cursor, t0,
                                         n_samples)
     y = results['occurences']
     #print(sum(y), y)

@@ -6,15 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pymongo
 
-def get_pmt_number(num_board, num_channel):
-    channels_per_board = 8 # this used elsewhere?
-    if num_board == 770:
-        scale = 0
-    elif num_board == 876:
-        scale = 1
-    else:
-        raise ValueError('Bad module number %d' % num_board)
-    return channels_per_board * scale + num_channel
+
 
 
 
@@ -34,8 +26,7 @@ class OutputCommon():
             self.event_number += 1
             return self.event_number
 
-    def write_data_range(self, t0, t1, data, peaks, results,
-                         save_range):
+    def write_data_range(self, t0, t1, data, peaks, save_range):
 
         all = True
         if not all:
@@ -61,27 +52,31 @@ class OutputCommon():
             to_save = {}
 
             for key, value in data.items():
-                (d0, d1, num_board, num_channel) = key
-                (indecies, samples) = value
-
-                num_pmt = get_pmt_number(num_board, num_channel)
-                #to_save[num_pmt*-1] = {'indecies' : indecies,
-                #                    'samples' : samples}
+                (d0, d1, num_pmt) = key
+                (indecies, samples) = value['indecies'], value['samples']
 
                 if d1 < e0 or e1 < d0: # If true, no overlap
                     continue
 
-                # Overlap range must be contiguous
-                overlap = np.intersect1d(np.arange(d0, d1), erange)
+                if e0 <= d0 and d1 <= e1:  # Most common case:
+                    s0 = 0
+                    s1 = len(indecies)
+                else:  # compute overlap
+                    overlap = np.intersect1d(np.arange(d0, d1), erange)
+                    s0 = np.where(indecies == overlap[0])[0][0]
+                    s1 = np.where(indecies == overlap[-1])[0][0]
 
-                s0 = np.where(indecies == overlap[0])[0][0]
-                s1 = np.where(indecies == overlap[-1])[0][0]
-                self.log.debug('\t\tData (PMT%d): [%d, %d]', num_pmt, d0, d1)
+                if num_pmt == 'sum':
+                    self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)
+                else:
+                    self.log.debug('\t\tData (PMT%d): [%d, %d]', num_pmt, d0, d1)
+
 
                 to_save[num_pmt] = {'indecies' : indecies[s0:s1],
                                     'samples' : samples[s0:s1]}
+
             to_save['peaks'] = peaks
-            to_save['sum'] = results
+            #to_save['sum'] = results
 
             self.write_event(to_save, evt_num, e0, e1)
 
@@ -141,7 +136,7 @@ class EpsOutput(OutputCommon):
             else:
                 plt.plot(value['indecies'], value['samples'], 'b--')
 
-        print(event_data)
+
         #plt.xlim(e0, e1)
         plt.xlabel("Time [10 ns adc steps]")
         plt.ylabel("Sum charge [adc counts]")
@@ -152,9 +147,9 @@ class EpsOutput(OutputCommon):
             for peak in event_data['peaks']:
                 if e0 < peak < e1:
                     found_peak = True
-                    self.log.error('peak! %d', peak)
-                    plt.vlines(peak, 0, plt.ylim()[1])
-                    #plt.hlines(plt.ylim()[1]/2, e0, e1)
+
+                    plt.vlines(peak, 0, plt.ylim()[1], 'g')
+                    plt.hlines(plt.ylim()[1]/2, e0, e1, 'g')
 
         if not found_peak:
             self.log.error("Cannot find peak/trigger in event range.")

@@ -139,7 +139,7 @@ class Test_get_sum_waveform(unittest.TestCase):
 
     def setUp(self):
         self.size = 1400
-        self.result = waveform.get_sum_waveform(self._testGoodDocs(),
+        self.result = waveform.get_data_and_sum_waveform(self._testGoodDocs(),
                                                  3896701090,
                                                  self.size)
 

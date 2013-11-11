@@ -46,28 +46,36 @@ class PlotWaveform(TimingTask):
         TimingTask.__init__(self)
         self.e = Output.EpsOutput()
 
+    @staticmethod
+    def find_sum_in_data(data):
+        for key, value in data.items():
+            start, stop, pmt_num = key
+            if pmt_num == 'sum':
+                return value
+        raise ValueError("Sum waveform not found")
+
     def process(self, t0, t1):  # doesn't this need to know what the padding is?
         save_range = 1000 # How much data to save around peak
 
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_sum_waveform(cursor, t0,
-                                            t1 - t0)
-
+        data, size = waveform.get_data_and_sum_waveform(cursor, t1 - t0)
 
         # If no data analyzed, return
-        self.log.debug("Size of data analyzed: %d", results['size'])
-        if results['size'] == 0:
+        self.log.debug("Size of data analyzed: %d", size)
+        if size == 0:
             return 0
+
+        sum_data = self.find_sum_in_data(data)
 
         # Sanity checks on sum waveform
         self.log.debug("Sanity check that sum waveform within inspection window")
-        assert t0 < results['indecies'][0] < t1, results['indecies'][0]   # Sum waveform must be in our inspection window
-        assert t0 < results['indecies'][1] < t1, results['indecies'][1]   # ditto as above line
+        assert t0 < sum_data['indecies'][0] < t1, sum_data['indecies'][0]   # Sum waveform must be in our inspection window
+        assert t0 < sum_data['indecies'][1] < t1, sum_data['indecies'][1]   # ditto as above line
 
         # Get peaks, return if none
-        self.log.debug('Sum waveform range: [%d, %d]', results['indecies'][0], results['indecies'][-1])
-        peak_indecies = waveform.find_peaks_in_data(results['indecies'], results['samples'])
-        peaks = results['indecies'][peak_indecies]
+        self.log.debug('Sum waveform range: [%d, %d]', sum_data['indecies'][0], sum_data['indecies'][-1])
+        peak_indecies = waveform.find_peaks_in_data(sum_data['indecies'], sum_data['samples'])
+        peaks = sum_data['indecies'][peak_indecies]
         self.log.info('Number of peaks: %d', len(peak_indecies))
         if len(peak_indecies) == 0: # If no peaks found, return
             pass#    return 0
@@ -78,12 +86,12 @@ class PlotWaveform(TimingTask):
         # Some sanity checks
         self.log.debug("Sanity check that peaks are within sum waveform")
         for peak in peaks:  # Peak must be in our data range
-            assert results['indecies'][0] < peak < results['indecies'][-1]
+            assert sum_data['indecies'][0] < peak < sum_data['indecies'][-1]
 
         # Save peaks
-        self.e.write_data_range(t0, t1, results['all_data'], peaks, results, save_range)
+        self.e.write_data_range(t0, t1, data, peaks, save_range)
 
-        return results['size']
+        return size
 
 
 
