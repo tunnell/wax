@@ -11,7 +11,8 @@ The data input format is a BSON document.  Per digitizer board, a document is cr
 
 * Module: identifies the digitizer board
 * Triggertime: This is a 64 bit number where the lower 32 bits are formed from the board time, and the upper 32 bits
-  from the system clock
+  from the system clock.  Each step is 10 ns.  There is enough range with 64 bits to not overflow the clock for about
+  10000 years, which from now was around when creation was in the Jewish calendar.  
 * Data: The actual payload.  This is the raw Caen format (maybe compressed) and must be converted into a usable
   format.
 * Zipped: Is the data compressed using snappy?

@@ -131,7 +131,7 @@ def get_index_mask_for_trigger(size, peaks,
         #  'True' is set for every index in 'this_range'
         to_save[this_range] = True
 
-    log.debug('Save range: ', to_save)
+    log.debug('Save range: %s', str(to_save))
     return to_save
 
 
@@ -150,21 +150,19 @@ def split_boolean_array(bool_array):
 
     ranges = []
 
+    places_where_true = np.flatnonzero(bool_array)
+
     start = None
-    for i, value in enumerate(bool_array):
-        if value == False:
-            if start == None:
-                continue
-            elif bool_array[i-1] == True:
-                ranges.append((start, i))
-                start = None
-        else: # value is True
-            if start == None:
-                start = i
+    for i, place in enumerate(places_where_true):
+        if start == None:
+            start = place
+        elif places_where_true[i] - places_where_true[i - 1] > 1:
+            ranges.append((start, places_where_true[i - 1] + 1))
+            start = place
 
     # Were we searching for the end of Trues but found end of array?
     if start != None:
-        ranges.append((start, len(bool_array)))
+        ranges.append((start, places_where_true[-1] + 1))
 
     return ranges
 
@@ -186,26 +184,21 @@ def get_sum_waveform(cursor, offset, n_samples):
       - use 8 bit and divide by num channels?  combine adjacent?
 
     """
-    log = logging.getLogger('waveform')
-
-    # dividie by some nubmer
-    log.debug('Number of samples for sum waveform: %d', n_samples)
+    log = logging.getLogger('get_sum_waveform')
 
     size = 0
 
     sum_data = {}  # index -> sample
-
-    # What is output format?
-    #  starttime, endtime -> channel, board, indecies
     all_data = {}
 
     for doc in cursor:
+        log.debug('Processing doc %s', str(doc['_id']))
         data = xedb.get_data_from_doc(doc)
         num_board = doc['module']
 
         size += len(data)
 
-        time_correction = doc['triggertime'] - offset
+        time_correction = doc['triggertime']
 
         this_board = InterfaceV1724.get_waveform(data, n_samples)
 
@@ -229,22 +222,23 @@ def get_sum_waveform(cursor, offset, n_samples):
                 else:
                     sum_data[sample_index] = sample
 
-            start, stop = np.min(indecies), np.max(indecies)
+            if indecies.size != 0:
+                start, stop = np.min(indecies), np.max(indecies)
 
-            # Store everything (used later for saving to DB)
-            all_data[(start, stop, num_board, num_channel)] = (indecies, samples)
+                # Store everything (used later for saving to DB)
+                all_data[(start, stop, num_board, num_channel)] = (indecies, samples)
 
 
-    new_indecies = list(sum_data.keys())
+    new_indecies = [x for x in sum_data.keys()]
     new_indecies.sort()
 
     new_samples = [sum_data[x] for x in new_indecies]
 
-    log.info("Size of data process in bytes: %d", size)
+    log.debug("Size of data process in bytes: %d", size)
 
     results = {}
     results['size'] = size
-    results['indecies'] =  np.array(new_indecies, dtype=np.int32)
+    results['indecies'] =  np.array(new_indecies, dtype=np.int64)  # must be 64 bit, see docs
     results['samples'] = np.array(new_samples, dtype=np.int32)
     results['all_data'] = all_data
 

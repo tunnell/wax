@@ -22,7 +22,7 @@ class Test_split_boolean_array(unittest.TestCase):
         for i in [True, False]:
             for j in [True, False]:
                 for k in [True, False]:
-                    self.assertEqual(f((i,j,k)),
+                    self.assertEqual(f(np.array((i,j,k), dtype=np.bool)),
                                      self.answer[(i,j,k)])
 
     def test_length6(self):
@@ -31,7 +31,7 @@ class Test_split_boolean_array(unittest.TestCase):
             for j in [True, False]:
                 for k in [True, False]:
                     new_answer = [(2*a, 2*b) for a, b in self.answer[(i,j,k)]]
-                    self.assertEqual(f((i,i,j,j,k,k)),
+                    self.assertEqual(f(np.array((i,i,j,j,k,k), dtype=np.bool)),
                                      new_answer)
 
 

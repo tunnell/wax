@@ -29,14 +29,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import logging
 import sys
+import os
 
 from cliff.app import App
 
 from cliff.commandmanager import CommandManager
-
+import logging.config
 
 class CitoApp(App):
-    log = logging.getLogger(__name__)
 
     def __init__(self):
         super(CitoApp, self).__init__(
@@ -46,15 +46,24 @@ class CitoApp(App):
         )
 
     def initialize_app(self, argv):
-        self.log.debug('initialize_app')
+        log_file = 'logging.conf'
+        used_file_config = False
+        if os.path.exists(log_file):
+            logging.config.fileConfig(log_file)
+            used_file_config = True
+
+        self.log = logging.getLogger(self.__class__.__name__)
+        if used_file_config:
+            logging.info("Loaded logging configuration: %s", log_file)
+        self.log.debug('Initialize application')
 
     def prepare_to_run_command(self, cmd):
-        self.log.debug('prepare_to_run_command %s', cmd.__class__.__name__)
+        self.log.info('Preparing to run command %s', cmd.__class__.__name__)
 
     def clean_up(self, cmd, result, err):
-        self.log.debug('clean_up %s', cmd.__class__.__name__)
+        self.log.debug('Clean up %s', cmd.__class__.__name__)
         if err:
-            self.log.debug('got an error: %s', err)
+            self.log.error('Got an error: %s', err)
 
 
 
@@ -64,4 +73,5 @@ def main(argv=sys.argv[1:]):
 
 
 if __name__ == '__main__':
+
     sys.exit(main(sys.argv[1:]))

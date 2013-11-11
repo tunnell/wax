@@ -38,37 +38,51 @@ from cito.base import CitoContinousCommand, TimingTask
 
 
 from cito.helpers import  waveform
-
+from cito.helpers import Output
 
 
 class PlotWaveform(TimingTask):
-
+    def __init__(self):
+        TimingTask.__init__(self)
+        self.e = Output.EpsOutput()
 
     def process(self, t0, t1):  # doesn't this need to know what the padding is?
-        save_range = 100
+        save_range = 1000 # How much data to save around peak
 
         cursor = self.get_cursor(t0, t1)
         results = waveform.get_sum_waveform(cursor, t0,
                                             t1 - t0)
+
+
+        # If no data analyzed, return
+        self.log.debug("Size of data analyzed: %d", results['size'])
+        if results['size'] == 0:
+            return 0
+
+        # Sanity checks on sum waveform
+        self.log.debug("Sanity check that sum waveform within inspection window")
+        assert t0 < results['indecies'][0] < t1, results['indecies'][0]   # Sum waveform must be in our inspection window
+        assert t0 < results['indecies'][1] < t1, results['indecies'][1]   # ditto as above line
+
+        # Get peaks, return if none
+        self.log.debug('Sum waveform range: [%d, %d]', results['indecies'][0], results['indecies'][-1])
         peak_indecies = waveform.find_peaks_in_data(results['indecies'], results['samples'])
         peaks = results['indecies'][peak_indecies]
+        self.log.info('Number of peaks: %d', len(peak_indecies))
+        if len(peak_indecies) == 0: # If no peaks found, return
+            pass#    return 0
+        self.log.debug('Peak indecies: %s', str(peaks))
 
-        #for peak in peaks:
-        #    self.plot(peak - 5 * save_range, peak + 5 * save_range,
-        #              peak_indecies, results, save_range)
-        #self.plot(None, None, peak_indecies, results, save_range)
+        self.log.debug('Peak local indecies: %s', str(peak_indecies))
 
-        #waveform.get_index_mask_for_trigger(t1 - t0, peaks, range_around_trigger=(-1*save_range, save_range))
-        all_data = results['all_data']
-        import pickle
-        f = open( "save.p", "wb" )
-        print(all_data)
-        pickle.dump(t0,f )
-        pickle.dump(t1,f )
-        pickle.dump(peaks,f)
-        pickle.dump( all_data, f)
-        f.close()
-        raise ValueError
+        # Some sanity checks
+        self.log.debug("Sanity check that peaks are within sum waveform")
+        for peak in peaks:  # Peak must be in our data range
+            assert results['indecies'][0] < peak < results['indecies'][-1]
+
+        # Save peaks
+        self.e.write_data_range(t0, t1, results['all_data'], peaks, results, save_range)
+
         return results['size']
 
 
@@ -78,9 +92,12 @@ class PlotWaveformSingleCommand(CitoContinousCommand):
     """Plot the sum waveform
     """
 
-    def get_tasks(self):
-        tasks = [PlotWaveform()]
 
+
+    def get_tasks(self):
+
+        tasks = [PlotWaveform()]
+        self.log.debug('Getting tasks: %s', str(tasks))
         return tasks
 
 

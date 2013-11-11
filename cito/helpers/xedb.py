@@ -36,8 +36,10 @@ import pymongo
 import snappy
 import logging
 
+def get_server_name():
+    return '127.0.0.1'
 
-def get_mongo_db_objects(server='127.0.0.1'):
+def get_mongo_db_objects(server=get_server_name()):
     """This function returns pymongo objects
 
     Args:
@@ -61,12 +63,6 @@ def get_mongo_db_objects(server='127.0.0.1'):
     num_docs_in_collection = collection.count()
     if num_docs_in_collection == 0:
         raise RuntimeError("Collection %s.%s contains no events; can't continue" % (db_name, collection_name))
-    else:
-        logging.debug("In %s.%s, there are %d documents" % (db_name,
-                                                            collection_name,
-                                                            collection.count()))
-
-
 
     collection.ensure_index(get_sort_key(),
                             background=True)

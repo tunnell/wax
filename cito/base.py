@@ -11,8 +11,8 @@ import time
 from cito.helpers import xedb
 import pymongo
 from cliff.show import ShowOne
-from cito.helpers import tasks, xedb
 import sys
+import logging
 
 class CitoCommand(Command):
     """CitoSingleCommand base class
@@ -20,18 +20,20 @@ class CitoCommand(Command):
     This only looks over some range t0 till t1
     """
 
-    log = logging.getLogger(__name__)
     # Key to sort by so we can use an index for quick query
     sort_key = [
             ('triggertime', pymongo.DESCENDING),
             ('module', pymongo.DESCENDING)
         ]
 
+    #def __init__(self):
+    #    #Command.__init__(self)
+    #    log = logging.getLogger(__name__)
+
     def get_description(self):
         return self.__doc__
 
     def get_parser(self, prog_name):
-        self.log.debug("Setting up parser")
         parser = super(CitoCommand, self).get_parser(prog_name)
 
         parser.add_argument("--hostname", help="MongoDB database address",
@@ -44,7 +46,6 @@ class CitoCommand(Command):
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
                             default=10 ** 2)
-        self.log.debug("Parser setup")
 
         return parser
 
@@ -53,6 +54,9 @@ class CitoCommand(Command):
 
 
     def take_action(self, parsed_args):
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.log.debug('Initialized %s', self.__class__.__name__)
+
         self.log.debug("take_action")
         chunk_size = parsed_args.chunksize
         padding = parsed_args.padding
@@ -96,34 +100,38 @@ class CitoContinousCommand(CitoCommand):
 
     This only looks over some range t0 till t1
     """
+    def get_tasks(self):
+        raise NotImplementedError()
+
     def get_parser(self, prog_name):
-        self.log.debug("Setting up parser")
         parser = super(CitoContinousCommand, self).get_parser(prog_name)
-
-        self.log.debug("Parser setup")
-
         return parser
 
     def take_action_wrapped(self, chunk_size, padding, min_time, collection, parsed_args):
         current_time_index = int(min_time / chunk_size)
         self.log.debug('Current time index %d', current_time_index)
 
+        tasks = self.get_tasks()
+
         # Loop until Ctrl-C or error
         while (1):
-            # This try-except catches Ctrl-C and error
+            self.log.debug("Entering while loop; use Ctrl-C to exit")
+
             try:
                 max_time = xedb.get_max_time(collection)
                 time_index = int(max_time / chunk_size)
 
-                self.log.debug('Previous chunk %d' % current_time_index)
-                self.log.debug('Current chunk %d' % time_index)
+                self.log.debug("Current max time: %d", max_time)
+
                 if time_index > current_time_index:
                     for i in range(current_time_index, time_index):
-                        t0 = (i * chunk_size - padding)
+                        t0 = (i * chunk_size)
                         t1 = (i + 1) * chunk_size
+
                         self.log.info('Processing %d %d' % (t0, t1))
 
-                        for task in self.get_tasks():
+                        for task in tasks:
+                            self.log.info('Sending data to task: %s', task.__class__.__name__)
                             task.process(t0, t1)
 
                     current_time_index = time_index
@@ -173,6 +181,9 @@ class CitoShowOne(ShowOne):
 
 
 class TimingTask():
+    def __init__(self):
+        self.log = logging.getLogger(self.__class__.__name__)
+
     def process(self, t0, t1, loops=1, verbose=False):
         sums = 0.0
         mins = 1.7976931348623157e+308
