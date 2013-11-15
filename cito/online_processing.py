@@ -38,7 +38,7 @@ import time
 import pymongo
 from cliff.command import Command
 
-from cito.helpers import tasks, xedb
+from cito.core import XeDB
 
 
 class Process(Command):
@@ -78,7 +78,7 @@ class Process(Command):
         chunk_size = parsed_args.chunksize
         padding = parsed_args.padding
 
-        conn, my_db, collection = xedb.get_mongo_db_objects(
+        conn, my_db, collection = XeDB.get_mongo_db_objects(
             parsed_args.hostname)
 
         # Key to sort by so we can use an index for quick query
@@ -89,14 +89,14 @@ class Process(Command):
 
         # Index for quick query
         collection.create_index(sort_key, dropDups=True)
-        current_time_index = int(xedb.get_min_time(collection) / chunk_size)
+        current_time_index = int(XeDB.get_min_time(collection) / chunk_size)
         self.log.debug('Current time index %d', current_time_index)
 
         # Loop until Ctrl-C or error
         while (1):
             # This try-except catches Ctrl-C and error
             try:
-                max_time = xedb.get_max_time(collection)
+                max_time = XeDB.get_max_time(collection)
                 time_index = int(max_time / chunk_size)
 
                 self.log.debug('Previous chunk %d' % current_time_index)

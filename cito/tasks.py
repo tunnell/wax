@@ -31,7 +31,7 @@
 
 This is the interface to celery.  You must first have done:
 
-  celery worker --app=cito.helpers.tasks
+  celery worker --app=cito.core.tasks
 
 
 """
@@ -45,14 +45,14 @@ from celery import Celery
 
 #sys.path.append(os.path.dirname(os.path.basename(__file__)))
 
-from cito.helpers import waveform
-from cito.helpers import xedb
-#from cito.helpers import sample_operations
+from cito.core import Waveform
+from cito.core import XeDB
+#from cito.core import sample_operations
 from pint import UnitRegistry
 import time
 
 # THIS BREAKS DOCS!
-conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
+conn, mongo_db_obj, collection = XeDB.get_mongo_db_objects()
 celery = Celery('tasks',
                 broker='mongodb://%s:%d/celery' % (conn.host,
                                                    conn.port))
@@ -110,7 +110,7 @@ def process(t0, t1):
     #                         fields=['triggertime', 'module'])
 
     # print('get_data_and_sum_waveform')
-    results = waveform.get_data_and_sum_waveform(cursor, t0,
+    results = Waveform.get_data_and_sum_waveform(cursor, t0,
                                         n_samples)
     y = results['occurences']
     #print(sum(y), y)
@@ -155,7 +155,7 @@ def process(t0, t1):
     #y = sample_operations.filter_samples(results['occurences'])
 
     print('find_peaks')
-    y = waveform.find_peaks(y)
+    y = Waveform.find_peaks(y)
 
     print('peaks', y)
 

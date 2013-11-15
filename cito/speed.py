@@ -41,8 +41,8 @@ import scipy
 import pymongo
 from cliff.command import Command
 
-#from cito.helpers import cInterfaceV1724
-from cito.helpers import xedb, waveform
+#from cito.core import cInterfaceV1724
+from cito.core import XeDB, Waveform
 from cito.base import CitoSingleCommand, TimingTask
 
 class Fetch(TimingTask):
@@ -52,7 +52,7 @@ class Fetch(TimingTask):
         cursor = self.get_cursor(t0, t1)
         size = 0.0
         for doc in cursor:
-            size += len(xedb.get_data_from_doc(doc))
+            size += len(XeDB.get_data_from_doc(doc))
         return size
 
 
@@ -67,7 +67,7 @@ class PySumWaveform(TimingTask):
 
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_data_and_sum_waveform(cursor, t0,
+        results = Waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         return results['size']
 
@@ -75,7 +75,7 @@ class PySumWaveform(TimingTask):
 class NumpyFFTWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_data_and_sum_waveform(cursor, t0,
+        results = Waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
         np.fft.fft(y)
@@ -91,7 +91,7 @@ class NumpyRealFFTWaveform(TimingTask):
 
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_data_and_sum_waveform(cursor, t0,
+        results = Waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
         np.fft.rfft(y)
@@ -101,7 +101,7 @@ class NumpyRealFFTWaveform(TimingTask):
 class SciPyFFTWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_data_and_sum_waveform(cursor, t0,
+        results = Waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
         scipy.fftpack.fft(y)
@@ -111,10 +111,10 @@ class SciPyFFTWaveform(TimingTask):
 class SciPyFindWaveformPeaks(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
-        results = waveform.get_data_and_sum_waveform(cursor, t0,
+        results = Waveform.get_data_and_sum_waveform(cursor, t0,
                                             t1 - t0)
         y = results['occurences']
-        peakind = waveform.signal.find_peaks_cwt(y, np.array([100]))
+        peakind = Waveform.signal.find_peaks_cwt(y, np.array([100]))
         threshold = 10000
         peaks = []
 

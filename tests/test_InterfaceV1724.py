@@ -12,7 +12,7 @@ import unittest
 
 import numpy as np
 
-from cito.helpers import InterfaceV1724
+from cito.core import InterfaceV1724
 
 class BaseInterfaceV1724():
     def _testGoodData(self):

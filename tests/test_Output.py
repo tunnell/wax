@@ -4,7 +4,7 @@ import unittest
 
 import logging
 import sys
-from cito.helpers import Output
+from cito.core import Output
 import pickle
 
 class TestOutputCommon(unittest.TestCase):

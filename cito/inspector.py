@@ -32,7 +32,7 @@ import logging
 
 import bson
 from cliff.show import ShowOne
-from cito.helpers import xedb, InterfaceV1724
+from cito.core import XeDB, InterfaceV1724
 
 
 class Inspector(ShowOne):
@@ -73,12 +73,12 @@ class Inspector(ShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        conn, my_db, collection = xedb.get_mongo_db_objects(
+        conn, my_db, collection = XeDB.get_mongo_db_objects(
             parsed_args.hostname)
 
         if parsed_args.newest:
             try:
-                time = xedb.get_max_time(collection)
+                time = XeDB.get_max_time(collection)
                 doc = collection.find_one({'triggertime': time})
             except RuntimeError as e:
                 self.log.fatal('Runtime error: %s' % e)
@@ -107,7 +107,7 @@ class Inspector(ShowOne):
                     continue
 
                 # Get data from doc (and decompress if necessary)
-                data = xedb.get_data_from_doc(doc)
+                data = XeDB.get_data_from_doc(doc)
                 self.log.debug("Data: %s", str(data))
 
                 # A try/except block to see if the InterfaceV1724 class throwns

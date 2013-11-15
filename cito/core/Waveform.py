@@ -36,8 +36,8 @@ import numpy as np
 from scipy import signal
 import scipy
 
-from cito.helpers import xedb
-from cito.helpers import InterfaceV1724
+from cito.core import XeDB
+from cito.core import InterfaceV1724
 
 
 def get_pmt_number(num_board, num_channel):
@@ -207,7 +207,7 @@ def get_data_and_sum_waveform(cursor, n_samples):
 
     for doc in cursor:
         log.debug('Processing doc %s', str(doc['_id']))
-        data = xedb.get_data_from_doc(doc)
+        data = XeDB.get_data_from_doc(doc)
         num_board = doc['module']
 
         size += len(data)

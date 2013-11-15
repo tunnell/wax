@@ -33,7 +33,7 @@
 import logging
 from bson.code import Code
 
-from cito.helpers import xedb
+from cito.core import XeDB
 from cito.base import CitoShowOne
 
 
@@ -47,7 +47,7 @@ class DBReset(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
 
         # The pymongo call
         db.drop_collection(collection.name)
@@ -67,7 +67,7 @@ class DBPurge(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
 
         self.log.debug("Purging all documents")
         # The pymongo call
@@ -89,7 +89,7 @@ class DBRepair(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
 
         # The actual pymongo call
         db.command('repairDatabase')
@@ -103,7 +103,7 @@ class DBCount(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
 
         columns = ['Number of documents']
         data = [collection.count()]
@@ -122,7 +122,7 @@ class DBDuplicates(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = xedb.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
 
         map_func = Code("function () {"
                         "  emit(this.data, 1); "

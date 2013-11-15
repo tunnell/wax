@@ -34,64 +34,11 @@ Make a plot of the sum waveform for a time range.
 
 __author__ = 'tunnell'
 
-from cito.base import CitoContinousCommand, TimingTask
+from cito.base import CitoContinousCommand
 
 
-from cito.helpers import  waveform
-from cito.helpers import Output
+from cito.core import ProcessingPipeline
 
-
-class PlotWaveform(TimingTask):
-    def __init__(self):
-        TimingTask.__init__(self)
-        self.e = Output.EpsOutput()
-
-    @staticmethod
-    def find_sum_in_data(data):
-        for key, value in data.items():
-            start, stop, pmt_num = key
-            if pmt_num == 'sum':
-                return value
-        raise ValueError("Sum waveform not found")
-
-    def process(self, t0, t1):  # doesn't this need to know what the padding is?
-        save_range = 500 # How much data to save around peak
-
-        cursor = self.get_cursor(t0, t1)
-        data, size = waveform.get_data_and_sum_waveform(cursor, t1 - t0)
-
-        # If no data analyzed, return
-        self.log.debug("Size of data analyzed: %d", size)
-        if size == 0:
-            return 0
-
-        sum_data = self.find_sum_in_data(data)
-
-        # Sanity checks on sum waveform
-        self.log.debug("Sanity check that sum waveform within inspection window")
-        assert t0 < sum_data['indecies'][0] < t1, sum_data['indecies'][0]   # Sum waveform must be in our inspection window
-        assert t0 < sum_data['indecies'][1] < t1, sum_data['indecies'][1]   # ditto as above line
-
-        # Get peaks, return if none
-        self.log.debug('Sum waveform range: [%d, %d]', sum_data['indecies'][0], sum_data['indecies'][-1])
-        peak_indecies = waveform.find_peaks_in_data(sum_data['indecies'], sum_data['samples'])
-        peaks = sum_data['indecies'][peak_indecies]
-        self.log.info('Number of peaks: %d', len(peak_indecies))
-        if len(peak_indecies) == 0: # If no peaks found, return
-            pass#    return 0
-        self.log.debug('Peak indecies: %s', str(peaks))
-
-        self.log.debug('Peak local indecies: %s', str(peak_indecies))
-
-        # Some sanity checks
-        self.log.debug("Sanity check that peaks are within sum waveform")
-        for peak in peaks:  # Peak must be in our data range
-            assert sum_data['indecies'][0] < peak < sum_data['indecies'][-1]
-
-        # Save peaks
-        self.e.write_data_range(t0, t1, data, peaks, save_range)
-
-        return size
 
 
 
@@ -104,7 +51,7 @@ class PlotWaveformSingleCommand(CitoContinousCommand):
 
     def get_tasks(self):
 
-        tasks = [PlotWaveform()]
+        tasks = [ProcessingPipeline.ProcessTimeBlockTask()]
         self.log.debug('Getting tasks: %s', str(tasks))
         return tasks
 
@@ -112,5 +59,5 @@ class PlotWaveformSingleCommand(CitoContinousCommand):
 
 
 if __name__ == '__main__':
-    x = PlotWaveform()
+    x = ProcessTimeBlockTask()
     x.process(400, 10 ** 3)

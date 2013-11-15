@@ -1,6 +1,6 @@
 __author__ = 'tunnell'
 
-from cito.helpers import waveform, xedb
+from cito.core import Waveform, XeDB
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,18 +26,7 @@ class OutputCommon():
             self.event_number += 1
             return self.event_number
 
-    def write_data_range(self, t0, t1, data, peaks, save_range):
-        to_save_bool_mask = waveform.get_index_mask_for_trigger(t1 - t0, peaks - t0,
-                                                                range_around_trigger=(-1*save_range,
-                                                                                        save_range))
-        event_ranges = waveform.split_boolean_array(to_save_bool_mask)
-
-        self.log.info('ranges %s %s %s', str(event_ranges),
-                      str(np.where(to_save_bool_mask == True)),
-                      str(to_save_bool_mask))
-
-        #event_ranges = [(0, t1 - t0)]
-
+    def write_data_range(self, t0, t1, data, peaks, event_ranges):
         for e0, e1 in event_ranges:
             e0 += t0
             e1 += t0
@@ -92,7 +81,7 @@ class MongoDBOutput(OutputCommon):
     def __init__(self):
         OutputCommon.__init__(self)
 
-        self.c = pymongo.MongoClient(xedb.get_server_name())
+        self.c = pymongo.MongoClient(XeDB.get_server_name())
         self.collection = self.c['output']['somerun']
 
     def get_event_number(self):

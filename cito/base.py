@@ -8,7 +8,7 @@ __author__ = 'tunnell'
 from cliff.command import Command
 import logging
 import time
-from cito.helpers import xedb
+from cito.core import XeDB
 import pymongo
 from cliff.show import ShowOne
 import sys
@@ -64,14 +64,14 @@ class CitoCommand(Command):
         self.log.debug("take_action_wrapped")
 
         self.log.debug("Getting mongo objects")
-        conn, my_db, collection = xedb.get_mongo_db_objects(
+        conn, my_db, collection = XeDB.get_mongo_db_objects(
             parsed_args.hostname)
 
         # Index for quick query
         self.log.debug("Creating index")
         collection.create_index(self.sort_key, dropDups=True)
 
-        min_time = xedb.get_min_time(collection)
+        min_time = XeDB.get_min_time(collection)
 
         self.take_action_wrapped(chunk_size, padding, min_time, collection, parsed_args)
 
@@ -118,7 +118,7 @@ class CitoContinousCommand(CitoCommand):
             self.log.debug("Entering while loop; use Ctrl-C to exit")
 
             try:
-                max_time = xedb.get_max_time(collection)
+                max_time = XeDB.get_max_time(collection)
                 time_index = int(max_time / chunk_size)
 
                 self.log.debug("Current max time: %d", max_time)
@@ -217,7 +217,7 @@ class TimingTask():
         return result
 
     def get_cursor(self, t0, t1):
-        conn, mongo_db_obj, collection = xedb.get_mongo_db_objects()
+        conn, mongo_db_obj, collection = XeDB.get_mongo_db_objects()
 
         # $gte and $lt are special mongo functions for greater than and less than
         subset_query = {"triggertime": {'$gte': t0,
