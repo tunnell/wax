@@ -23,6 +23,7 @@ above.
 As of 22/October/2013, an example document is:
 
 .. code-block:: javascript
+
     {
         "_id": ObjectId("525186149d7a330faeae9d68"),
         "insertsize": NumberInt(46154),
@@ -34,6 +35,7 @@ As of 22/October/2013, an example document is:
     }
 
 .. code-block:: javascript
+
     {
        "_id": ObjectId("525186149d7a330faeae9d65"),
        "insertsize": NumberInt(46151),
@@ -43,6 +45,7 @@ As of 22/October/2013, an example document is:
        "datalength": NumberInt(752),
        "data": "<Mongo Binary Data>"
     }
+
 
 Ouput format
 ============
