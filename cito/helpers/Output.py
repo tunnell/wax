@@ -27,18 +27,16 @@ class OutputCommon():
             return self.event_number
 
     def write_data_range(self, t0, t1, data, peaks, save_range):
+        to_save_bool_mask = waveform.get_index_mask_for_trigger(t1 - t0, peaks - t0,
+                                                                range_around_trigger=(-1*save_range,
+                                                                                        save_range))
+        event_ranges = waveform.split_boolean_array(to_save_bool_mask)
 
-        all = True
-        if not all:
-            to_save_bool_mask = waveform.get_index_mask_for_trigger(t1 - t0, peaks,
-                                                                    range_around_trigger=(-1*save_range,
-                                                                                                save_range))
-            event_ranges = waveform.split_boolean_array(to_save_bool_mask)
+        self.log.info('ranges %s %s %s', str(event_ranges),
+                      str(np.where(to_save_bool_mask == True)),
+                      str(to_save_bool_mask))
 
-            print('ranges', event_ranges, np.where(to_save_bool_mask == True))
-
-        else:
-            event_ranges = [(0, t1 - t0)]
+        #event_ranges = [(0, t1 - t0)]
 
         for e0, e1 in event_ranges:
             e0 += t0
@@ -149,7 +147,7 @@ class EpsOutput(OutputCommon):
                     found_peak = True
 
                     plt.vlines(peak, 0, plt.ylim()[1], 'g')
-                    plt.hlines(plt.ylim()[1]/2, e0, e1, 'g')
+                    #plt.hlines(plt.ylim()[1]/2, e0, e1, 'g')
 
         if not found_peak:
             self.log.error("Cannot find peak/trigger in event range.")

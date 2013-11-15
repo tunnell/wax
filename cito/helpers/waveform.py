@@ -85,7 +85,7 @@ def find_peaks_in_data(indecies, samples):
 
 
 
-def find_peaks(values, threshold=10000, cwt_width=20):
+def find_peaks(values, threshold=10000, cwt_width=100):
     """Find peaks within list of values.
 
     Uses scipy to find peaks above a threshold.
@@ -225,7 +225,7 @@ def get_data_and_sum_waveform(cursor, n_samples):
             # i is for what is returned by get_waveform
             # sample_index is the index in detector time
             for i, sample_index in enumerate(indecies):
-                sample = np.max((samples[i] - baseline), 0)
+                sample = np.min((samples[i] - baseline), 0)
 
                 if sample_index in sum_data:
                     sum_data[sample_index] += sample
@@ -247,7 +247,7 @@ def get_data_and_sum_waveform(cursor, n_samples):
     new_indecies.sort()
     new_samples = [sum_data[x] for x in new_indecies]
     new_indecies = np.array(new_indecies, dtype=np.int64)
-    new_samples = np.array(new_samples, dtype=np.uint32)
+    new_samples = np.array(new_samples, dtype=np.int32)
 
     interpreted_data[(np.min(new_indecies), np.max(new_indecies), 'sum')] = {'indecies' : new_indecies,
                                                                  'samples' : new_samples}

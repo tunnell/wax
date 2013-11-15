@@ -184,7 +184,7 @@ def get_waveform(data, n_samples):
             indecies = np.compress(index * [True], indecies)
         else:
             samples = np.array([], dtype=SAMPLE_TYPE)
-            indecies = np.array([], dtype=np.uint32)
+            indecies = np.array([], dtype=np.uint64)
 
         data_to_return.append((j, samples, indecies))
 

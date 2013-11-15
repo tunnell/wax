@@ -55,7 +55,7 @@ class PlotWaveform(TimingTask):
         raise ValueError("Sum waveform not found")
 
     def process(self, t0, t1):  # doesn't this need to know what the padding is?
-        save_range = 1000 # How much data to save around peak
+        save_range = 500 # How much data to save around peak
 
         cursor = self.get_cursor(t0, t1)
         data, size = waveform.get_data_and_sum_waveform(cursor, t1 - t0)
