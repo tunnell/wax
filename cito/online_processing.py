@@ -107,12 +107,12 @@ class Process(Command):
                         t1 = (i + 1) * chunk_size
                         self.log.info('Processing %d %d' % (t0, t1))
                         if parsed_args.flush:
-                            tasks.flush(t0, t1)
+                            pass  # tasks.flush(t0, t1)
                         else:
                             if parsed_args.single:
-                                tasks.process(t0, t1)
+                                pass  # tasks.process(t0, t1)
                             else:
-                                tasks.process.delay(t0, t1)
+                                pass  # tasks.process.delay(t0, t1)
 
                     current_time_index = time_index
                 else:

@@ -108,75 +108,6 @@ def find_peaks(values, threshold=10000, cwt_width=100):
 
 
 
-def get_index_mask_for_trigger(size, peaks,
-                    range_around_trigger = (-10, 10)):
-    """Returns a boolean array designating if an index/sample should be saved.
-
-    Args:
-        size (int):  An iterable object of documents containing Caen
-                           blocks.  This can be a pymongo Cursor.
-        peaks (list or int): The index or indecies of the peaks
-        range_around_trigger (tuple): The range around the peak to save.  Note that there
-                                      is no wrap around.
-
-    Returns:
-       np.ndarray(dtype=np.bool):  Boolean array of length size which says whether or not
-                                    to save a certain index.
-
-    """
-    # Bureaucracy
-    log = logging.getLogger('waveform')
-    if not isinstance(size, int):
-        raise ValueError('Size must be int')
-    if isinstance(peaks, int):
-        peaks = [peaks]
-    elif isinstance(peaks, float):
-        raise ValueError("peaks must be a list of integers (i.e., not a float)")
-
-    # Physics
-    to_save = np.zeros(size, dtype=np.bool)  # False means don't save, true means save
-    for peak in peaks:  # For each triggered peak
-        # The 'min' and 'max' are used to prevent wrap around
-        this_range = np.arange(max(peak + range_around_trigger[0], 0),
-                               min(peak + range_around_trigger[1], size))
-
-        #  'True' is set for every index in 'this_range'
-        to_save[this_range] = True
-
-    log.debug('Save range: %s', str(to_save))
-    return to_save
-
-
-def split_boolean_array(bool_array):
-    """For boolean arrays, something similar to Python native string split()
-
-    Will return the boundaries of contingous True ranges.
-
-    Args:
-        bool_array (np.array(dtype=np.bool)):  Boolean array to search
-
-    Returns:
-       list: A 2tuple of boundaries for True ranges
-
-    """
-
-    ranges = []
-
-    places_where_true = np.flatnonzero(bool_array)
-
-    start = None
-    for i, place in enumerate(places_where_true):
-        if start == None:
-            start = place
-        elif places_where_true[i] - places_where_true[i - 1] > 1:
-            ranges.append((start, places_where_true[i - 1] + 1))
-            start = place
-
-    # Were we searching for the end of Trues but found end of array?
-    if start != None:
-        ranges.append((start, places_where_true[-1] + 1))
-
-    return ranges
 
 def get_data_and_sum_waveform(cursor, n_samples):
     """Get inverted sum waveform from mongo
@@ -196,7 +127,7 @@ def get_data_and_sum_waveform(cursor, n_samples):
       - use 8 bit and divide by num channels?  combine adjacent?
 
     """
-    log = logging.getLogger(__name__)#'get_data_and_sum_waveform')
+    log = logging.getLogger(__name__)
 
     size = 0
 

@@ -36,7 +36,6 @@ from cito.core import XeDB, InterfaceV1724
 
 
 class Inspector(ShowOne):
-
     """Grab DAQ document from MongoDB and print it.
 
     A DAQ document contains the V1724 flash ADC data.  If data in the document is
@@ -59,8 +58,9 @@ class Inspector(ShowOne):
                             choices=('data', 'nondata', 'all'),
                             default='all',
                             help='Print only certain keys within document(s)')
-        parser.add_argument('--skip-checks', dest='checks', action='store_false',
-                            help='Skip consistency checks on data.')
+        parser.add_argument(
+            '--skip-checks', dest='checks', action='store_false',
+            help='Skip consistency checks on data.')
 
         subparser = parser.add_mutually_exclusive_group(required=True)
         subparser.add_argument('-n', '--newest', action='store_true',
@@ -131,8 +131,6 @@ class Inspector(ShowOne):
                     except Exception as e:
                         output.append(('data(processing exception)',
                                        str(e)))
-
-
 
                     # Loop over 32-bits words
                     for i in range(int(len(data) / 4)):

@@ -33,17 +33,14 @@ SciPyFFTWaveform is really freaking slow compared to others.  Same with FFTW.
 """
 
 __author__ = 'tunnell'
-import logging
-import time
 
 import numpy as np
 import scipy
-import pymongo
-from cliff.command import Command
 
 #from cito.core import cInterfaceV1724
 from cito.core import XeDB, Waveform
-from cito.base import CitoSingleCommand, TimingTask
+from cito.CommandsBase import CitoSingleCommand, TimingTask
+
 
 class Fetch(TimingTask):
     """Fetch and decompress"""
@@ -68,7 +65,7 @@ class PySumWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = Waveform.get_data_and_sum_waveform(cursor, t0,
-                                            t1 - t0)
+                                                     t1 - t0)
         return results['size']
 
 
@@ -76,7 +73,7 @@ class NumpyFFTWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = Waveform.get_data_and_sum_waveform(cursor, t0,
-                                            t1 - t0)
+                                                     t1 - t0)
         y = results['occurences']
         np.fft.fft(y)
         return results['size']
@@ -92,7 +89,7 @@ class NumpyRealFFTWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = Waveform.get_data_and_sum_waveform(cursor, t0,
-                                            t1 - t0)
+                                                     t1 - t0)
         y = results['occurences']
         np.fft.rfft(y)
         return results['size']
@@ -102,7 +99,7 @@ class SciPyFFTWaveform(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = Waveform.get_data_and_sum_waveform(cursor, t0,
-                                            t1 - t0)
+                                                     t1 - t0)
         y = results['occurences']
         scipy.fftpack.fft(y)
         return results['size']
@@ -112,7 +109,7 @@ class SciPyFindWaveformPeaks(TimingTask):
     def call(self, t0, t1):
         cursor = self.get_cursor(t0, t1)
         results = Waveform.get_data_and_sum_waveform(cursor, t0,
-                                            t1 - t0)
+                                                     t1 - t0)
         y = results['occurences']
         peakind = Waveform.signal.find_peaks_cwt(y, np.array([100]))
         threshold = 10000
@@ -142,7 +139,6 @@ class SpeedTestSingleCommand(CitoSingleCommand):
         ]
 
         return tasks
-
 
 
 if __name__ == '__main__':

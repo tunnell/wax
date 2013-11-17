@@ -7,3 +7,4 @@ anyjson
 cliff
 pint
 scipy
+mongomock

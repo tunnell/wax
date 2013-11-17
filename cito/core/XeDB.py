@@ -32,9 +32,11 @@
 
 __author__ = 'tunnell'
 
+import logging
+
 import pymongo
 import snappy
-import logging
+
 
 def get_server_name():
     return '127.0.0.1'
@@ -180,3 +182,24 @@ def get_data_from_doc(doc):
         data = snappy.uncompress(data)
 
     return data
+
+
+def get_data_docs(t0, t1):
+    """Fetch from DB the documents within time range.
+
+    .. todo:: Must this know padding?  Maybe just hand cursor so can mock?
+
+    :param t0: Initial time to query.
+    :type t0: int.
+    :param t1: Final time.
+    :type t1: int.
+    :returns:  list -- Input documents see docs :ref:`data_format#input`
+    :raises: AssertionError
+    """
+    conn, mongo_db_obj, collection = get_mongo_db_objects()
+
+    # $gte and $lt are special mongo functions for greater than and less than
+    subset_query = {"triggertime": {'$gte': t0,
+                                    '$lt': t1}}
+
+    return list(collection.find(subset_query))

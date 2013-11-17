@@ -34,30 +34,16 @@ Make a plot of the sum waveform for a time range.
 
 __author__ = 'tunnell'
 
-from cito.base import CitoContinousCommand
-
-
-from cito.core import ProcessingPipeline
-
-
-
+from cito.CommandsBase import CitoContinousCommand
+from cito.core import Tasks
+from cito.core import Output
 
 
 class PlotWaveformSingleCommand(CitoContinousCommand):
     """Plot the sum waveform
     """
 
-
-
     def get_tasks(self):
-
-        tasks = [ProcessingPipeline.ProcessTimeBlockTask()]
+        tasks = [Tasks.ProcessTimeBlockTask(Output.MongoDBOutput())]
         self.log.debug('Getting tasks: %s', str(tasks))
         return tasks
-
-
-
-
-if __name__ == '__main__':
-    x = ProcessTimeBlockTask()
-    x.process(400, 10 ** 3)

@@ -167,7 +167,7 @@ def get_waveform(data, n_samples):
                         counter_within_channel_payload += 1
                 else:
                     wavecounter_within_channel_payload += 2 * \
-                        words_in_channel_payload + 1
+                                                          words_in_channel_payload + 1
                     pnt = pnt + 1
                     counter_within_channel_payload += 1
 

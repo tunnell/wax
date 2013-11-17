@@ -4,15 +4,16 @@ Include inspector in this"""
 
 __author__ = 'tunnell'
 
-
-from cliff.command import Command
 import logging
 import time
-from cito.core import XeDB
-import pymongo
-from cliff.show import ShowOne
 import sys
-import logging
+
+from cliff.command import Command
+from cliff.show import ShowOne
+import pymongo
+
+from cito.core import XeDB
+
 
 class CitoCommand(Command):
     """CitoSingleCommand base class
@@ -22,12 +23,12 @@ class CitoCommand(Command):
 
     # Key to sort by so we can use an index for quick query
     sort_key = [
-            ('triggertime', pymongo.DESCENDING),
-            ('module', pymongo.DESCENDING)
-        ]
+        ('triggertime', pymongo.DESCENDING),
+        ('module', pymongo.DESCENDING)
+    ]
 
-    #def __init__(self):
-    #    #Command.__init__(self)
+    # def __init__(self):
+    # Command.__init__(self)
     #    log = logging.getLogger(__name__)
 
     def get_description(self):
@@ -52,7 +53,6 @@ class CitoCommand(Command):
     def get_tasks(self):
         raise NotImplementedError()
 
-
     def take_action(self, parsed_args):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
@@ -73,11 +73,13 @@ class CitoCommand(Command):
 
         min_time = XeDB.get_min_time(collection)
 
-        self.take_action_wrapped(chunk_size, padding, min_time, collection, parsed_args)
+        self.take_action_wrapped(
+            chunk_size, padding, min_time, collection, parsed_args)
 
     def take_action_wrapped(self, chunk_size, padding, min_time, collection, parsed_args):
         """Wrapped version of take action"""
         raise NotImplementedError()
+
 
 class CitoSingleCommand(CitoCommand):
     """CitoSingleCommand base class
@@ -95,11 +97,13 @@ class CitoSingleCommand(CitoCommand):
             self.log.debug("Running task", task)
             print(task.process(t0, t1, loops=10))
 
+
 class CitoContinousCommand(CitoCommand):
     """CitoSingleCommand base class
 
     This only looks over some range t0 till t1
     """
+
     def get_tasks(self):
         raise NotImplementedError()
 
@@ -131,7 +135,8 @@ class CitoContinousCommand(CitoCommand):
                         self.log.info('Processing %d %d' % (t0, t1))
 
                         for task in tasks:
-                            self.log.info('Sending data to task: %s', task.__class__.__name__)
+                            self.log.info(
+                                'Sending data to task: %s', task.__class__.__name__)
                             task.process(t0, t1)
 
                     current_time_index = time_index
@@ -148,6 +153,7 @@ class CitoContinousCommand(CitoCommand):
             except KeyboardInterrupt:
                 self.log.info("Ctrl-C caught so exiting.")
                 sys.exit(0)
+
 
 class CitoShowOne(ShowOne):
     """Base class for all DB commands.
@@ -178,51 +184,3 @@ class CitoShowOne(ShowOne):
         else:
             data = ['success']
         return columns, data
-
-
-class TimingTask():
-    def __init__(self):
-        self.log = logging.getLogger(self.__class__.__name__)
-
-    def process(self, t0, t1, loops=1, verbose=False):
-        sums = 0.0
-        mins = 1.7976931348623157e+308
-        maxs = 0.0
-        print('====%s Timing====' % self.__class__.__name__)
-        for i in range(0, loops):
-            start_time = time.time()
-            result = self.call(t0, t1)
-            dt = time.time() - start_time
-            mins = dt if dt < mins else mins
-            maxs = dt if dt > maxs else maxs
-            sums += dt
-            if verbose == True:
-                print('\t%r ran in %2.9f sec on run %s' %
-                      (self.__class__.__name__, dt, i))
-        print('%r min run time was %2.9f sec' %
-              (self.__class__.__name__, mins))
-        print('%r max run time was %2.9f sec' %
-              (self.__class__.__name__, maxs))
-        print('%r avg run time was %2.9f sec in %s runs' %
-              (self.__class__.__name__, sums / loops, loops))
-
-        size = result / 1024
-        print('%r size %d kB %s runs' % (self.__class__.__name__, size, loops))
-        size = size / 1024  # MB
-        print('%r size %d MB %s runs' % (self.__class__.__name__, size, loops))
-        speed = size / (sums / loops)
-        print('%r avg speed %2.9f MB/s in %s runs' %
-              (self.__class__.__name__, speed, loops))
-        print('==== end ====')
-        return result
-
-    def get_cursor(self, t0, t1):
-        conn, mongo_db_obj, collection = XeDB.get_mongo_db_objects()
-
-        # $gte and $lt are special mongo functions for greater than and less than
-        subset_query = {"triggertime": {'$gte': t0,
-                                        '$lt': t1}}
-        return collection.find(subset_query)
-
-    def call(self, t0, t1):
-        raise NotImplementedError()

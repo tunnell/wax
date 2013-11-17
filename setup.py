@@ -4,6 +4,7 @@
 import sys
 import os
 from setuptools import setup
+import cito
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -15,7 +16,7 @@ required = open('requirements.txt').read().splitlines()
 
 setup(
     name='cito',
-    version='0.1.0',
+    version=cito.__version_string__,
     description='This code consitutes the framework for the XENON software trigger.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
@@ -40,7 +41,6 @@ setup(
             'db purge = cito.db_operations:DBPurge',
             'duplicates = cito.db_operations:DBDuplicates',
             'process = cito.online_processing:Process',
-            'speedtest = cito.speed:SpeedTestSingleCommand',
             'plot = cito.plot:PlotWaveformSingleCommand'
 
         ],

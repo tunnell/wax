@@ -1,74 +1,19 @@
 __author__ = 'tunnell'
 
-from cito.core import Waveform, XeDB
 import logging
-import matplotlib.pyplot as plt
-import numpy as np
-import pymongo
 
 
-
+from cito.core import XeDB
 
 
 class OutputCommon():
     def __init__(self):
-        self.log = logging.getLogger(self.__class__.__name__)
         if 'OutputCommon' == self.__class__.__name__:
-            raise ValueError('This is a base class')
+            raise ValueError('This is a base class %s',self.__class__.__name__)
+        self.log = logging.getLogger(self.__class__.__name__)
 
-        self.event_number = None
-
-    def get_event_number(self):
-        if self.event_number is None:
-            self.event_number = 0
-            return self.event_number
-        else:
-            self.event_number += 1
-            return self.event_number
-
-    def write_data_range(self, t0, t1, data, peaks, event_ranges):
-        for e0, e1 in event_ranges:
-            e0 += t0
-            e1 += t0
-
-            evt_num = self.get_event_number()
-            self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
-
-            erange = np.arange(e0, e1)
-
-            to_save = {}
-
-            for key, value in data.items():
-                (d0, d1, num_pmt) = key
-                (indecies, samples) = value['indecies'], value['samples']
-
-                if d1 < e0 or e1 < d0: # If true, no overlap
-                    continue
-
-                if e0 <= d0 and d1 <= e1:  # Most common case:
-                    s0 = 0
-                    s1 = len(indecies)
-                else:  # compute overlap
-                    overlap = np.intersect1d(np.arange(d0, d1), erange)
-                    s0 = np.where(indecies == overlap[0])[0][0]
-                    s1 = np.where(indecies == overlap[-1])[0][0]
-
-                if num_pmt == 'sum':
-                    self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)
-                else:
-                    self.log.debug('\t\tData (PMT%d): [%d, %d]', num_pmt, d0, d1)
-
-
-                to_save[num_pmt] = {'indecies' : indecies[s0:s1],
-                                    'samples' : samples[s0:s1]}
-
-            to_save['peaks'] = peaks
-            #to_save['sum'] = results
-
-            self.write_event(to_save, evt_num, e0, e1)
-
-
-
+    def write_event(self):
+        raise NotImplementedError()
 
 
 class MongoDBOutput(OutputCommon):
@@ -81,68 +26,45 @@ class MongoDBOutput(OutputCommon):
     def __init__(self):
         OutputCommon.__init__(self)
 
-        self.c = pymongo.MongoClient(XeDB.get_server_name())
-        self.collection = self.c['output']['somerun']
+        self._collection = None
 
-    def get_event_number(self):
+    @property
+    def event_number(self):
         return "Not set"
 
-    def write_event(self, event_data):
+    @property
+    def collection(self):
+        if self._collection == None:
+           self.log.warning("Using default output MongoDB collection")
+           conn, my_db, collection = XeDB.get_mongo_db_objects()
+           # Todo: move this logic to XeDB?
+           self._collection = conn['output']['somerun']
+        return self._collection
+
+    @collection.setter
+    def collection(self, value):
+        self._collection = value
+
+
+    def clean_event(self, event_data):
+        """Clean so can mongo"""
         new_data = {}
-        for key in event_data.keys():
-            new_data[str(key)] = [event_data[key]['samples'].tolist(),
-                                  event_data[key]['indecies'].tolist()]
+        for channel, channel_data in event_data['data'].items():
+            new_data[str(channel)] = {}
+            for variable_name, variable_value in channel_data.items():
 
-        new_data['event_number'] = self.get_event_number()
-        self.collection.insert(new_data)
-
-class HDF5Output(OutputCommon):
-    """Write an HDF5 output.  This is a standard scinece format.
-
-    This must know event numbers.
-    See, e.g., http://www.hdfgroup.org/HDF5/
-    """
-    pass
-
-class EpsOutput(OutputCommon):
-    def __init__(self):
-        OutputCommon.__init__(self)
-        self.fig = plt.figure(figsize=(7,5))
-
-    def write_event(self, event_data, evt_num, e0, e1):
-        self.log.debug('write event %d [%d, %d]', evt_num, e0, e1)
-        plt.clf()
-        #plt.title('Time from %d till %d' % (t0, t1))
-
-        for key, value in event_data.items():
-            if key == 'peaks':
-                continue
-
-            if key == 'sum':
-                plt.plot(value['indecies'], value['samples'], 'r-', label='SUM')
-            else:
-                plt.plot(value['indecies'], value['samples'], 'b--')
+                new_data[str(channel)][variable_name] = variable_value.tolist() # todo: pickle/bson
 
 
-        #plt.xlim(e0, e1)
-        plt.xlabel("Time [10 ns adc steps]")
-        plt.ylabel("Sum charge [adc counts]")
-        plt.title(str(event_data['peaks']))
-        plt.legend()
-        found_peak = False
+        event_data['data'] = new_data
+
         if 'peaks' in event_data:
-            for peak in event_data['peaks']:
-                if e0 < peak < e1:
-                    found_peak = True
+            event_data['peaks'] = event_data['peaks'].tolist()
 
-                    plt.vlines(peak, 0, plt.ylim()[1], 'g')
-                    #plt.hlines(plt.ylim()[1]/2, e0, e1, 'g')
+        return event_data
 
-        if not found_peak:
-            self.log.error("Cannot find peak/trigger in event range.")
+    def write_events(self, event_data_list):
+        cleaned_list = [self.clean_event(x) for x in event_data_list]
+        self.collection.insert(cleaned_list)
 
-
-        plt.savefig('peak_finding_%d.eps' % evt_num)
-        #plt.close(fig)
-        #plt.show()
 

@@ -29,19 +29,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import logging
 import sys
-import os
-
-from cliff.app import App
-
-from cliff.commandmanager import CommandManager
 import logging.config
+
+import os
+from cliff.app import App
+from cliff.commandmanager import CommandManager
+
+import cito
+
 
 class CitoApp(App):
 
     def __init__(self):
         super(CitoApp, self).__init__(
             description='cito DAQ software.',
-            version='0.1',
+            version=cito.__version_string__,
             command_manager=CommandManager('cito.main'),
         )
 
@@ -66,12 +68,10 @@ class CitoApp(App):
             self.log.error('Got an error: %s', err)
 
 
-
 def main(argv=sys.argv[1:]):
     myapp = CitoApp()
     return myapp.run(argv)
 
 
 if __name__ == '__main__':
-
     sys.exit(main(sys.argv[1:]))
