@@ -13,7 +13,8 @@ import logging
 
 import numpy as np
 
-from cito.core import Waveform
+
+from cito.Trigger import Threshold
 
 
 def get_index_mask_for_trigger(size, peaks,
@@ -152,7 +153,7 @@ class EventBuilder():
             assert t0 < sum_data['indecies'][-1] < t1, 'Incorrect Sum WF end time'
 
         # Find peaks
-        peak_indecies = Waveform.find_peaks_in_data(sum_data['indecies'], sum_data['samples'])
+        peak_indecies = Threshold.trigger(sum_data['indecies'], sum_data['samples'])
         peaks = sum_data['indecies'][peak_indecies]
         self.log.debug('Peak indecies: %s', str(peaks))
         self.log.debug('Peak local indecies: %s', str(peak_indecies))

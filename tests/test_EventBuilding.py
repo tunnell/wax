@@ -3,7 +3,7 @@
 import unittest
 
 import numpy as np
-from cito.core import EventBuilding
+from cito.EventBuilder import EventBuilding
 
 class Test_split_boolean_array(unittest.TestCase):
     def setUp(self):

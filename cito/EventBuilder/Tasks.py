@@ -12,7 +12,7 @@ import logging
 
 from cito.core import Waveform, XeDB
 
-from cito.core import EventBuilding
+from cito.EventBuilder import EventBuilding
 
 
 class ProcessTimeBlockTask():

@@ -2,7 +2,6 @@ __author__ = 'tunnell'
 
 import logging
 
-
 from cito.core import XeDB
 
 
@@ -66,5 +65,4 @@ class MongoDBOutput(OutputCommon):
     def write_events(self, event_data_list):
         cleaned_list = [self.clean_event(x) for x in event_data_list]
         self.collection.insert(cleaned_list)
-
 
