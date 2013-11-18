@@ -1,8 +1,6 @@
 """For analyzing single documents
 """
 
-import logging
-
 import bson
 from cito.CommandsBase import CitoShowOne
 from cito.core import XeDB, InterfaceV1724

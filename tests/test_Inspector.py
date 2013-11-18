@@ -26,7 +26,7 @@ class TestInspector(unittest.TestCase):
 
     def test_random_doc(self):
         myapp = main.CitoApp()
-        myapp.run("doc inspector -r".split())
+        myapp.run("doc inspector -r --debug -vvvv".split())
 
     def tearDown(self):
         pass
