@@ -48,6 +48,7 @@ class CitoCommand(Command):
                             help='Padding to overlap processing windows [10 ns step]',
                             default=10 ** 2)
 
+
         return parser
 
     def get_tasks(self):
@@ -73,8 +74,8 @@ class CitoCommand(Command):
 
         min_time = XeDB.get_min_time(collection)
 
-        self.take_action_wrapped(
-            chunk_size, padding, min_time, collection, parsed_args)
+        self.take_action_wrapped(chunk_size, padding, min_time,
+                                 collection, parsed_args)
 
     def take_action_wrapped(self, chunk_size, padding, min_time, collection, parsed_args):
         """Wrapped version of take action"""
@@ -109,6 +110,10 @@ class CitoContinousCommand(CitoCommand):
 
     def get_parser(self, prog_name):
         parser = super(CitoContinousCommand, self).get_parser(prog_name)
+
+        parser.add_argument('-n', '--numevents', type=int,
+                               help='Number of events to process')
+
         return parser
 
     def take_action_wrapped(self, chunk_size, padding, min_time, collection, parsed_args):
@@ -135,8 +140,10 @@ class CitoContinousCommand(CitoCommand):
                         self.log.info('Processing %d %d' % (t0, t1))
 
                         for task in tasks:
-                            self.log.info(
-                                'Sending data to task: %s', task.__class__.__name__)
+                            if i > parsed_args.numevents:
+                                raise StopIteration
+                            self.log.info('Sending data to task: %s',
+                                          task.__class__.__name__)
                             task.process(t0, t1)
 
                     current_time_index = time_index

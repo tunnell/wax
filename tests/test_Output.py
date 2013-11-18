@@ -2,12 +2,11 @@
 
 import unittest
 
-import logging
-import sys
+
 from cito.core import Output
-import os
+
 import pickle
-import mongomock
+
 
 class TestOutputCommon(unittest.TestCase):
     def test_cannot_initialize(self):
@@ -19,7 +18,7 @@ class TestOutputCommon(unittest.TestCase):
 class TestMongoDBOutput(unittest.TestCase):
     def setUp(self):
         self.c = Output.MongoDBOutput()
-        self.c.collection = mongomock.Connection()['output']['something']
+        #self.c.collection = mongomock.Connection()['output']['something']
 
         import inspect, os
 
