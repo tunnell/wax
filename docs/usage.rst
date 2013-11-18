@@ -2,6 +2,6 @@
 Usage
 ========
 
-To use Code for Intelligent Triggering Online in a project::
+Cito presents a command line interface, where you can see the possible commands by running `cito`.
 
-	import cito
+	cito -h
