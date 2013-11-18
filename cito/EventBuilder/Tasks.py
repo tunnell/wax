@@ -16,15 +16,14 @@ from cito.EventBuilder import EventBuilding
 
 
 class ProcessTimeBlockTask():
+
     """Process a time block
     """
-
 
     def __init__(self, output):
         self.log = logging.getLogger(__name__)
         self.event_builder = EventBuilding.EventBuilder()
         self.output = output
-
 
     def process(self, t0, t1):
         """Process a time chunk
@@ -53,10 +52,9 @@ class ProcessTimeBlockTask():
 
         # Write out events,
         #f = open('test.p', 'wb')
-        #mport pickle
-        #for event in events:
+        # mport pickle
+        # for event in events:
         #    pickle.dump(event, f)
-        #f.close()
+        # f.close()
 
         return size
-

@@ -7,6 +7,7 @@ from cito.core import XeDB, InterfaceV1724
 
 
 class Inspector(CitoShowOne):
+
     """Grab DAQ document from MongoDB and print it.
 
     A DAQ document contains the V1724 flash ADC data.  If data in the document is
@@ -54,7 +55,7 @@ class Inspector(CitoShowOne):
             self.log.debug("ID: %s", parsed_args.id)
             doc = collection.find_one({'_id': id_bson})
 
-        if doc == None:
+        if doc is None:
             self.log.fatal("No document found.")
             return ([], [])
 

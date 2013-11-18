@@ -40,6 +40,7 @@ from cito.EventBuilder import Output
 
 
 class ProcessToMongoCommand(CitoContinousCommand):
+
     """Process time blocks and save to MongoDB
     """
 

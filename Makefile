@@ -24,7 +24,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 cito tests
+	flake8 --ignore=E501 cito tests
 
 test:
 	python setup.py test

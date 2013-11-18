@@ -2,7 +2,7 @@ __author__ = 'tunnell'
 
 import scipy
 import numpy as np
-from scipy  import signal
+from scipy import signal
 
 
 def trigger(indecies, samples):
@@ -17,25 +17,24 @@ def trigger(indecies, samples):
         if index_last == None or (index - index_last) == 1:
             index_last = index_last
         elif index <= index_last:
-            raise ValueError("Indecies must be monotonically increasing: %d, %d!",
-                             index,
-                             index_last)
+            raise ValueError(
+                "Indecies must be monotonically increasing: %d, %d!",
+                index,
+                index_last)
         elif index - index_last > 1:
-            high_extrema = find_peaks(samples[i_start:i-1])
+            high_extrema = find_peaks(samples[i_start:i - 1])
             for value in high_extrema:
                 peaks.append(value)
             i_start = i
         else:
             raise RuntimeError()
 
-    if i_start < (len(indecies) - 1):  #If events still to process
+    if i_start < (len(indecies) - 1):  # If events still to process
         high_extrema = find_peaks(samples[i_start:-1])
         for value in high_extrema:
             peaks.append(value)
 
     return peaks
-
-
 
 
 def find_peaks(values, threshold=10000, cwt_width=100):

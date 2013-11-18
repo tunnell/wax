@@ -39,7 +39,7 @@ from cito.core import InterfaceV1724
 
 
 def get_pmt_number(num_board, num_channel):
-    channels_per_board = 8 # this used elsewhere?
+    channels_per_board = 8  # this used elsewhere?
     if num_board == 770:
         scale = 0
     elif num_board == 876:
@@ -91,7 +91,7 @@ def get_data_and_sum_waveform(cursor, n_samples):
             indecies += time_correction
 
             # Compute baseline with first 3 and last 3 samples
-            baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()#
+            baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()
 
             # i is for what is returned by get_waveform
             # sample_index is the index in detector time
@@ -108,8 +108,9 @@ def get_data_and_sum_waveform(cursor, n_samples):
 
                 num_pmt = get_pmt_number(num_board, num_channel)
 
-                interpreted_data[(start, stop, num_pmt)] = {'indecies' : indecies,
-                                                            'samples' : samples}
+                interpreted_data[(
+                    start, stop, num_pmt)] = {'indecies': indecies,
+                                              'samples': samples}
 
     log.debug("Size of data process in bytes: %d", size)
     if size == 0:
@@ -120,9 +121,10 @@ def get_data_and_sum_waveform(cursor, n_samples):
     new_indecies = np.array(new_indecies, dtype=np.int64)
     new_samples = np.array(new_samples, dtype=np.int32)
 
-    interpreted_data[(np.min(new_indecies), np.max(new_indecies), 'sum')] = {'indecies' : new_indecies,
-                                                                 'samples' : new_samples}
-
-
+    interpreted_data[(
+        np.min(
+            new_indecies), np.max(
+            new_indecies), 'sum')] = {'indecies': new_indecies,
+                                      'samples': new_samples}
 
     return interpreted_data, size

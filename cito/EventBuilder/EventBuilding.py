@@ -13,7 +13,6 @@ import logging
 
 import numpy as np
 
-
 from cito.Trigger import Threshold
 
 
@@ -44,10 +43,12 @@ def get_index_mask_for_trigger(size, peaks,
     if isinstance(peaks, int):
         peaks = [peaks]
     elif isinstance(peaks, float):
-        raise ValueError("peaks must be a list of integers (i.e., not a float)")
+        raise ValueError(
+            "peaks must be a list of integers (i.e., not a float)")
 
     # Physics
-    to_save = np.zeros(size, dtype=np.bool)  # False means don't save, true means save
+    # False means don't save, true means save
+    to_save = np.zeros(size, dtype=np.bool)
     for peak in peaks:  # For each triggered peak
         # The 'min' and 'max' are used to prevent wrap around
         this_range = np.arange(max(peak + range_around_peak[0], 0),
@@ -79,14 +80,14 @@ def split_boolean_array(bool_array):
 
     start = None
     for i, place in enumerate(places_where_true):
-        if start == None:
+        if start is None:
             start = place
         elif places_where_true[i] - places_where_true[i - 1] > 1:
             ranges.append((start, places_where_true[i - 1] + 1))
             start = place
 
     # Were we searching for the end of Trues but found end of array?
-    if start != None:
+    if start is not None:
         ranges.append((start, places_where_true[-1] + 1))
 
     return ranges
@@ -109,6 +110,7 @@ def find_sum_in_data(data):
 
 
 class EventBuilder():
+
     """From data, construct events
 
     This is a separate class since it has to keep track of event number"""
@@ -140,25 +142,29 @@ class EventBuilder():
         :raises: ValueError
         """
 
-
         # Grab sum waveform
         sum_data = find_sum_in_data(data)
-        self.log.debug('Sum waveform range: [%d, %d]', sum_data['indecies'][0], sum_data['indecies'][-1])
+        self.log.debug('Sum waveform range: [%d, %d]', sum_data[
+                       'indecies'][0], sum_data['indecies'][-1])
 
         # Sanity checks on sum waveform
         if t0 is not None and t1 is not None:
-            self.log.debug("Sanity check that sum waveform within inspection window")
+            self.log.debug(
+                "Sanity check that sum waveform within inspection window")
             # Sum waveform must be in our inspection window
-            assert t0 < sum_data['indecies'][0] < t1, 'Incorrect Sum WF start time'
-            assert t0 < sum_data['indecies'][-1] < t1, 'Incorrect Sum WF end time'
+            assert t0 < sum_data['indecies'][
+                0] < t1, 'Incorrect Sum WF start time'
+            assert t0 < sum_data['indecies'][
+                -1] < t1, 'Incorrect Sum WF end time'
 
         # Find peaks
-        peak_indecies = Threshold.trigger(sum_data['indecies'], sum_data['samples'])
+        peak_indecies = Threshold.trigger(
+            sum_data['indecies'], sum_data['samples'])
         peaks = sum_data['indecies'][peak_indecies]
         self.log.debug('Peak indecies: %s', str(peaks))
         self.log.debug('Peak local indecies: %s', str(peak_indecies))
         self.log.info('Number of peaks: %d', len(peak_indecies))
-        if len(peak_indecies) == 0: # If no peaks found, return
+        if len(peak_indecies) == 0:  # If no peaks found, return
             self.log.info("No peak found; returning")
             return 0
 
@@ -166,7 +172,6 @@ class EventBuilder():
         self.log.debug("Sanity check that peaks are within sum waveform")
         for peak in peaks:  # Peak must be in our data range
             assert sum_data['indecies'][0] < peak < sum_data['indecies'][-1]
-
 
         # Flag samples to save
         to_save_bool_mask = get_index_mask_for_trigger(t1 - t0, peaks - t0)
@@ -184,13 +189,13 @@ class EventBuilder():
 
             erange = np.arange(e0, e1)
 
-            to_save = {'data' : {}}
+            to_save = {'data': {}}
 
             for key, value in data.items():
                 (d0, d1, num_pmt) = key
                 (indecies, samples) = value['indecies'], value['samples']
 
-                if d1 < e0 or e1 < d0: # If true, no overlap
+                if d1 < e0 or e1 < d0:  # If true, no overlap
                     continue
 
                 if e0 <= d0 and d1 <= e1:  # Most common case:
@@ -204,10 +209,11 @@ class EventBuilder():
                 if num_pmt == 'sum':
                     self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)
                 else:
-                    self.log.debug('\t\tData (PMT%d): [%d, %d]', num_pmt, d0, d1)
+                    self.log.debug(
+                        '\t\tData (PMT%d): [%d, %d]', num_pmt, d0, d1)
 
                 to_save['data'][num_pmt] = {'indecies': indecies[s0:s1],
-                                    'samples': samples[s0:s1]}
+                                            'samples': samples[s0:s1]}
 
             to_save['peaks'] = peaks
             to_save['evt_num'] = evt_num
@@ -215,5 +221,3 @@ class EventBuilder():
             events.append(to_save)
 
         return events
-
-

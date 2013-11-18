@@ -6,9 +6,11 @@ from cito.core import XeDB
 
 
 class OutputCommon():
+
     def __init__(self):
         if 'OutputCommon' == self.__class__.__name__:
-            raise ValueError('This is a base class %s',self.__class__.__name__)
+            raise ValueError(
+                'This is a base class %s', self.__class__.__name__)
         self.log = logging.getLogger(self.__class__.__name__)
 
     def write_event(self):
@@ -16,6 +18,7 @@ class OutputCommon():
 
 
 class MongoDBOutput(OutputCommon):
+
     """Write to MongoDB
 
     This class, I don't think, can know the event number since it events before it
@@ -33,17 +36,16 @@ class MongoDBOutput(OutputCommon):
 
     @property
     def collection(self):
-        if self._collection == None:
-           self.log.warning("Using default output MongoDB collection")
-           conn, my_db, collection = XeDB.get_mongo_db_objects()
-           # Todo: move this logic to XeDB?
-           self._collection = conn['output']['somerun']
+        if self._collection is None:
+            self.log.warning("Using default output MongoDB collection")
+            conn, my_db, collection = XeDB.get_mongo_db_objects()
+            # Todo: move this logic to XeDB?
+            self._collection = conn['output']['somerun']
         return self._collection
 
     @collection.setter
     def collection(self, value):
         self._collection = value
-
 
     def clean_event(self, event_data):
         """Clean so can mongo"""
@@ -51,9 +53,8 @@ class MongoDBOutput(OutputCommon):
         for channel, channel_data in event_data['data'].items():
             new_data[str(channel)] = {}
             for variable_name, variable_value in channel_data.items():
-
-                new_data[str(channel)][variable_name] = variable_value.tolist() # todo: pickle/bson
-
+                # todo: pickle/bson
+                new_data[str(channel)][variable_name] = variable_value.tolist()
 
         event_data['data'] = new_data
 
@@ -65,4 +66,3 @@ class MongoDBOutput(OutputCommon):
     def write_events(self, event_data_list):
         cleaned_list = [self.clean_event(x) for x in event_data_list]
         self.collection.insert(cleaned_list)
-

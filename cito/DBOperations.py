@@ -11,6 +11,7 @@ from cito.CommandsBase import CitoShowOne
 
 
 class DBReset(CitoShowOne):
+
     """Reset the database by dropping the default collection.
 
     Warning: this cannot be used during a run as it will kill the DAQ writer.
@@ -23,6 +24,7 @@ class DBReset(CitoShowOne):
 
 
 class DBPurge(CitoShowOne):
+
     """Delete/purge all DAQ documents without deleting collection.
 
     This can be used during a run.
@@ -36,6 +38,7 @@ class DBPurge(CitoShowOne):
 
 
 class DBRepair(CitoShowOne):
+
     """Repair DB to regain unused space.
 
     MongoDB can't know how what to do with space after a document is deleted,
@@ -53,6 +56,7 @@ class DBRepair(CitoShowOne):
 
 
 class DBCount(CitoShowOne):
+
     """Count docs in DB.
     """
 
@@ -64,6 +68,7 @@ class DBCount(CitoShowOne):
 
 
 class DBDuplicates(CitoShowOne):
+
     """Find duplicate data and print their IDs.
 
     Search through all the DAQ document's data payloads (i.e., 'data' key) and

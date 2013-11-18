@@ -4,19 +4,22 @@
 __author__ = 'tunnell'
 
 import logging
+import pickle
+import gzip
+import inspect
 
 import pymongo
 import snappy
 import mongomock
-import pickle
-import gzip
-import inspect
 import os
+
 
 def mock_get_mongo_db_objects(a='127.0.0.1'):
     print("Using mock")
 
-    dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
+    # script directory
+    dir = os.path.dirname(
+        os.path.abspath(inspect.getfile(inspect.currentframe())))
 
     file = gzip.open(os.path.join(dir, 'data.p'), 'rb')
     c = mongomock.Connection()
@@ -40,6 +43,7 @@ def get_server_name():
     :returns: str -- server address
     """
     return "127.0.0.1"
+
 
 def get_sort_key():
     """Sort key used for MongoDB sorting and indexing.
@@ -76,7 +80,9 @@ def get_mongo_db_objects(server=get_server_name()):
 
     num_docs_in_collection = collection.count()
     if num_docs_in_collection == 0:
-        raise RuntimeError("Collection %s.%s contains no events; can't continue" % (db_name, collection_name))
+        raise RuntimeError(
+            "Collection %s.%s contains no events; can't continue" %
+            (db_name, collection_name))
 
     collection.ensure_index(get_sort_key(),
                             background=True)
@@ -90,9 +96,6 @@ def get_pymongo_collection():
     :returns:  Collection -- Mongo collection with docs
     """
     return get_mongo_db_objects()[2]
-
-
-
 
 
 def get_min_time(collection):
@@ -111,7 +114,7 @@ def get_min_time(collection):
         my_min = None
 
         for doc in collection.find():
-            if my_min == None or doc['triggertime'] < my_min:
+            if my_min is None or doc['triggertime'] < my_min:
                 my_min = doc['triggertime']
         if my_min is None:
             raise RuntimeError("Can't find min time in mock")

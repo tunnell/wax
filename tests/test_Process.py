@@ -17,6 +17,7 @@ from cito import main
 
 
 class TestInspector(unittest.TestCase):
+
     def setUp(self):
         pass
 

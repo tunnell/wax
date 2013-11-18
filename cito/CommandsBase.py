@@ -6,16 +6,15 @@ __author__ = 'tunnell'
 
 import logging
 import time
-import sys
 
 from cliff.command import Command
 from cliff.show import ShowOne
-import pymongo
 
 from cito.core import XeDB
 
 
 class CitoCommand(Command):
+
     """CitoSingleCommand base class
 
     This only looks over some range t0 till t1
@@ -37,7 +36,6 @@ class CitoCommand(Command):
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
                             default=10 ** 2)
-
 
         return parser
 
@@ -70,6 +68,7 @@ class CitoCommand(Command):
 
 
 class CitoSingleCommand(CitoCommand):
+
     """CitoSingleCommand base class
 
     This only looks over some range t0 till t1
@@ -87,6 +86,7 @@ class CitoSingleCommand(CitoCommand):
 
 
 class CitoContinousCommand(CitoCommand):
+
     """CitoSingleCommand base class
 
     This only looks over some range t0 till t1
@@ -99,7 +99,7 @@ class CitoContinousCommand(CitoCommand):
         parser = super(CitoContinousCommand, self).get_parser(prog_name)
 
         parser.add_argument('-n', '--num', type=int, default=-1,
-                               help='Number of time chunks to process')
+                            help='Number of time chunks to process')
 
         return parser
 
@@ -124,11 +124,14 @@ class CitoContinousCommand(CitoCommand):
                         t0 = (i * chunk_size)
                         t1 = (i + 1) * chunk_size
 
-                        # Break if enough processed, simulate KeyboardInterrupt for testing
+                        # Break if enough processed, simulate KeyboardInterrupt
+                        # for testing
                         if parsed_args.num != -1:
-                            self.log.debug('%d %d', i, (int(min_time / chunk_size) + parsed_args.num))
+                            self.log.debug(
+                                '%d %d', i, (int(min_time / chunk_size) + parsed_args.num))
                             if i > (int(min_time / chunk_size) + parsed_args.num):
-                                self.log.info("Reached maximum number of docs, exiting...")
+                                self.log.info(
+                                    "Reached maximum number of docs, exiting...")
                                 raise KeyboardInterrupt
 
                         self.log.info('Processing %d %d' % (t0, t1))
@@ -152,6 +155,7 @@ class CitoContinousCommand(CitoCommand):
 
 
 class CitoShowOne(ShowOne):
+
     """Base class for all DB commands.
 
     Handles logging, descriptions, and common fuctions.
