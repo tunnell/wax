@@ -1,33 +1,7 @@
-# cito - The Xenon1T experiments software trigger
-# Copyright 2013.  All rights reserved.
-# https://github.com/tunnell/cito
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-#     * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-#     * Neither the name of the Xenon experiment, nor the names of its
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Commands for the command line interface for DB operations.
+
+All of these commands are simple enough that they don't rely too
+much on XeDB.  Maybe these commands should be moved there though?
 """
 
 from bson.code import Code
@@ -44,14 +18,7 @@ class DBReset(CitoShowOne):
 
     def take_action(self, parsed_args):
         conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
-
-        # The pymongo call
         db.drop_collection(collection.name)
-
-        # TODO: Maybe purge celery too?
-        #from celery.task.control import discard_all
-        # discard_all()
-
         return self.get_status(db)
 
 
@@ -63,11 +30,8 @@ class DBPurge(CitoShowOne):
 
     def take_action(self, parsed_args):
         conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
-
         self.log.debug("Purging all documents")
-        # The pymongo call
         collection.remove({})
-
         return self.get_status(db)
 
 
@@ -84,10 +48,7 @@ class DBRepair(CitoShowOne):
 
     def take_action(self, parsed_args):
         conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
-
-        # The actual pymongo call
         db.command('repairDatabase')
-
         return self.get_status(db)
 
 
@@ -97,10 +58,8 @@ class DBCount(CitoShowOne):
 
     def take_action(self, parsed_args):
         conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
-
         columns = ['Number of documents']
         data = [collection.count()]
-
         return columns, data
 
 

@@ -34,15 +34,13 @@ setup(
             'cito = cito.main:main'
         ],
         'cito.main': [
-            'doc inspector = cito.inspector:Inspector',
-            'db reset = cito.db_operations:DBReset',
-            'db inspector = cito.db_operations:DBCount',
-            'db repair = cito.db_operations:DBRepair',
-            'db purge = cito.db_operations:DBPurge',
-            'duplicates = cito.db_operations:DBDuplicates',
-            'process = cito.online_processing:Process',
-            'plot = cito.plot:PlotWaveformSingleCommand'
-
+            'doc inspector = cito.Inspector:Inspector',
+            'db reset = cito.DBOperations:DBReset',
+            'db inspector = cito.DBOperations:DBCount',
+            'db repair = cito.DBOperations:DBRepair',
+            'db purge = cito.DBOperations:DBPurge',
+            'duplicates = cito.DBOperations:DBDuplicates',
+            'process = cito.Process:ProcessToMongoCommand',
         ],
     },
     license="BSD",

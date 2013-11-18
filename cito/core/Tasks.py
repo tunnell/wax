@@ -16,6 +16,10 @@ from cito.core import EventBuilding
 
 
 class ProcessTimeBlockTask():
+    """Process a time block
+    """
+
+
     def __init__(self, output):
         self.log = logging.getLogger(__name__)
         self.event_builder = EventBuilding.EventBuilder()

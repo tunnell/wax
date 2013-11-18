@@ -7,57 +7,39 @@ import logging
 
 import pymongo
 import snappy
+import mongomock
+import pickle
+import gzip
+import inspect
+import os
 
+def mock_get_mongo_db_objects(a='127.0.0.1'):
+    print("Using mock")
 
-def get_server_name():
-    return '127.0.0.1'
+    dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
 
-def get_mongo_db_objects(server=get_server_name()):
-    """This function returns pymongo objects
+    file = gzip.open(os.path.join(dir, 'data.p'), 'rb')
+    c = mongomock.Connection()
+    db = c.db
+    collection = db.collection
 
-    Args:
-       server (str):  The server IP or DNS name MongoDB.
+    for doc in pickle.load(file):
+        if 'module' not in doc:
+            print(doc)
+        collection.insert(doc)
 
-    Returns:
-       [Connection, Database, Collection]
-
-    Raises:
-       pymongo.errors.PyMongoError
-
-    """
-    db_name = 'data'
-    collection_name = 'pulses'
-
-    c = pymongo.MongoClient(server)
-
-    db = c[db_name]
-    collection = db[collection_name]
-
-    num_docs_in_collection = collection.count()
-    if num_docs_in_collection == 0:
-        raise RuntimeError("Collection %s.%s contains no events; can't continue" % (db_name, collection_name))
-
-    collection.ensure_index(get_sort_key(),
-                            background=True)
-
-    # Used for module list finding. TODO: This do anything?
-    collection.ensure_index([('module', pymongo.DESCENDING)],
-                            background=True)
+    file.close()
 
     return c, db, collection
 
 
-def get_pymongo_collection():
-    """Returns the current pymongo collection.
+def get_server_name():
+    """Get the current server name
 
-    Args:
-        None
-
-    Returns:
-        Collection
+    .. todo:: should this be a 'config' item or somethign?
+    :returns: str -- server address
     """
-    return get_mongo_db_objects()[2]
-
+    return "127.0.0.1"
 
 def get_sort_key():
     """Sort key used for MongoDB sorting and indexing.
@@ -74,6 +56,45 @@ def get_sort_key():
             ('_id', pymongo.DESCENDING)]
 
 
+def get_mongo_db_objects(server=get_server_name()):
+    """This function returns pymongo objects
+
+    This does all the connection setup, that is specific to this program.
+
+    :param server: The server IP or DNS name MongoDB.
+    :type t0: str.
+    :returns:  list -- [Connection, Database, Collection]
+    :raises: pymongo.errors.PyMongoError
+    """
+    db_name = 'data'            # todo: config?
+    collection_name = 'pulses'  # todo: config?
+
+    c = pymongo.MongoClient(server)
+
+    db = c[db_name]
+    collection = db[collection_name]
+
+    num_docs_in_collection = collection.count()
+    if num_docs_in_collection == 0:
+        raise RuntimeError("Collection %s.%s contains no events; can't continue" % (db_name, collection_name))
+
+    collection.ensure_index(get_sort_key(),
+                            background=True)
+
+    return c, db, collection
+
+
+def get_pymongo_collection():
+    """Returns the current pymongo collection.
+
+    :returns:  Collection -- Mongo collection with docs
+    """
+    return get_mongo_db_objects()[2]
+
+
+
+
+
 def get_min_time(collection):
     """Get minimum time in collection.
 
@@ -84,6 +105,18 @@ def get_min_time(collection):
        int:  A time in units of 10 ns
 
     """
+
+    # See bug #6. https://github.com/tunnell/cito/issues/6
+    if isinstance(collection, mongomock.collection.Collection):
+        my_min = None
+
+        for doc in collection.find():
+            if my_min == None or doc['triggertime'] < my_min:
+                my_min = doc['triggertime']
+        if my_min is None:
+            raise RuntimeError("Can't find min time in mock")
+        return my_min
+
     sort_key = get_sort_key()
     sort_key = [(x[0], pymongo.ASCENDING) for x in sort_key]
 

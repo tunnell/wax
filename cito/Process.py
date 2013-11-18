@@ -39,11 +39,10 @@ from cito.core import Tasks
 from cito.core import Output
 
 
-class PlotWaveformSingleCommand(CitoContinousCommand):
-    """Plot the sum waveform
+class ProcessToMongoCommand(CitoContinousCommand):
+    """Process time blocks and save to MongoDB
     """
 
     def get_tasks(self):
         tasks = [Tasks.ProcessTimeBlockTask(Output.MongoDBOutput())]
-        self.log.debug('Getting tasks: %s', str(tasks))
         return tasks

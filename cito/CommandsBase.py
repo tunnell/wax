@@ -21,16 +21,6 @@ class CitoCommand(Command):
     This only looks over some range t0 till t1
     """
 
-    # Key to sort by so we can use an index for quick query
-    sort_key = [
-        ('triggertime', pymongo.DESCENDING),
-        ('module', pymongo.DESCENDING)
-    ]
-
-    # def __init__(self):
-    # Command.__init__(self)
-    #    log = logging.getLogger(__name__)
-
     def get_description(self):
         return self.__doc__
 
@@ -62,18 +52,15 @@ class CitoCommand(Command):
         chunk_size = parsed_args.chunksize
         padding = parsed_args.padding
 
-        self.log.debug("take_action_wrapped")
+        self.log.debug('Args: %s', str(parsed_args))
 
         self.log.debug("Getting mongo objects")
         conn, my_db, collection = XeDB.get_mongo_db_objects(
             parsed_args.hostname)
 
-        # Index for quick query
-        self.log.debug("Creating index")
-        collection.create_index(self.sort_key, dropDups=True)
-
         min_time = XeDB.get_min_time(collection)
 
+        self.log.debug("take_action_wrapped")
         self.take_action_wrapped(chunk_size, padding, min_time,
                                  collection, parsed_args)
 
@@ -111,8 +98,8 @@ class CitoContinousCommand(CitoCommand):
     def get_parser(self, prog_name):
         parser = super(CitoContinousCommand, self).get_parser(prog_name)
 
-        parser.add_argument('-n', '--numevents', type=int,
-                               help='Number of events to process')
+        parser.add_argument('-n', '--num', type=int, default=-1,
+                               help='Number of time chunks to process')
 
         return parser
 
@@ -137,11 +124,16 @@ class CitoContinousCommand(CitoCommand):
                         t0 = (i * chunk_size)
                         t1 = (i + 1) * chunk_size
 
+                        # Break if enough processed, simulate KeyboardInterrupt for testing
+                        if parsed_args.num != -1:
+                            self.log.debug('%d %d', i, (int(min_time / chunk_size) + parsed_args.num))
+                            if i > (int(min_time / chunk_size) + parsed_args.num):
+                                self.log.info("Reached maximum number of docs, exiting...")
+                                raise KeyboardInterrupt
+
                         self.log.info('Processing %d %d' % (t0, t1))
 
                         for task in tasks:
-                            if i > parsed_args.numevents:
-                                raise StopIteration
                             self.log.info('Sending data to task: %s',
                                           task.__class__.__name__)
                             task.process(t0, t1)
@@ -154,12 +146,9 @@ class CitoContinousCommand(CitoCommand):
                     # break
             except StopIteration:
                 pass
-            except ValueError as e:
-                self.log.exception(e)
-                raise  # pass # This means no events left
             except KeyboardInterrupt:
                 self.log.info("Ctrl-C caught so exiting.")
-                sys.exit(0)
+                break
 
 
 class CitoShowOne(ShowOne):
