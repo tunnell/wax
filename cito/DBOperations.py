@@ -5,9 +5,8 @@ much on XeDB.  Maybe these commands should be moved there though?
 """
 
 from bson.code import Code
-
-from cito.core import XeDB
 from cito.CommandsBase import CitoShowOne
+from cito.core import XeDB
 
 
 class DBReset(CitoShowOne):

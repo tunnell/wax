@@ -7,10 +7,9 @@ __author__ = 'tunnell'
 import logging
 import time
 
+from cito.core import XeDB
 from cliff.command import Command
 from cliff.show import ShowOne
-
-from cito.core import XeDB
 
 
 class CitoCommand(Command):

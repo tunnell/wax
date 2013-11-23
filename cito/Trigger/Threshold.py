@@ -1,7 +1,7 @@
 __author__ = 'tunnell'
 
-import scipy
 import numpy as np
+import scipy
 from scipy import signal
 
 

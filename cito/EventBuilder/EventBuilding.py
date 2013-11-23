@@ -12,7 +12,6 @@
 import logging
 
 import numpy as np
-
 from cito.Trigger import Threshold
 
 

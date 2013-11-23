@@ -11,7 +11,6 @@ as a class here.
 import logging
 
 from cito.core import Waveform, XeDB
-
 from cito.EventBuilder import EventBuilding
 
 

@@ -28,14 +28,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import logging
-import sys
 import logging.config
-
 import os
-from cliff.app import App
-from cliff.commandmanager import CommandManager
+import sys
 
 import cito
+from cliff.app import App
+from cliff.commandmanager import CommandManager
 
 
 class CitoApp(App):

@@ -3,7 +3,7 @@
 
 import bson
 from cito.CommandsBase import CitoShowOne
-from cito.core import XeDB, InterfaceV1724
+from cito.core import InterfaceV1724, XeDB
 
 
 class Inspector(CitoShowOne):
