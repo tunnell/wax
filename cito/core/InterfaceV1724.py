@@ -77,7 +77,7 @@ def get_trigger_time_tag(data):
     # The trigger time is a 31 bit number.  The 32nd bit is pointless since it
     # is zero for the first clock cycle then 1 for each cycle afterward.  This
     # information from from Dan Coderre (Bern).  28/Aug/2013.
-    word = word & 0x7FFFFFFF
+    word = int(word) & 0x7FFFFFFF
 
     return word
 
@@ -92,8 +92,7 @@ def get_waveform(data, n_samples):
 
     pnt = 1
 
-    word_chan_mask = data[pnt]
-    word_chan_mask = word_chan_mask & 0xFF
+    word_chan_mask = int(data[pnt]) & 0xFF
     pnt += 3
 
     data_to_return = []
@@ -112,7 +111,7 @@ def get_waveform(data, n_samples):
             wavecounter_within_channel_payload = 0
 
             while (counter_within_channel_payload <= words_in_channel_payload):
-                word_control = data[pnt]
+                word_control = int(data[pnt])
 
                 if (word_control >> 28) == 0x8:
                     num_words_in_channel_payload = word_control & 0xFFFFFFF
