@@ -6,6 +6,7 @@ __author__ = 'tunnell'
 import logging
 import pickle
 import gzip
+import numpy as np
 import inspect
 
 import pymongo
@@ -187,6 +188,12 @@ def get_data_from_doc(doc):
 
     if doc['zipped']:
         data = snappy.uncompress(data)
+
+    data = np.fromstring(data,
+                        dtype=np.uint32)
+
+    if len(data) == 0:
+        raise IndexError("Data has zero length")
 
     return data
 

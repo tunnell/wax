@@ -43,40 +43,14 @@ SAMPLE_TIME_STEP = 1    # 10 ns
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
 
-def get_word_by_index(data, i, do_checks=True):
-    """Get 32-bit word by index.
-
-This function is called often so be sure to check
-
-    Args:
-        data (bytes):  Data bytes to use
-        i (int):  index
-        do_checks (bool): Check that data is good?
-
-    Returns:
-        int:  32-bit word
-    """
-    if do_checks:
-        if len(data) == 0:
-            raise IndexError("Data has zero length")
-        if i > int(len(data) / 4):
-            raise IndexError('i does not exist: %d' % i)
-
-    # 4 bytes in a 32 bit word
-    i0 = i * 4
-    i1 = (i + 1) * 4
-
-    word = int.from_bytes(data[i0:i1], 'little')
-
-    return word
-
 
 def check_header(data, do_checks=True):
     """Check data header for control bits.
 
     Throws exception if misformated header.
     """
-    word = get_word_by_index(data, 0)
+    word = data[0]
+    print(data)
     if do_checks:
         assert word >> 20 == 0xA00, 'Data header misformated %s' % hex(word)
     return True
@@ -86,19 +60,19 @@ def get_block_size(data, do_checks=True):
     """Get size of block from header.
     """
     check_header(data, do_checks)
-    word = get_word_by_index(data, 0)
+    word = data[0]
     size = (word & 0x0FFFFFFF)  # size in words
     if do_checks:
         # len(data) is in bytes, word = 4 bytes
-        assert size == (
-            len(data) / 4), 'Size from header not equal to data size'
+        assert size == (len(data)),\
+            'Size from header not equal to data size'
 
     return size  # number of words
 
 
 def get_trigger_time_tag(data):
     check_header(data)
-    word = get_word_by_index(data, 3)
+    word = data[3]
 
     # The trigger time is a 31 bit number.  The 32nd bit is pointless since it
     # is zero for the first clock cycle then 1 for each cycle afterward.  This
@@ -118,7 +92,7 @@ def get_waveform(data, n_samples):
 
     pnt = 1
 
-    word_chan_mask = get_word_by_index(data, pnt)
+    word_chan_mask = data[pnt]
     word_chan_mask = word_chan_mask & 0xFF
     pnt += 3
 
@@ -130,7 +104,7 @@ def get_waveform(data, n_samples):
         index = 0
 
         if ((word_chan_mask >> j) & 1):
-            words_in_channel_payload = get_word_by_index(data, pnt)
+            words_in_channel_payload = data[pnt]
 
             pnt += 1
 
@@ -138,7 +112,7 @@ def get_waveform(data, n_samples):
             wavecounter_within_channel_payload = 0
 
             while (counter_within_channel_payload <= words_in_channel_payload):
-                word_control = get_word_by_index(data, pnt)
+                word_control = data[pnt]
 
                 if (word_control >> 28) == 0x8:
                     num_words_in_channel_payload = word_control & 0xFFFFFFF
@@ -146,7 +120,7 @@ def get_waveform(data, n_samples):
                     counter_within_channel_payload += 1
 
                     for k in range(num_words_in_channel_payload):
-                        double_sample = get_word_by_index(data, pnt)
+                        double_sample = data[pnt]
 
                         # the 32nd, 31st, 15th, and 16th bits should be zero
                         assert (
