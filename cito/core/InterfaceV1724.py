@@ -49,10 +49,10 @@ def check_header(data, do_checks=True):
 
     Throws exception if misformated header.
     """
-    word = data[0]
-    print(data)
+    word = int(data[0])
+
     if do_checks:
-        assert int(word) >> 20 == 0xA00, 'Data header misformated %s' % hex(word)
+        assert word >> 20 == 0xA00, 'Data header misformated %s' % hex(word)
     return True
 
 
@@ -154,10 +154,11 @@ def get_waveform(data, n_samples):
         samples *= -1
 
         # compress here
-        if index != 0:
-            samples = np.compress(index * [True], samples)
-            indecies = np.compress(index * [True], indecies)
-        else:
+        #if index != 0:
+        #    samples = np.compress(index * [True], samples)
+        #    indecies = np.compress(index * [True], indecies)
+        #else:
+        if index==0:
             samples = np.array([], dtype=SAMPLE_TYPE)
             indecies = np.array([], dtype=np.uint64)
 
