@@ -34,9 +34,9 @@ setup(
             'cito = cito.main:main'
         ],
         'cito.main': [
-            'doc inspector = cito.Inspector:Inspector',
+            'doc inspector = cito.DocInspector:Inspector',
             'db reset = cito.DBOperations:DBReset',
-            'db inspector = cito.DBOperations:DBCount',
+            'db inspector = cito.DBOperations:DBInspector',
             'db repair = cito.DBOperations:DBRepair',
             'db purge = cito.DBOperations:DBPurge',
             'duplicates = cito.DBOperations:DBDuplicates',
