@@ -72,7 +72,7 @@ def get_mongo_db_objects(server=get_server_name()):
     :raises: pymongo.errors.PyMongoError
     """
     db_name = 'data'            # todo: config?
-    collection_name = 'pulses'  # todo: config?
+    collection_name = 'XENON100'  # todo: config?
 
     c = pymongo.MongoClient(server)
 

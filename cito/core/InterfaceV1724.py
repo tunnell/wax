@@ -43,35 +43,31 @@ SAMPLE_TIME_STEP = 1    # 10 ns
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
 
-
-def check_header(data, do_checks=True):
+def check_header(data):
     """Check data header for control bits.
 
     Throws exception if misformated header.
     """
     word = int(data[0])
 
-    if do_checks:
-        assert word >> 20 == 0xA00, 'Data header misformated %s' % hex(word)
+    assert word >> 20 == 0xA00, 'Data header misformated %s' % hex(word)
+
     return True
 
 
-def get_block_size(data, do_checks=True):
+def get_block_size(data):
     """Get size of block from header.
     """
-    check_header(data, do_checks)
     word = data[0]
     size = (int(word) & 0x0FFFFFFF)  # size in words
-    if do_checks:
-        # len(data) is in bytes, word = 4 bytes
-        assert size == (len(data)),\
-            'Size from header not equal to data size'
+
+    # len(data) is in bytes, word = 4 bytes
+    assert size == (len(data)), 'Size from header not equal to data size'
 
     return size  # number of words
 
 
 def get_trigger_time_tag(data):
-    check_header(data)
     word = data[3]
 
     # The trigger time is a 31 bit number.  The 32nd bit is pointless since it

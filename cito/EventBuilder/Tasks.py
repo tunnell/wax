@@ -46,14 +46,9 @@ class ProcessTimeBlockTask():
 
         # Build events (t0 and t1 used only for sanity checks)
         events = self.event_builder.build_event(data, t0, t1)
-
-        self.output.write_events(events)
-
-        # Write out events,
-        #f = open('test.p', 'wb')
-        # mport pickle
-        # for event in events:
-        #    pickle.dump(event, f)
-        # f.close()
+        if len(events):
+            self.output.write_events(events)
+        else:
+            self.log.warning("No events found between %d and %d." % (t0, t1))
 
         return size

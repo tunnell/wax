@@ -24,7 +24,7 @@ setup(
     url='https://github.com/tunnell/cito',
     download_url='https://github.com/tunnell/cito/tarball/master',
     packages=[
-        'cito', 'cito.core',
+        'cito', 'cito.core', 'cito.EventBuilder', 'cito.FileBuilder', 'cito.Trigger',
     ],
     package_dir={'cito': 'cito'},
     include_package_data=True,

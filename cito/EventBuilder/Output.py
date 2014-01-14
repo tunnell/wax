@@ -64,5 +64,6 @@ class MongoDBOutput(OutputCommon):
         return event_data
 
     def write_events(self, event_data_list):
+        self.log.debug(event_data_list)
         cleaned_list = [self.clean_event(x) for x in event_data_list]
         self.collection.insert(cleaned_list)
