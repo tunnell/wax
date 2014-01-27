@@ -4,7 +4,7 @@
     cito.core.EventBuilding
     ~~~~~~~~~~~~~~~~~~~~~~~
 
-    Event building converts time blocks of data into DAQ events.
+    Event building converts time blocks of data (from different digitizer boards) into DAQ events.
 
     Event building (link jargon) occurs by taking all data from all boards recorded between a time window and, using
     some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
@@ -25,6 +25,8 @@
     interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
     example, for peak_k > peak_i, if peak_i + t_post > peak_k - t_pre, these are one event.
 
+    TODO: Store metadata that stores the time of each trigger.
+
 """
 import logging
 
@@ -43,7 +45,7 @@ def get_index_mask_for_trigger(size, peaks,
     Args:
         size (int):  An iterable object of documents containing Caen
                            blocks.  This can be a pymongo Cursor.
-        peaks (list or int): The index or indecies of the peaks
+        peaks (list or int): The index or indices of the peaks
         range_around_trigger (tuple): The range around the peak to save.  Note that there
                                       is no wrap around.
 
@@ -115,7 +117,7 @@ def find_sum_in_data(data):
 
     :param data: Initial time to query.
     :type data: dict.
-    :returns:  dict -- Sum waveform indecies and samples.
+    :returns:  dict -- Sum waveform indices and samples.
     :raises: ValueError
     """
     for key, value in data.items():
@@ -154,40 +156,40 @@ class EventBuilder():
         :type t0: int.
         :param t1: Latest possible time for sanity checks.  If None, skip check.
         :type t1: int.
-        :returns:  dict -- Sum waveform indecies and samples.
+        :returns:  dict -- Sum waveform indices and samples.
         :raises: ValueError
         """
 
         # Grab sum waveform
         sum_data = find_sum_in_data(data)
         self.log.debug('Sum waveform range: [%d, %d]', sum_data[
-                       'indecies'][0], sum_data['indecies'][-1])
+                       'indices'][0], sum_data['indices'][-1])
 
         # Sanity checks on sum waveform
         if t0 is not None and t1 is not None:
             self.log.debug(
                 "Sanity check that sum waveform within inspection window")
             # Sum waveform must be in our inspection window
-            assert t0 < sum_data['indecies'][
+            assert t0 < sum_data['indices'][
                 0] < t1, 'Incorrect Sum WF start time'
-            assert t0 < sum_data['indecies'][
+            assert t0 < sum_data['indices'][
                 -1] < t1, 'Incorrect Sum WF end time'
 
         # Find peaks
-        peak_indecies = Threshold.trigger(
-            sum_data['indecies'], sum_data['samples'])
-        peaks = sum_data['indecies'][peak_indecies]
-        self.log.debug('Peak indecies: %s', str(peaks))
-        self.log.debug('Peak local indecies: %s', str(peak_indecies))
-        self.log.info('Number of peaks: %d', len(peak_indecies))
-        if len(peak_indecies) == 0:  # If no peaks found, return
+        peak_indices = Threshold.trigger(
+            sum_data['indices'], sum_data['samples'])
+        peaks = sum_data['indices'][peak_indices]
+        self.log.debug('Peak indices: %s', str(peaks))
+        self.log.debug('Peak local indices: %s', str(peak_indices))
+        self.log.info('Number of peaks: %d', len(peak_indices))
+        if len(peak_indices) == 0:  # If no peaks found, return
             self.log.info("No peak found; returning")
             return []
 
         # Check peak in sum waveform
         self.log.debug("Sanity check that peaks are within sum waveform")
         for peak in peaks:  # Peak must be in our data range
-            assert sum_data['indecies'][0] < peak < sum_data['indecies'][-1]
+            assert sum_data['indices'][0] < peak < sum_data['indices'][-1]
 
         # Flag samples to save
         to_save_bool_mask = get_index_mask_for_trigger(t1 - t0, peaks - t0)
@@ -209,18 +211,18 @@ class EventBuilder():
 
             for key, value in data.items():
                 (d0, d1, num_pmt) = key
-                (indecies, samples) = value['indecies'], value['samples']
+                (indices, samples) = value['indices'], value['samples']
 
                 if d1 < e0 or e1 < d0:  # If true, no overlap
                     continue
 
                 if e0 <= d0 and d1 <= e1:  # Most common case:
                     s0 = 0
-                    s1 = len(indecies)
+                    s1 = len(indices)
                 else:  # compute overlap
                     overlap = np.intersect1d(np.arange(d0, d1), erange)
-                    s0 = np.where(indecies == overlap[0])[0][0]
-                    s1 = np.where(indecies == overlap[-1])[0][0]
+                    s0 = np.where(indices == overlap[0])[0][0]
+                    s1 = np.where(indices == overlap[-1])[0][0]
 
                 if num_pmt == 'sum':
                     self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)
@@ -228,7 +230,7 @@ class EventBuilder():
                     self.log.debug(
                         '\t\tData (PMT%d): [%d, %d]', num_pmt, d0, d1)
 
-                to_save['data'][num_pmt] = {'indecies': indecies[s0:s1],
+                to_save['data'][num_pmt] = {'indices': indices[s0:s1],
                                             'samples': samples[s0:s1]}
 
             to_save['peaks'] = peaks
