@@ -8,3 +8,4 @@ cliff
 pint
 scipy # not pypy
 mongomock
+mock
