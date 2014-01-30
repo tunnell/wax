@@ -2,6 +2,8 @@
 Installation
 ============
 
+Using Python3.
+
 At the command line::
 
     $ easy_install cito
