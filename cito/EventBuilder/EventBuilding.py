@@ -6,8 +6,8 @@
 
     Event building converts time blocks of data (from different digitizer boards) into DAQ events.
 
-    Event building (link jargon) occurs by taking all data from all boards recorded between a time window and, using
-    some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
+    Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,
+    using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
     that performs the following sequential operations:
 
     * Build sum waveform
@@ -162,29 +162,26 @@ class EventBuilder():
 
         # Grab sum waveform
         sum_data = find_sum_in_data(data)
-        self.log.debug('Sum waveform range: [%d, %d]', sum_data[
-                       'indices'][0], sum_data['indices'][-1])
+        self.log.debug('Sum waveform range: [%d, %d]', sum_data['indices'][0], sum_data['indices'][-1])
 
         # Sanity checks on sum waveform
         if t0 is not None and t1 is not None:
-            self.log.debug(
-                "Sanity check that sum waveform within inspection window")
+            self.log.debug("Sanity check that sum waveform within inspection window")
             # Sum waveform must be in our inspection window
-            assert t0 < sum_data['indices'][
-                0] < t1, 'Incorrect Sum WF start time'
-            assert t0 < sum_data['indices'][
-                -1] < t1, 'Incorrect Sum WF end time'
+            assert t0 < sum_data['indices'][0] < t1, 'Incorrect Sum WF start time: %s' % str(data)
+            assert t0 < sum_data['indices'][-1] < t1, 'Incorrect Sum WF end time %s' % str(data)
 
         # Find peaks
-        peak_indices = Threshold.trigger(
-            sum_data['indices'], sum_data['samples'])
+        peak_indices = Threshold.trigger(sum_data['indices'], sum_data['samples'])
         peaks = sum_data['indices'][peak_indices]
         self.log.debug('Peak indices: %s', str(peaks))
         self.log.debug('Peak local indices: %s', str(peak_indices))
-        self.log.info('Number of peaks: %d', len(peak_indices))
+
         if len(peak_indices) == 0:  # If no peaks found, return
             self.log.info("No peak found; returning")
             return []
+        else:
+            self.log.info('Number of peaks: %d', len(peak_indices))
 
         # Check peak in sum waveform
         self.log.debug("Sanity check that peaks are within sum waveform")

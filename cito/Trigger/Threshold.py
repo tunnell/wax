@@ -3,6 +3,7 @@ __author__ = 'tunnell'
 import numpy as np
 import scipy
 from scipy import signal
+import logging
 
 
 def trigger(indecies, samples):
@@ -54,5 +55,9 @@ def find_peaks(values, threshold=10000, cwt_width=100):
 
     # 20 is the wavelet width
     peakind = scipy.signal.find_peaks_cwt(values, np.array([cwt_width]))
-    peaks_over_threshold = [x for x in peakind if values[x] > threshold]
+    logging.debug('peak')
+    logging.debug(peakind)
+    logging.debug(values[peakind])
+    logging.debug(max(values))
+    peaks_over_threshold = peakind #[x for x in peakind if values[x] > threshold]
     return np.array(peaks_over_threshold, dtype=np.uint32)
