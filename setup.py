@@ -41,6 +41,7 @@ setup(
             'db purge = cito.DBOperations:DBPurge',
             'duplicates = cito.DBOperations:DBDuplicates',
             'process = cito.Process:ProcessToMongoCommand',
+            'inspect trigger = cito.Inspector:TriggerInspector'
         ],
     },
     license="BSD",

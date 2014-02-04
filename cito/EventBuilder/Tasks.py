@@ -46,7 +46,11 @@ class ProcessTimeBlockTask():
             return 0
 
         # Build events (t0 and t1 used only for sanity checks)
-        events = self.event_builder.build_event(data, t0, t1)
+        try:
+            events = self.event_builder.build_event(data, t0, t1)
+        except:
+            logging.exception('Event building failed.')
+
         if len(events):
             self.output.write_events(events)
         else:

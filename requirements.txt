@@ -2,7 +2,7 @@ pymongo
 python-snappy # not pypy, pip install -e git+https://github.com/andrix/python-snappy.git#egg=python-snappy
 numpy # not pypy
 celery
-Cython # not pypy
+#Cython # not pypy
 anyjson
 cliff
 pint

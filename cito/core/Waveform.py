@@ -95,7 +95,8 @@ def get_data_and_sum_waveform(cursor, n_samples):
                    time_correction + len(samples),
                    num_channel)
 
-            interpreted_data[key] = samples
+            interpreted_data[key] = {'indices' : np.arange(time_correction, time_correction + 2 * len(samples)),
+                                     'samples' : samples}
 
     log.debug("Size of data process in bytes: %d", size)
     if size == 0:
@@ -110,7 +111,9 @@ def get_data_and_sum_waveform(cursor, n_samples):
            new_indices[-1],
            'sum')
 
-    interpreted_data[key] = {'indices': new_indices,
-                             'samples': new_samples}
+    #  Here, we store indices as well as the range (in the key) because
+    # the samples of the sum waveform need not be contigous
+    interpreted_data[key] = {'indices' : new_indices,
+                             'samples' : new_samples}
 
     return interpreted_data, size
