@@ -10,6 +10,8 @@ as a class here.
 """
 import logging
 import time
+import sys
+from cito.main import CitoApp
 from cito.core import Waveform, XeDB
 from cito.EventBuilder import EventBuilding
 
@@ -58,3 +60,8 @@ class ProcessTimeBlockTask():
             self.log.warning("No events found between %d and %d." % (t0, t1))
 
         return size
+
+if __name__ == '__main__':
+    myapp = CitoApp()
+    code = myapp.run(['process'])
+    sys.exit(code)
