@@ -84,11 +84,11 @@ def find_peaks(values, threshold=200, cwt_width=100):
     """
 
     # 20 is the wavelet width
-    logging.error('start n=%d' % values.size)
+    logging.debug('CWT with n=%d' % values.size)
     t0 = time.time()
     peakind = find_peaks_cwt(values, np.array([cwt_width]))
     peaks_over_threshold = peakind # [x for x in peakind if values[x] > threshold]
     t1 = time.time()
 
-    logging.error('stop: %f s' % (t1 - t0))
+    logging.debug('Convolution duration: %f s' % (t1 - t0))
     return np.array(peaks_over_threshold, dtype=np.uint32)
