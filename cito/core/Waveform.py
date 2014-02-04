@@ -77,7 +77,7 @@ def get_data_and_sum_waveform(cursor, n_samples):
         try:
             samples = InterfaceV1724.get_samples(data)
         except:
-            logging.exception('Failed to parse document: %s' % str(doc))
+            logging.exception('Failed to parse document: %s' % str(doc['_id']))
             continue
 
         # Improve?
