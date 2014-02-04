@@ -50,10 +50,8 @@ class ProcessToMongoCommand(CitoContinousCommand):
         tasks = [Tasks.ProcessTimeBlockTask(Output.MongoDBOutput())]
         return tasks
 
-def main(argv=sys.argv[1:]):
-    myapp = CitoApp()
-    return myapp.run(argv)
-
 
 if __name__ == '__main__':
-    sys.exit(main('cito process'))
+    myapp = CitoApp()
+    code = myapp.run('cito process')
+    sys.exit(code)
