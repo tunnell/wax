@@ -36,10 +36,6 @@ class ProcessTimeBlockTask():
         :returns:  int -- number of bytes processed
         :raises: AssertionError
         """
-        import cProfile, pstats, io
-        pr = cProfile.Profile()
-        pr.enable()
-
         data_docs = XeDB.get_data_docs(t0, t1)
         data, size = Waveform.get_data_and_sum_waveform(data_docs, t1 - t0)
 
@@ -59,11 +55,5 @@ class ProcessTimeBlockTask():
             self.output.write_events(events)
         else:
             self.log.warning("No events found between %d and %d." % (t0, t1))
-        pr.disable()
-        s = io.StringIO()
-        sortby = 'cumulative'
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        ps.dump_stats('profile_data')
-        print(s.getvalue())
+
         return size

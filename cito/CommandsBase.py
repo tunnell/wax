@@ -129,8 +129,7 @@ class CitoContinousCommand(CitoCommand):
                             self.log.debug(
                                 '%d %d', i, (int(min_time / chunk_size) + parsed_args.num))
                             if i > (int(min_time / chunk_size) + parsed_args.num):
-                                self.log.info(
-                                    "Reached maximum number of docs, exiting...")
+                                self.log.info("Reached maximum number of docs, exiting...")
                                 raise KeyboardInterrupt
 
                         self.log.info('Processing %d %d' % (t0, t1))
