@@ -6,19 +6,23 @@ from cito.core import XeDB
 
 
 class OutputCommon():
+    """Base class for all output
+    """
 
     def __init__(self):
         if 'OutputCommon' == self.__class__.__name__:
-            raise ValueError(
-                'This is a base class %s', self.__class__.__name__)
+            raise ValueError('This is a base class %s',
+                             self.__class__.__name__)
         self.log = logging.getLogger(self.__class__.__name__)
 
     def write_event(self):
         raise NotImplementedError()
 
+    @property
+    def event_number(self):
+        return "Not set"
 
 class MongoDBOutput(OutputCommon):
-
     """Write to MongoDB
 
     This class, I don't think, can know the event number since it events before it
@@ -28,11 +32,9 @@ class MongoDBOutput(OutputCommon):
     def __init__(self):
         OutputCommon.__init__(self)
 
+        # MongoDB collection to put data in
         self._collection = None
 
-    @property
-    def event_number(self):
-        return "Not set"
 
     @property
     def collection(self):
@@ -47,13 +49,17 @@ class MongoDBOutput(OutputCommon):
     def collection(self, value):
         self._collection = value
 
-    def clean_event(self, event_data):
-        """Clean so can mongo"""
+    def mongify_event(self, event_data):
+        """Convert the data into a format that the Mongo API can save
+
+        The main reason this has to be done is because the Mongo API does not
+        understand numpy arrays."""
         new_data = {}
         for channel, channel_data in event_data['data'].items():
             new_data[str(channel)] = {}
             for variable_name, variable_value in channel_data.items():
-                # todo: pickle/bson
+
+                # Convert numpy array to Python list
                 new_data[str(channel)][variable_name] = variable_value.tolist()
 
         event_data['data'] = new_data
@@ -64,6 +70,8 @@ class MongoDBOutput(OutputCommon):
         return event_data
 
     def write_events(self, event_data_list):
+        """Save data to database
+        """
         self.log.debug(event_data_list)
-        cleaned_list = [self.clean_event(x) for x in event_data_list]
-        self.collection.insert(cleaned_list)
+        mongofied_list = [self.mongify_event(x) for x in event_data_list]
+        self.collection.insert(mongofied_list)

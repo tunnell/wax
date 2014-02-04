@@ -22,9 +22,6 @@ class Inspector(CitoShowOne):
                             choices=('data', 'nondata', 'all'),
                             default='all',
                             help='Print only certain keys within document(s)')
-        parser.add_argument(
-            '--skip-checks', dest='checks', action='store_false',
-            help='Skip consistency checks on data.')
 
         subparser = parser.add_mutually_exclusive_group(required=True)
         subparser.add_argument('-n', '--newest', action='store_true',
@@ -60,7 +57,6 @@ class Inspector(CitoShowOne):
             return ([], [])
 
         selection = parsed_args.print
-        do_checks = parsed_args.checks
 
         output = []
 
@@ -77,15 +73,24 @@ class Inspector(CitoShowOne):
                 # A try/except block to see if the InterfaceV1724 class throwns
                 # any assertion exceptions when checking for data consistency.
                 try:
-                    if do_checks:
-                        output.append(('data(good header?)',
-                                       InterfaceV1724.check_header(data)))
-                    output.append(('data(trigger time tag)',
-                                   InterfaceV1724.get_trigger_time_tag(data)))
+                    try:
+                        output.append(('data(good header?)', InterfaceV1724.check_header(data)))
+                    except AssertionError:
+                        output.append(('data(good header?)', False))
 
-                    size = InterfaceV1724.get_block_size(data, do_checks)
-                    output.append(('data(size from header in words)',
-                                   size))
+                    try:
+                        output.append(('data(trigger time tag)',
+                                   InterfaceV1724.get_trigger_time_tag(data)))
+                    except AssertionError:
+                        output.append(('data(trigger time tag)', False))
+
+
+                    try:
+                        size = InterfaceV1724.get_block_size(data)
+                        output.append(('data(size from header in words)',
+                                       size))
+                    except AssertionError:
+                        output.append(('data(size from header in words)', False))
 
                     try:
                         result = InterfaceV1724.get_waveform(data, 10000)
@@ -101,8 +106,7 @@ class Inspector(CitoShowOne):
                         # Print out 8 hex characters. After printing, the rightmost
                         # character on the string corresponds to the 0th bit.  The
                         # leftmost then corresponds to the highest 31st bit.
-                        word = InterfaceV1724.get_word_by_index(
-                            data, i, do_checks)
+                        word = data[i]
                         output.append(('data[%d]' % i,
                                        '%08x' % word))
 
@@ -113,8 +117,7 @@ class Inspector(CitoShowOne):
 
                     # This shouldn't happen since the interface was told not to
                     # raise assertion errors
-                    if not do_checks:
-                        raise e
+                    raise e
 
             # If not 'data' and data-only printing off
             elif selection != 'data':

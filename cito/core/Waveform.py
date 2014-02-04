@@ -38,17 +38,6 @@ from cito.core import XeDB
 from cito.core import InterfaceV1724
 
 
-def get_pmt_number(num_board, num_channel):
-    channels_per_board = 8  # this used elsewhere?
-    if num_board == 770:
-        scale = 0
-    elif num_board == 876:
-        scale = 1
-    else:
-        raise ValueError('Bad module number %d' % num_board)
-    return channels_per_board * scale + num_channel
-
-
 def get_data_and_sum_waveform(cursor, n_samples):
     """Get inverted sum waveform from mongo
 
@@ -79,52 +68,52 @@ def get_data_and_sum_waveform(cursor, n_samples):
     for doc in cursor:
         log.debug('Processing doc %s', str(doc['_id']))
         data = XeDB.get_data_from_doc(doc)
-        num_board = doc['module']
+        num_channel = doc['module']
 
         size += len(data)
 
         time_correction = doc['triggertime']
 
-        this_board = InterfaceV1724.get_waveform(data, n_samples)
+        samples = InterfaceV1724.get_samples(data)
 
-        for num_channel, samples, indecies in this_board:
-            indecies += time_correction
+        # Improve?
+        # Compute baseline with first 3 and last 3 samples
+        baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()
 
-            # Compute baseline with first 3 and last 3 samples
-            baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()
+        for i, sample in enumerate(samples):
+            sample = np.min((samples[i] - baseline), 0)
+            sample_index = time_correction + i
 
-            # i is for what is returned by get_waveform
-            # sample_index is the index in detector time
-            for i, sample_index in enumerate(indecies):
-                sample = np.min((samples[i] - baseline), 0)
+            if sample_index in sum_data:
+                sum_data[sample_index] += sample
+            else:
+                sum_data[sample_index] = sample
 
-                if sample_index in sum_data:
-                    sum_data[sample_index] += sample
-                else:
-                    sum_data[sample_index] = sample
 
-            if indecies.size != 0:
-                start, stop = np.min(indecies), np.max(indecies)
+        if samples.size != 0:
+            key = (time_correction,
+                   time_correction + len(samples),
+                   num_channel)
 
-                num_pmt = get_pmt_number(num_board, num_channel)
-
-                interpreted_data[(
-                    start, stop, num_pmt)] = {'indecies': indecies,
-                                              'samples': samples}
+            interpreted_data[key] = {'indices' : np.arange(time_correction, time_correction + 2 * len(samples)),
+                                     'samples' : samples}
 
     log.debug("Size of data process in bytes: %d", size)
     if size == 0:
         return interpreted_data, size
-    new_indecies = [x for x in sum_data.keys()]
-    new_indecies.sort()
-    new_samples = [sum_data[x] for x in new_indecies]
-    new_indecies = np.array(new_indecies, dtype=np.int64)
+    new_indices = [x for x in sum_data.keys()]
+    new_indices.sort()
+    new_samples = [sum_data[x] for x in new_indices]
+    new_indices = np.array(new_indices, dtype=np.int64)
     new_samples = np.array(new_samples, dtype=np.int32)
 
-    interpreted_data[(
-        np.min(
-            new_indecies), np.max(
-            new_indecies), 'sum')] = {'indecies': new_indecies,
-                                      'samples': new_samples}
+    key = (new_indices[0],
+           new_indices[-1],
+           'sum')
+
+    #  Here, we store indices as well as the range (in the key) because
+    # the samples of the sum waveform need not be contigous
+    interpreted_data[key] = {'indices' : new_indices,
+                             'samples' : new_samples}
 
     return interpreted_data, size

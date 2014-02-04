@@ -7,7 +7,7 @@ much on XeDB.  Maybe these commands should be moved there though?
 from bson.code import Code
 from cito.CommandsBase import CitoShowOne
 from cito.core import XeDB
-
+import itertools
 
 class DBReset(CitoShowOne):
 
@@ -54,15 +54,61 @@ class DBRepair(CitoShowOne):
         return self.get_status(db)
 
 
-class DBCount(CitoShowOne):
+class DBInspector(CitoShowOne):
 
-    """Count docs in DB.
+    """Show statistics on DB collection
     """
+
+    @staticmethod
+    def formatter2(start, end, step):
+        if step > 1:
+            return '{}-{}:{}'.format(start, end, step)
+        else:
+            return '{}-{}'.format(start, end)
+
+    def helper(self, lst):
+        if len(lst) == 1:
+            return str(lst[0]), []
+        if len(lst) == 2:
+            return ','.join(map(str,lst)), []
+
+        step = lst[1] - lst[0]
+        for i,x,y in zip(itertools.count(1), lst[1:], lst[2:]):
+            if y-x != step:
+                if i > 1:
+                    return self.formatter2(lst[0], lst[i], step), lst[i+1:]
+                else:
+                    return str(lst[0]), lst[1:]
+        return self.formatter2(lst[0], lst[-1], step), []
+
+    def re_range(self, lst):
+        result = []
+        while lst:
+            partial,lst = self.helper(lst)
+            result.append(partial)
+        return ','.join(result)
 
     def take_action(self, parsed_args):
         conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
         columns = ['Number of documents']
         data = [collection.count()]
+
+        modules = collection.distinct('module')
+        modules.sort()
+        columns.append('Modules')
+        data.append(self.re_range(modules))
+
+        columns.append('Module count')
+        data.append(str(len(collection.distinct('module'))))
+
+        columns.append('Missing modules')
+        modules = collection.distinct('module')
+        missing_modules = [i for i in range(min(modules), max(modules)) if i not in modules]
+        data.append(self.re_range(missing_modules))
+
+        columns.append('Missing modules count')
+        data.append(len(missing_modules))
+
         return columns, data
 
 

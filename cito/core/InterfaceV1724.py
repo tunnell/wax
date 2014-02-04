@@ -43,121 +43,17 @@ SAMPLE_TIME_STEP = 1    # 10 ns
 N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
 
-def check_header(data):
-    """Check data header for control bits.
+def get_samples(data):
+    # Parse data
+    samples = np.frombuffer(data, dtype=np.int16)
 
-    Throws exception if misformated header.
-    """
-    word = int(data[0])
+    # Sanity check
+    #for i in range(len(data)):
+    #    # the 32nd, 31st, 15th, and 16th bits should be zero
+    #    assert (int(data[i]) & 0x0C000C000) == 0, "Sample format incorrect"
 
-    assert word >> 20 == 0xA00, 'Data header misformated %s' % hex(word)
+    # Invert pulse so larger energy deposit is larger ADC values
+    samples *= -1
+    samples += MAX_ADC_VALUE
 
-    return True
-
-
-def get_block_size(data):
-    """Get size of block from header.
-    """
-    word = data[0]
-    size = (int(word) & 0x0FFFFFFF)  # size in words
-
-    # len(data) is in bytes, word = 4 bytes
-    assert size == (len(data)), 'Size from header not equal to data size'
-
-    return size  # number of words
-
-
-def get_trigger_time_tag(data):
-    word = data[3]
-
-    # The trigger time is a 31 bit number.  The 32nd bit is pointless since it
-    # is zero for the first clock cycle then 1 for each cycle afterward.  This
-    # information from from Dan Coderre (Bern).  28/Aug/2013.
-    word = int(word) & 0x7FFFFFFF
-
-    return word
-
-
-def get_waveform(data, n_samples):
-    # Each 'occurence' is a continous sequence of ADC samples for a given
-    # channel.  Due to zero suppression, there can be multiple occurences for
-    # a given channel.  Each item in this array is a dictionary that will be
-    # returned.
-
-    check_header(data)
-
-    pnt = 1
-
-    word_chan_mask = int(data[pnt]) & 0xFF
-    pnt += 3
-
-    data_to_return = []
-
-    for j in range(N_CHANNELS_IN_DIGITIZER):
-        samples = np.zeros(n_samples, dtype=SAMPLE_TYPE)
-        indecies = np.zeros(n_samples, dtype=np.uint32)
-        index = 0
-
-        if ((word_chan_mask >> j) & 1):
-            words_in_channel_payload = data[pnt]
-
-            pnt += 1
-
-            counter_within_channel_payload = 2
-            wavecounter_within_channel_payload = 0
-
-            while (counter_within_channel_payload <= words_in_channel_payload):
-                word_control = int(data[pnt])
-
-                if (word_control >> 28) == 0x8:
-                    num_words_in_channel_payload = word_control & 0xFFFFFFF
-                    pnt = pnt + 1
-                    counter_within_channel_payload += 1
-
-                    for k in range(num_words_in_channel_payload):
-                        double_sample = int(data[pnt])
-
-                        # the 32nd, 31st, 15th, and 16th bits should be zero
-                        assert (double_sample & 0x0C000C000) == 0,\
-                            "Sample format incorrect"
-
-                        sample_1 = double_sample & 0xFFFF
-                        sample_2 = (double_sample >> 16) & 0xFFFF
-
-                        samples[index] = sample_1
-                        indecies[index] = wavecounter_within_channel_payload
-                        wavecounter_within_channel_payload += 1
-                        index += 1
-
-                        samples[index] = sample_2
-                        indecies[index] = wavecounter_within_channel_payload
-                        wavecounter_within_channel_payload += 1
-                        index += 1
-
-                        pnt = pnt + 1
-                        counter_within_channel_payload += 1
-                else:
-                    wavecounter_within_channel_payload += 2 * \
-                        words_in_channel_payload + 1
-                    pnt = pnt + 1
-                    counter_within_channel_payload += 1
-
-        else:
-            #print('skipping', j)
-            pass
-
-        samples -= 2 ** 14
-        samples *= -1
-
-        # compress here
-        #if index != 0:
-        #    samples = np.compress(index * [True], samples)
-        #    indecies = np.compress(index * [True], indecies)
-        #else:
-        if index==0:
-            samples = np.array([], dtype=SAMPLE_TYPE)
-            indecies = np.array([], dtype=np.uint64)
-
-        data_to_return.append((j, samples, indecies))
-
-    return data_to_return
+    return samples
