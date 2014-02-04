@@ -99,6 +99,8 @@ class CitoContinousCommand(CitoCommand):
 
         parser.add_argument('-n', '--num', type=int, default=-1,
                             help='Number of time chunks to process')
+        parser.add_argument('-w', '--waittime', type=int, default=-1,
+                            help='Time to wait (negative means do not)')
 
         return parser
 
@@ -150,12 +152,14 @@ class CitoContinousCommand(CitoCommand):
 
                     current_time_index = time_index
                 else:
+                    if parsed_args.waittime < 0:
+                        break
                     self.log.debug('Waiting %f seconds' % parsed_args.waittime)
                     time.sleep(parsed_args.waittime)
                     # my_db.command('repairDatabase')
                     # break
             except StopIteration:
-                pass
+                raise#pass
             except KeyboardInterrupt:
                 self.log.info("Ctrl-C caught so exiting.")
                 break
