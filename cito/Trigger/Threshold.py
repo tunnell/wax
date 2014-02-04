@@ -4,7 +4,12 @@ import numpy as np
 import scipy
 from scipy import signal
 import logging
-
+import numpy as np
+from scipy.signal._peak_finding import _filter_ridge_lines, _identify_ridge_lines
+from scipy.lib.six.moves import xrange
+from scipy.signal.wavelets import cwt, ricker
+from scipy.stats import scoreatpercentile
+import time
 
 def trigger(indecies, samples):
     peaks = []
@@ -37,8 +42,33 @@ def trigger(indecies, samples):
 
     return peaks
 
+def cwt(data, wavelet, widths):
+    output = np.zeros([len(widths), len(data)])
+    for ind, width in enumerate(widths):
+        wavelet_data = wavelet(min(10 * width, len(data)), width)
+        output[ind, :] = signal.fftconvolve(data, wavelet_data,
+                                              mode='same')
+    return output
 
-def find_peaks(values, threshold=10000, cwt_width=100):
+def find_peaks_cwt(vector, widths, wavelet=None, max_distances=None, gap_thresh=None,
+                   min_length=None, min_snr=1, noise_perc=10):
+    """Stolen from Scipy"""
+    if gap_thresh is None:
+        gap_thresh = np.ceil(widths[0])
+    if max_distances is None:
+        max_distances = widths / 4.0
+    if wavelet is None:
+        wavelet = ricker
+
+    cwt_dat = cwt(vector, wavelet, widths)
+    ridge_lines = _identify_ridge_lines(cwt_dat, max_distances, gap_thresh)
+    filtered = _filter_ridge_lines(cwt_dat, ridge_lines, min_length=min_length,
+                                   min_snr=min_snr, noise_perc=noise_perc)
+    max_locs = [x[1][0] for x in filtered]
+    return sorted(max_locs)
+
+
+def find_peaks(values, threshold=200, cwt_width=100):
     """Find peaks within list of values.
 
     Uses scipy to find peaks above a threshold.
@@ -54,10 +84,17 @@ def find_peaks(values, threshold=10000, cwt_width=100):
     """
 
     # 20 is the wavelet width
-    peakind = scipy.signal.find_peaks_cwt(values, np.array([cwt_width]))
+    logging.error('start n=%d' % values.size)
+    t0 = time.time()
+    peakind = find_peaks_cwt(values, np.array([cwt_width]))
     logging.debug('peak')
     logging.debug(peakind)
     logging.debug(values[peakind])
     logging.debug(max(values))
-    peaks_over_threshold = peakind #[x for x in peakind if values[x] > threshold]
+    logging.error('big:')
+    logging.error(values[peakind])
+    peaks_over_threshold = peakind # [x for x in peakind if values[x] > threshold]
+    t1 = time.time()
+
+    logging.error('stop: %f s' % (t1 - t0))
     return np.array(peaks_over_threshold, dtype=np.uint32)

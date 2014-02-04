@@ -74,7 +74,11 @@ def get_data_and_sum_waveform(cursor, n_samples):
 
         time_correction = doc['triggertime']
 
-        samples = InterfaceV1724.get_samples(data)
+        try:
+            samples = InterfaceV1724.get_samples(data)
+        except:
+            logging.exception('Failed to parse document: %s' % str(doc))
+            continue
 
         # Improve?
         # Compute baseline with first 3 and last 3 samples
@@ -95,7 +99,7 @@ def get_data_and_sum_waveform(cursor, n_samples):
                    time_correction + len(samples),
                    num_channel)
 
-            interpreted_data[key] = {'indices' : np.arange(time_correction, time_correction + 2 * len(samples)),
+            interpreted_data[key] = {'indices' : np.arange(time_correction, time_correction + samples.size),
                                      'samples' : samples}
 
     log.debug("Size of data process in bytes: %d", size)

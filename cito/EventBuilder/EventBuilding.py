@@ -35,7 +35,7 @@ from cito.Trigger import Threshold
 
 
 def get_index_mask_for_trigger(size, peaks,
-                               range_around_peak=(-500, 500)):
+                               range_around_peak=(-18000, 18000)):
     """Creates 1D array where an element is true if respective sample should be
      saved.
 
@@ -166,6 +166,27 @@ class EventBuilder():
         ##
         # sum0, sum1, time ranges
         sum_data = find_sum_in_data(data)
+
+        to_save = {}
+        to_save['data'] = {}
+        to_save['sum_data'] = {'samples' : sum_data['samples'].tolist(),
+                                   'indices' : sum_data['indices'].tolist(),}
+        import matplotlib.pyplot as plt
+        plt.title('%d' % (np.max(sum_data['indices']) - np.min(sum_data['indices'])))
+        plt.plot(sum_data['indices'], sum_data['samples'])
+        #plt.show()
+
+
+        for channel, data2 in data.items():
+            if channel == 'sum': continue
+            print(data2.keys())
+            logging.error('size indices %d' % data2['indices'].size)
+            logging.error('size samples %d' % data2['samples'].size)
+            plt.plot(data2['indices'], data2['samples'], label=channel)
+        plt.legend()
+        plt.show()
+        return [to_save]
+
         sum0, sum1 = sum_data['indices'][0], sum_data['indices'][-1]
         #if t0 is not None and t1 is not None:  # Sanity checks on sum waveform
         #    self.log.debug("Sanity check that sum waveform within inspection window")
@@ -220,7 +241,9 @@ class EventBuilder():
                 (d0, d1, num_pmt) = key
                 samples = value['samples']
                 indices = value['indices']
-                assert len(samples) == (d1 - d0), '%d %d %d' % (samples.size, d0, d1)
+
+                if key[2] != 'sum':
+                    assert len(samples) == (d1 - d0), '%d %d %d' % (samples.size, d0, d1)
 
                 # If no data in our search range, continue
                 if d1 < e0 or e1 <= d0:  # If true, no overlap
@@ -231,6 +254,9 @@ class EventBuilder():
                     s1 = len(samples)
                 else:  # compute overlap
                     overlap = np.intersect1d(np.arange(d0, d1), erange)
+                    if overlap.size == 0:
+                        self.log.warn('No overlap found... not saving %s.' % key)
+                        continue
 
                     s0 = np.where(indices == overlap[0])[0][0]
                     s1 = np.where(indices == overlap[-1])[0][0]

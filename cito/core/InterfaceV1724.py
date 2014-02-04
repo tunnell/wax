@@ -47,6 +47,9 @@ def get_samples(data):
     # Parse data
     samples = np.frombuffer(data, dtype=np.int16)
 
+    if np.max(samples) >= MAX_ADC_VALUE or np.min(samples) < 0:
+        raise ValueError('Corrupt data')
+
     # Sanity check
     #for i in range(len(data)):
     #    # the 32nd, 31st, 15th, and 16th bits should be zero

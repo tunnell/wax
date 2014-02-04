@@ -23,40 +23,48 @@ class TriggerInspector(CitoShowOne):
 
         # TODO: move into XeDB
         collection = conn['output']['somerun']
-        self.log.info('Searching for trigger event %d' % parsed_args.index)
+        index = parsed_args.index
+        self.log.info('Searching for trigger event %d' % index)
         #doc = collection.find("{}")
-        doc = collection.find_one({'evt_num': parsed_args.index})
+        doc = collection.find_one({'evt_num': index})
 
-        output = []
-        output.append(('Event number:', doc['evt_num']))
+        try:
+            output = []
+            output.append(('Event number', doc['evt_num']))
 
-        output.append(('Range [10 ns]:', doc['range']))
-        output.append(('Range [us]:', [i/100 for i in doc['range']]))
+            output.append(('Range [10 ns]', doc['range']))
+            output.append(('Range [us]', [i/100 for i in doc['range']]))
 
-        output.append(('Span [10 ns]:', (doc['range'][1] - doc['range'][0])))
-        output.append(('Span [us]:', (doc['range'][1] - doc['range'][0])/100))
+            output.append(('Span [10 ns]', (doc['range'][1] - doc['range'][0])))
+            output.append(('Span [us]', (doc['range'][1] - doc['range'][0])/100))
 
-        output.append(('Peaks:', doc['peaks']))
-        output.append(('Channels with data:', str(doc['data'].keys())))
+            output.append(('Peaks', doc['peaks']))
+            output.append(('Channels with data', str(doc['data'].keys())))
 
-        x = doc['sum_data']['indices']
-        y = doc['sum_data']['samples']
+            scale = 100
 
-        plt.figure()
-        plt.plot(x,y, 'o')
+            x = [i / scale for i in doc['sum_data']['indices']]
+            y = doc['sum_data']['samples']
 
-        for peak in doc['peaks']:
-            plt.vlines(peak, 0, plt.ylim()[1])
-        plt.hlines(plt.ylim()[1]*0.5, doc['range'][0], doc['range'][1])
+            plt.figure()
+            plt.plot(x,y, 'o')
 
+            for peak in doc['peaks']:
+                plt.vlines(peak/scale, 0, plt.ylim()[1])
+            plt.hlines(plt.ylim()[1]*0.5, doc['range'][0]/scale, doc['range'][1]/scale)
+            plt.xlabel('$\mu$s')
+            plt.savefig('sum_%d.eps' % index)
+            output.append(('Sum plot', 'sum_%d.eps' % index))
 
-        plt.figure()
+            plt.figure()
+            for channel, data in doc['data'].items():
+                plt.plot([i / scale for i in data['indices']], data['samples'], label=channel)
+            plt.xlabel('$\mu$s')
+            plt.legend()
 
-        for channel, data in doc['data'].items():
-            plt.plot(data['indices'], data['samples'], label=channel)
-        plt.legend()
-        plt.show()
-
-
+            plt.savefig('channels_%d.eps' % index)
+            output.append(('Channel plot', 'channels_%d.eps' % index))
+        except:
+            self.log.exception('fail to inspect')
 
         return zip(*output)
