@@ -188,12 +188,6 @@ class EventBuilder():
         # return [to_save]
 
         sum0, sum1 = sum_data['indices'][0], sum_data['indices'][-1]
-        #if t0 is not None and t1 is not None:  # Sanity checks on sum waveform
-        #    self.log.debug("Sanity check that sum waveform within inspection window")
-            # Sum waveform must be in our inspection window
-        #    debug_string = 't [%d, %d], sum [%d, %d]' % (t0, t1, sum0, sum1)
-        #    assert t0 < sum0 < t1, 'Incorrect Sum WF start time: %s' % debug_string
-        #    assert t0 < sum1 < t1, 'Incorrect Sum WF end time %s' % debug_string
         self.log.debug('Sum waveform range: [%d, %d]', sum0, sum1)
 
         ##

@@ -87,12 +87,6 @@ def find_peaks(values, threshold=200, cwt_width=100):
     logging.error('start n=%d' % values.size)
     t0 = time.time()
     peakind = find_peaks_cwt(values, np.array([cwt_width]))
-    logging.debug('peak')
-    logging.debug(peakind)
-    logging.debug(values[peakind])
-    logging.debug(max(values))
-    logging.error('big:')
-    logging.error(values[peakind])
     peaks_over_threshold = peakind # [x for x in peakind if values[x] > threshold]
     t1 = time.time()
 
