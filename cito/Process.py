@@ -36,7 +36,9 @@ from cito.FileBuilder import Output
 __author__ = 'tunnell'
 
 from cito.CommandsBase import CitoContinousCommand
+import sys
 from cito.EventBuilder import Tasks
+from cito.main import CitoApp
 
 
 class ProcessToMongoCommand(CitoContinousCommand):
@@ -47,3 +49,11 @@ class ProcessToMongoCommand(CitoContinousCommand):
     def get_tasks(self):
         tasks = [Tasks.ProcessTimeBlockTask(Output.MongoDBOutput())]
         return tasks
+
+def main(argv=sys.argv[1:]):
+    myapp = CitoApp()
+    return myapp.run(argv)
+
+
+if __name__ == '__main__':
+    sys.exit(main('cito process'))

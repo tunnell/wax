@@ -24,6 +24,7 @@ class ProcessTimeBlockTask():
         self.event_builder = EventBuilding.EventBuilder()
         self.output = output
 
+    @profile
     def process(self, t0, t1):
         """Process a time chunk
 
