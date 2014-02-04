@@ -108,6 +108,9 @@ class CitoContinousCommand(CitoCommand):
 
         tasks = self.get_tasks()
 
+        start_time = time.time()
+        amount_data_processed = 0
+
         # Loop until Ctrl-C or error
         while (1):
             self.log.debug("Entering while loop; use Ctrl-C to exit")
@@ -137,7 +140,13 @@ class CitoContinousCommand(CitoCommand):
                         for task in tasks:
                             self.log.info('Sending data to task: %s',
                                           task.__class__.__name__)
-                            task.process(t0, t1)
+                            amount_data_processed += task.process(t0, t1)
+
+                        dt = (time.time() - start_time)
+                        data_rate = amount_data_processed / dt
+                        self.log.info("%d bytes processed in %d seconds" % (amount_data_processed,
+                                                                            dt))
+                        self.log.info("Rate: %f" % (data_rate/dt))
 
                     current_time_index = time_index
                 else:

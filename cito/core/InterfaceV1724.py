@@ -45,10 +45,13 @@ N_CHANNELS_IN_DIGITIZER = 8  # number of channels in digitizer board
 
 def get_samples(data):
     # Parse data
+    if len(data) > 32000:
+        raise ValueError('Data from board larger than memory on board')
+
     samples = np.frombuffer(data, dtype=np.int16)
 
     if np.max(samples) >= MAX_ADC_VALUE or np.min(samples) < 0:
-        raise ValueError('Corrupt data')
+        raise ValueError('Corrupt data since more than 14 bits used')
 
     # Sanity check
     #for i in range(len(data)):

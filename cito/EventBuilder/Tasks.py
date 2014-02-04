@@ -9,7 +9,7 @@ as a class here.
 
 """
 import logging
-
+import time
 from cito.core import Waveform, XeDB
 from cito.EventBuilder import EventBuilding
 

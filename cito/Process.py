@@ -45,15 +45,5 @@ class ProcessToMongoCommand(CitoContinousCommand):
     """
 
     def get_tasks(self):
-        import cProfile, pstats, io
-        pr = cProfile.Profile()
-        pr.enable()
         tasks = [Tasks.ProcessTimeBlockTask(Output.MongoDBOutput())]
-        pr.disable()
-        s = io.StringIO()
-        sortby = 'cumulative'
-        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-        ps.print_stats()
-        ps.dump_stats('profile_data')
-        print(s.getvalue())
         return tasks
