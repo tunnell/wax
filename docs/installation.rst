@@ -22,3 +22,22 @@ To get dependencies right, can do::
   ubuntu: apt-get install cython build-essential python3 python-virtualenv python3-scipy python3-numpy 
 
 (git if dev)
+
+-------------------
+
+Installing Anaconda
+
+
+Download Anaconda from: http://continuum.io/downloads
+
+At the command line: 
+
+    $ bash <downloaded file>
+    
+To make anaconda use python 3: (manual: http://continuum.io/blog/anaconda-python-3)
+
+    $ conda create -n py3k python=3 anaconda
+    
+To activate the use of python 3:
+
+    $ source activate py3k
