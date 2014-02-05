@@ -34,81 +34,32 @@ import numpy as np
 from cito.Trigger import Threshold
 
 
-def get_index_mask_for_trigger(size, peaks,
-                               range_around_peak=(-18000, 18000)):
-    """Creates 1D array where an element is true if respective sample should be
-     saved.
 
-    The array is by default 'false' and then, if within certain distance from a
-    peak, an element is set to 'true'.
+def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
+    """Determine overlapping ranges"""
+    peaks.sort()
 
-    Args:
-        size (int):  An iterable object of documents containing Caen
-                           blocks.  This can be a pymongo Cursor.
-        peaks (list or int): The index or indices of the peaks
-        range_around_trigger (tuple): The range around the peak to save.  Note that there
-                                      is no wrap around.
-
-    Returns:
-       np.ndarray(dtype=np.bool):  Boolean array of length size which says whether or not
-                                    to save a certain index.
-
-    """
-    # Bureaucracy
-    log = logging.getLogger('waveform')
-    if not isinstance(size, int):
-        raise ValueError('Size must be int')
-    if isinstance(peaks, int):
-        peaks = [peaks]
-    elif isinstance(peaks, float):
-        raise ValueError(
-            "peaks must be a list of integers (i.e., not a float)")
-
-    # Physics
-    # False means don't save, true means save
-    to_save = np.zeros(size, dtype=np.bool)
-    for peak in peaks:  # For each triggered peak
-        # The 'min' and 'max' are used to prevent wrap around
-        this_range = np.arange(max(peak + range_around_peak[0], 0),
-                               min(peak + range_around_peak[1], size))
-
-        #  'True' is set for every index in 'this_range'
-        to_save[this_range] = True
-
-    log.debug('Save range: %s', str(to_save))
-    return to_save
-
-
-def split_boolean_array(bool_array):
-    """For boolean arrays, something similar to Python native string split()
-
-    Will return the boundaries of contingous True ranges.
-
-    Args:
-        bool_array (np.array(dtype=np.bool)):  Boolean array to search
-
-    Returns:
-       list: A 2tuple of boundaries for True ranges
-
-    """
+    assert len(range_around_peak) == 2
+    assert range_around_peak[0] < range_around_peak[1]
 
     ranges = []
 
-    places_where_true = np.flatnonzero(bool_array)
+    for peak in peaks:
+        time_start = peak + range_around_peak[0]
+        time_stop = peak + range_around_peak[1]
 
-    start = None
-    for i, place in enumerate(places_where_true):
-        if start is None:
-            start = place
-        elif places_where_true[i] - places_where_true[i - 1] > 1:
-            ranges.append((start, places_where_true[i - 1] + 1))
-            start = place
+        if len(ranges) >= 1 and time_start < ranges[-1][1]: # ranges[-1] is latest range
+            logging.debug('Combining time ranges:')
+            logging.debug('\t%s' % (str((time_start, time_stop))))
+            logging.debug('\t%s' % str(ranges[-1]))
 
-    # Were we searching for the end of Trues but found end of array?
-    if start is not None:
-        ranges.append((start, places_where_true[-1] + 1))
+            ranges[-1][1] = time_stop
+        else:
+            ranges.append([time_start, time_stop])
 
     return ranges
+
+
 
 
 def find_sum_in_data(data):
@@ -145,6 +96,7 @@ class EventBuilder():
             self.event_number += 1
             return self.event_number
 
+    #@profile
     def build_event(self, data, t0=None, t1=None):
         """Build events out of raw data.
 
@@ -202,14 +154,14 @@ class EventBuilder():
         if len(peak_indices) == 0:  # If no peaks found, return
             self.log.info("No peak found; returning")
             return []
-        else:
-            self.log.info('Number of peaks: %d', len(peak_indices))
+
 
         ##
         ## Step 3: Flag ranges around peaks to save, then break into events
         ##
-        to_save_bool_mask = get_index_mask_for_trigger(t1 - t0, peaks - t0)
-        event_ranges = split_boolean_array(to_save_bool_mask) # contigous ranges
+        event_ranges = compute_event_ranges(peaks)
+        self.log.info('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
+
 
         ##
         ## Step 4: For each trigger event, associate channel information
@@ -217,8 +169,8 @@ class EventBuilder():
         events = []
         for e0, e1 in event_ranges:
             # e0, e1 are the times for this trigger event
-            e0 += t0
-            e1 += t0
+            #e0 += t0
+            #e1 += t0
             evt_num = self.get_event_number()
             self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
 
@@ -272,3 +224,10 @@ class EventBuilder():
             events.append(to_save)
 
         return events
+
+if __name__ == '__main__':
+    import sys
+    from cito.main import CitoApp
+    myapp = CitoApp()
+    code = myapp.run(['process'])
+    sys.exit(code)
