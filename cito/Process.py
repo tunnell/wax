@@ -31,13 +31,11 @@
 
 Make a plot of the sum waveform for a time range.
 """
-from cito.FileBuilder import Output
 
 __author__ = 'tunnell'
 
 from cito.CommandsBase import CitoContinousCommand
-from cito.EventBuilder import Tasks
-
+from cito.EventBuilder import Tasks, Output
 
 
 class ProcessToMongoCommand(CitoContinousCommand):

@@ -3,7 +3,7 @@
 import unittest
 
 import pickle
-from cito.FileBuilder import Output
+from cito.EventBuilder import Output
 
 
 class TestOutputCommon(unittest.TestCase):

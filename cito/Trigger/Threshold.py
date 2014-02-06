@@ -11,20 +11,20 @@ from scipy.signal.wavelets import cwt, ricker
 from scipy.stats import scoreatpercentile
 import time
 
-def trigger(indecies, samples):
+def trigger(indices, samples):
     peaks = []
 
-    if len(indecies) == len(samples) == 0:
+    if len(indices) == len(samples) == 0:
         return []
 
     i_start = 0
     index_last = None
-    for i, index in enumerate(indecies):
+    for i, index in enumerate(indices):
         if index_last == None or (index - index_last) == 1:
             index_last = index_last
         elif index <= index_last:
             raise ValueError(
-                "Indecies must be monotonically increasing: %d, %d!",
+                "Indices must be monotonically increasing: %d, %d!",
                 index,
                 index_last)
         elif index - index_last > 1:
@@ -35,7 +35,7 @@ def trigger(indecies, samples):
         else:
             raise RuntimeError()
 
-    if i_start < (len(indecies) - 1):  # If events still to process
+    if i_start < (len(indices) - 1):  # If events still to process
         high_extrema = find_peaks(samples[i_start:-1])
         for value in high_extrema:
             peaks.append(value)

@@ -119,25 +119,6 @@ class EventBuilder():
         # sum0, sum1, time ranges
         sum_data = find_sum_in_data(data)
 
-        # to_save = {}
-        # to_save['data'] = {}
-        # to_save['sum_data'] = {'samples' : sum_data['samples'].tolist(),
-        #                            'indices' : sum_data['indices'].tolist(),}
-        # import matplotlib.pyplot as plt
-        # plt.title('%d' % (np.max(sum_data['indices']) - np.min(sum_data['indices'])))
-        # plt.plot(sum_data['indices'], sum_data['samples'])
-        # #plt.show()
-        #
-        #
-        # for channel, data2 in data.items():
-        #     if channel == 'sum': continue
-        #     print(data2.keys())
-        #     logging.error('size indices %d' % data2['indices'].size)
-        #     logging.error('size samples %d' % data2['samples'].size)
-        #     plt.plot(data2['indices'], data2['samples'], label=channel)
-        # plt.legend()
-        # plt.show()
-        # return [to_save]
 
         sum0, sum1 = sum_data['indices'][0], sum_data['indices'][-1]
         self.log.debug('Sum waveform range: [%d, %d]', sum0, sum1)

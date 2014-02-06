@@ -38,3 +38,7 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
     60                                                       self.log.warning("No events found between %d and %d." % (t0, t1))
     61
     62       156          485      3.1      0.0          return size
+
+
+
+    95% of time in trigger.threshold

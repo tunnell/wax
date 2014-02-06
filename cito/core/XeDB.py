@@ -14,6 +14,7 @@ import snappy
 import mongomock
 import os
 
+CONNECTIONS = {}
 
 def mock_get_mongo_db_objects(a='127.0.0.1'):
     print("Using mock")
@@ -61,42 +62,54 @@ def get_sort_key():
             ('_id', pymongo.DESCENDING)]
 
 
-def get_mongo_db_objects(server=get_server_name()):
+def get_mongo_db_objects(server=get_server_name(), selection='input'):
     """This function returns pymongo objects
 
     This does all the connection setup, that is specific to this program.
 
+    :param selection: 'input' if caen blocks, otherwise 'output' for output
+    :type selection: str.
     :param server: The server IP or DNS name MongoDB.
-    :type t0: str.
+    :type server: str.
     :returns:  list -- [Connection, Database, Collection]
     :raises: pymongo.errors.PyMongoError
     """
-    db_name = 'data'            # todo: config?
-    collection_name = 'XENON100'  # todo: config?
+    if selection in CONNECTIONS.keys():
+        return CONNECTIONS[selection]
+
+    if selection == 'input':
+        db_name = 'data'            # todo: config?
+        collection_name = 'XENON100'  # todo: config?
+    elif selection == 'output':
+        db_name = 'output'
+        collection_name = 'somerun'
+    else:
+        raise ValueError()
 
     c = pymongo.MongoClient(server)
 
     db = c[db_name]
     collection = db[collection_name]
 
-    num_docs_in_collection = collection.count()
-    if num_docs_in_collection == 0:
-        raise RuntimeError(
-            "Collection %s.%s contains no events; can't continue" %
-            (db_name, collection_name))
+    if selection == 'input':
+        num_docs_in_collection = collection.count()
+        if num_docs_in_collection == 0:
+            raise RuntimeError("Collection %s.%s contains no events; can't continue" %
+                                (db_name, collection_name))
 
-    collection.ensure_index(get_sort_key(),
-                            background=True)
-
+        collection.ensure_index(get_sort_key(),
+                                background=True)
+    CONNECTIONS[selection] = (c, db, collection)
     return c, db, collection
 
 
-def get_pymongo_collection():
+def get_pymongo_collection(selection='input'):
     """Returns the current pymongo collection.
 
+    selection is 'input' for input Caen blocks, 'output' for trigger events
     :returns:  Collection -- Mongo collection with docs
     """
-    return get_mongo_db_objects()[2]
+    return get_mongo_db_objects(selection)[2]
 
 
 def get_min_time(collection):
@@ -128,7 +141,12 @@ def get_min_time(collection):
                              fields=['triggertime'],
                              limit=1,
                              sort=sort_key)
-    time = next(cursor)['triggertime']
+
+    doc = next(cursor)
+    logging.error('trig time: %s' % str(doc))
+    time = doc['triggertime']
+    if time == None:
+        raise ValueError("No time found when searching for minimal time")
     logging.debug("Minimum time: %d", time)
     return time
 

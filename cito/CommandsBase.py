@@ -52,9 +52,9 @@ class CitoCommand(Command):
         self.log.debug('Args: %s', str(parsed_args))
 
         self.log.debug("Getting mongo objects")
-        conn, my_db, collection = XeDB.get_mongo_db_objects(
-            parsed_args.hostname)
-
+        conn, my_db, collection = XeDB.get_mongo_db_objects(selection='input',
+                                                            server=parsed_args.hostname)
+        self.log.error(collection.count())
         min_time = XeDB.get_min_time(collection)
 
         self.log.debug("take_action_wrapped")

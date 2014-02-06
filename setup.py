@@ -24,7 +24,7 @@ setup(
     url='https://github.com/tunnell/cito',
     download_url='https://github.com/tunnell/cito/tarball/master',
     packages=[
-        'cito', 'cito.core', 'cito.EventBuilder', 'cito.FileBuilder', 'cito.Trigger',
+        'cito', 'cito.core', 'cito.EventBuilder', 'cito.Trigger',
     ],
     package_dir={'cito': 'cito'},
     include_package_data=True,
@@ -41,7 +41,9 @@ setup(
             'db purge = cito.DBOperations:DBPurge',
             'duplicates = cito.DBOperations:DBDuplicates',
             'process = cito.Process:ProcessToMongoCommand',
-            'inspect trigger = cito.Inspector:TriggerInspector'
+            'inspect trigger = cito.Inspector:TriggerInspector',
+            'file builder = cito.FileBuilder:FileBuilderCommand',
+
         ],
     },
     license="BSD",
