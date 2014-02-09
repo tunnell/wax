@@ -2,7 +2,43 @@
 Installation
 ============
 
-Using Python3.
+Every attempt is made to make 'cito' as portable as possible and install in a wide range of environments.  Nevertheless,
+ the scientific libraries that 'cito' relies on can sometimes cause installation problems.  For users who are
+ unaccustomed to working with NumPy, SciPy, and Cython, it is recommended that they install
+ "Anaconda":https://store.continuum.io/cshop/anaconda/, which includes all common Python packages.  The exact
+ dependencies of cito can be found in the file requirements.txt.
+
+.. important::
+    cito only works with Python3.
+
+Installing Anaconda
+===================
+
+
+Instally snappy
+===============
+
+Please install snappy, which is a compression library from Google.  The concept behind the library is when data is
+being transferred over a network, the CPU is normally doing nothing.  Therefore, if we use the CPU a little, we can
+reduce the data size and send the data quicker.
+
+If it is not already installed, please install the snappy code, which can be found
+'here':http://code.google.com/p/snappy/.
+
+.. hint::
+    For Ubuntu users, there is a package::
+
+
+    $ sudo apt-get install libsnappy-dev
+
+Please install python-snappy using your favorite Python package manager.  For example::
+
+    $ pip install python-snappy
+
+For python-snappy, you must install snappy library >= 1.0.2 (or revision 27) http://code.google.com/p/snappy/
+
+Installing Cito
+===============
 
 At the command line::
 
@@ -14,17 +50,11 @@ Or, if you have virtualenvwrapper installed::
     $ pip install cito
 
 
-For python-snappy, you must install snappy library >= 1.0.2 (or revision 27) http://code.google.com/p/snappy/
 
-To get dependencies right, can do::
+Installing own MongoDB database
+================================
 
-  macports: py33-scipy py33-matplotlib py33-cython
-  ubuntu: apt-get install cython build-essential python3 python-virtualenv python3-scipy python3-numpy emacs23-nox
-
-(git if dev)
-
-
-You must install MongoDB.  Please refer to their docs, but hints are here for Ubuntu::
+You must install MongoDB or use an existing installation.  Please refer to their docs, but hints are here for Ubuntu::
 
     sudo apt-get -y install screen openssh-server
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
@@ -32,3 +62,4 @@ You must install MongoDB.  Please refer to their docs, but hints are here for Ub
     sudo apt-get update
     sudo apt-get -y install mongodb-10gen
     sudo service mongodb restart
+

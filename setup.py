@@ -17,7 +17,7 @@ required = open('requirements.txt').read().splitlines()
 setup(
     name='cito',
     version=cito.__version_string__,
-    description='This code consitutes the framework for the XENON software trigger.',
+    description='Generic particle-physics software trigger with flash ADCs.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
     author_email='ctunnell@nikhef.nl',
@@ -50,7 +50,7 @@ setup(
     zip_safe=False,
     keywords='cito',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
