@@ -7,7 +7,6 @@ Subpackages
 .. toctree::
 
     cito.EventBuilder
-    cito.FileBuilder
     cito.Trigger
     cito.core
 
@@ -34,6 +33,22 @@ cito.DocInspector module
 ------------------------
 
 .. automodule:: cito.DocInspector
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cito.FileBuilder module
+-----------------------
+
+.. automodule:: cito.FileBuilder
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cito.Inspector module
+---------------------
+
+.. automodule:: cito.Inspector
     :members:
     :undoc-members:
     :show-inheritance:

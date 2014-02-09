@@ -51,8 +51,8 @@ Or, if you have virtualenvwrapper installed::
 
 
 
-Installing own MongoDB database
-================================
+(Optional) Installing own MongoDB database
+==========================================
 
 You must install MongoDB or use an existing installation.  Please refer to their docs, but hints are here for Ubuntu::
 
