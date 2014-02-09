@@ -63,7 +63,7 @@ def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
 
 
 def find_sum_in_data(data):
-    """Find sum waveform in Xenon data
+    """Find sum waveform in channel data
 
 
     :param data: Initial time to query.

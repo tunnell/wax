@@ -12,7 +12,7 @@ Code for Intelligent Triggering Online
   :target: https://crate.io/packages/cito?version=latest
 
 
-This code consitutes the framework for the XENON software trigger.
+This code consitutes a framework for software triggering.
 
 * Free software: BSD license
 * Documentation: http://cito.rtfd.org.
