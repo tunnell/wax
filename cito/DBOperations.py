@@ -4,13 +4,15 @@ All of these commands are simple enough that they don't rely too
 much on XeDB.  Maybe these commands should be moved there though?
 """
 
-from bson.code import Code
-from cito.CommandsBase import CitoShowOne
-from cito.core import XeDB
 import itertools
 
-class DBReset(CitoShowOne):
+from bson.code import Code
 
+from cito.CommandsBase import CitoShowOne
+from cito.core import XeDB
+
+
+class DBReset(CitoShowOne):
     """Reset the database by dropping the default collection.
 
     Warning: this cannot be used during a run as it will kill the DAQ writer.
@@ -23,7 +25,6 @@ class DBReset(CitoShowOne):
 
 
 class DBPurge(CitoShowOne):
-
     """Delete/purge all DAQ documents without deleting collection.
 
     This can be used during a run.
@@ -37,7 +38,6 @@ class DBPurge(CitoShowOne):
 
 
 class DBRepair(CitoShowOne):
-
     """Repair DB to regain unused space.
 
     MongoDB can't know how what to do with space after a document is deleted,
@@ -55,7 +55,6 @@ class DBRepair(CitoShowOne):
 
 
 class DBInspector(CitoShowOne):
-
     """Show statistics on DB collection
     """
 
@@ -70,13 +69,13 @@ class DBInspector(CitoShowOne):
         if len(lst) == 1:
             return str(lst[0]), []
         if len(lst) == 2:
-            return ','.join(map(str,lst)), []
+            return ','.join(map(str, lst)), []
 
         step = lst[1] - lst[0]
-        for i,x,y in zip(itertools.count(1), lst[1:], lst[2:]):
-            if y-x != step:
+        for i, x, y in zip(itertools.count(1), lst[1:], lst[2:]):
+            if y - x != step:
                 if i > 1:
-                    return self.formatter2(lst[0], lst[i], step), lst[i+1:]
+                    return self.formatter2(lst[0], lst[i], step), lst[i + 1:]
                 else:
                     return str(lst[0]), lst[1:]
         return self.formatter2(lst[0], lst[-1], step), []
@@ -84,7 +83,7 @@ class DBInspector(CitoShowOne):
     def re_range(self, lst):
         result = []
         while lst:
-            partial,lst = self.helper(lst)
+            partial, lst = self.helper(lst)
             result.append(partial)
         return ','.join(result)
 
@@ -113,7 +112,6 @@ class DBInspector(CitoShowOne):
 
 
 class DBDuplicates(CitoShowOne):
-
     """Find duplicate data and print their IDs.
 
     Search through all the DAQ document's data payloads (i.e., 'data' key) and

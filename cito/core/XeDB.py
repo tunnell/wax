@@ -6,15 +6,17 @@ __author__ = 'tunnell'
 import logging
 import pickle
 import gzip
-import numpy as np
 import inspect
+import os
 
+import numpy as np
 import pymongo
 import snappy
 import mongomock
-import os
+
 
 CONNECTIONS = {}
+
 
 def mock_get_mongo_db_objects(a='127.0.0.1'):
     print("Using mock")
@@ -78,7 +80,7 @@ def get_mongo_db_objects(server=get_server_name(), selection='input'):
         return CONNECTIONS[selection]
 
     if selection == 'input':
-        db_name = 'data'            # todo: config?
+        db_name = 'data'  # todo: config?
         collection_name = 'XENON100'  # todo: config?
     elif selection == 'output':
         db_name = 'output'
@@ -95,7 +97,7 @@ def get_mongo_db_objects(server=get_server_name(), selection='input'):
         num_docs_in_collection = collection.count()
         if num_docs_in_collection == 0:
             raise RuntimeError("Collection %s.%s contains no events; can't continue" %
-                                (db_name, collection_name))
+                               (db_name, collection_name))
 
         collection.ensure_index(get_sort_key(),
                                 background=True)
@@ -122,9 +124,8 @@ def get_min_time(collection):
        int:  A time in units of 10 ns
 
     """
-
-    # See bug #6. https://github.com/tunnell/cito/issues/6
-    if isinstance(collection, mongomock.collection.Collection):
+    if isinstance(collection,
+                  mongomock.collection.Collection):  # See bug #6. https://github.com/tunnell/cito/issues/6
         my_min = None
 
         for doc in collection.find():
@@ -137,15 +138,12 @@ def get_min_time(collection):
     sort_key = get_sort_key()
     sort_key = [(x[0], pymongo.ASCENDING) for x in sort_key]
 
-    cursor = collection.find({},
-                             fields=['triggertime'],
-                             limit=1,
-                             sort=sort_key)
+    cursor = collection.find({}, fields=['triggertime'], limit=1, sort=sort_key)
 
     doc = next(cursor)
     logging.error('trig time: %s' % str(doc))
     time = doc['triggertime']
-    if time == None:
+    if time is None:
         raise ValueError("No time found when searching for minimal time")
     logging.debug("Minimum time: %d", time)
     return time
@@ -208,7 +206,7 @@ def get_data_from_doc(doc):
         data = snappy.uncompress(data)
 
     data = np.fromstring(data,
-                        dtype=np.uint32)
+                         dtype=np.uint32)
 
     if len(data) == 0:
         raise IndexError("Data has zero length")

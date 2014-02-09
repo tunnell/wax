@@ -1,18 +1,14 @@
 __author__ = 'tunnell'
 
-from cito.core import XeDB
-from cliff.command import Command
 import logging
-import tables
-
-import pymongo
-import numpy as np
-import matplotlib.pyplot as plt
-import snappy
 import pickle
 import gzip
 
-import gzip
+from cliff.command import Command
+import snappy
+
+from cito.core import XeDB
+
 
 class FileBuilderCommand(Command):
     """Continously build files
@@ -30,7 +26,6 @@ class FileBuilderCommand(Command):
                             default='127.0.0.1')
         return parser
 
-
     def take_action(self, parsed_args):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
@@ -38,15 +33,13 @@ class FileBuilderCommand(Command):
 
         self.log.debug("Getting mongo objects")
 
-
         c, db, collection = XeDB.get_mongo_db_objects(selection='output')
-        f = gzip.open('testPickleFile.pklz','wb')
+        f = gzip.open('testPickleFile.pklz', 'wb')
 
         for doc in collection.find():
             doc2 = snappy.uncompress(doc['compressed_doc'])
             doc2 = pickle.loads(doc2)
 
-            pickle.dump(doc2,f)
-
+            pickle.dump(doc2, f)
 
         f.close()

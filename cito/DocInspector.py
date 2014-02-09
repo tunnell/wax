@@ -2,12 +2,12 @@
 """
 
 import bson
+
 from cito.CommandsBase import CitoShowOne
 from cito.core import InterfaceV1724, XeDB
 
 
 class Inspector(CitoShowOne):
-
     """Grab DAQ document from MongoDB and print it.
 
     A DAQ document contains the V1724 flash ADC data.  If data in the document is
@@ -80,10 +80,9 @@ class Inspector(CitoShowOne):
 
                     try:
                         output.append(('data(trigger time tag)',
-                                   InterfaceV1724.get_trigger_time_tag(data)))
+                                       InterfaceV1724.get_trigger_time_tag(data)))
                     except AssertionError:
                         output.append(('data(trigger time tag)', False))
-
 
                     try:
                         size = InterfaceV1724.get_block_size(data)

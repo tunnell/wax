@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 
 import unittest
-
 import pickle
+
 from cito.EventBuilder import Output
 
 
 class TestOutputCommon(unittest.TestCase):
-
     def test_cannot_initialize(self):
         with self.assertRaises(ValueError):
             Output.OutputCommon()
 
 
 class TestMongoDBOutput(unittest.TestCase):
-
     def setUp(self):
         self.c = Output.MongoDBOutput()
         #self.c.collection = mongomock.Connection()['output']['something']

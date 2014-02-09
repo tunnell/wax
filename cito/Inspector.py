@@ -1,10 +1,11 @@
 """For analyzing single documents
 """
 
-import bson
+import matplotlib.pyplot as plt
+
 from cito.CommandsBase import CitoShowOne
 from cito.core import XeDB
-import matplotlib.pyplot as plt
+
 
 class TriggerInspector(CitoShowOne):
     """Inspect information about trigger event."""
@@ -14,7 +15,6 @@ class TriggerInspector(CitoShowOne):
         parser = super(TriggerInspector, self).get_parser(prog_name)
 
         parser.add_argument("-i", "--index", type=int, help="Trigger index", required=True)
-
 
         return parser
 
@@ -33,10 +33,10 @@ class TriggerInspector(CitoShowOne):
             output.append(('Event number', doc['evt_num']))
 
             output.append(('Range [10 ns]', doc['range']))
-            output.append(('Range [us]', [i/100 for i in doc['range']]))
+            output.append(('Range [us]', [i / 100 for i in doc['range']]))
 
             output.append(('Span [10 ns]', (doc['range'][1] - doc['range'][0])))
-            output.append(('Span [us]', (doc['range'][1] - doc['range'][0])/100))
+            output.append(('Span [us]', (doc['range'][1] - doc['range'][0]) / 100))
 
             output.append(('Peaks', doc['peaks']))
             output.append(('Channels with data', str(doc['data'].keys())))
@@ -47,11 +47,11 @@ class TriggerInspector(CitoShowOne):
             y = doc['sum_data']['samples']
 
             plt.figure()
-            plt.plot(x,y, 'o')
+            plt.plot(x, y, 'o')
 
             for peak in doc['peaks']:
-                plt.vlines(peak/scale, 0, plt.ylim()[1])
-            plt.hlines(plt.ylim()[1]*0.5, doc['range'][0]/scale, doc['range'][1]/scale)
+                plt.vlines(peak / scale, 0, plt.ylim()[1])
+            plt.hlines(plt.ylim()[1] * 0.5, doc['range'][0] / scale, doc['range'][1] / scale)
             plt.xlabel('$\mu$s')
             plt.savefig('sum_%d.eps' % index)
             output.append(('Sum plot', 'sum_%d.eps' % index))

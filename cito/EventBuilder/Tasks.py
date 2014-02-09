@@ -9,14 +9,12 @@ as a class here.
 
 """
 import logging
-import time
 
 from cito.core import Waveform, XeDB
 from cito.EventBuilder import EventBuilding
 
 
 class ProcessTimeBlockTask():
-
     """Process a time block
     """
 
@@ -24,7 +22,6 @@ class ProcessTimeBlockTask():
         self.log = logging.getLogger(__name__)
         self.event_builder = EventBuilding.EventBuilder()
         self.output = output
-
 
     def process(self, t0, t1):
         """Process a time chunk
@@ -59,4 +56,3 @@ class ProcessTimeBlockTask():
             self.log.warning("No events found between %d and %d." % (t0, t1))
 
         return size
-

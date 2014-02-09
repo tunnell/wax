@@ -7,13 +7,13 @@ __author__ = 'tunnell'
 import logging
 import time
 
-from cito.core import XeDB
 from cliff.command import Command
 from cliff.show import ShowOne
 
+from cito.core import XeDB
+
 
 class CitoCommand(Command):
-
     """CitoSingleCommand base class
 
     This only looks over some range t0 till t1
@@ -67,7 +67,6 @@ class CitoCommand(Command):
 
 
 class CitoSingleCommand(CitoCommand):
-
     """CitoSingleCommand base class
 
     This only looks over some range t0 till t1
@@ -85,7 +84,6 @@ class CitoSingleCommand(CitoCommand):
 
 
 class CitoContinousCommand(CitoCommand):
-
     """CitoSingleCommand base class
 
     This only looks over some range t0 till t1
@@ -148,7 +146,7 @@ class CitoContinousCommand(CitoCommand):
                         data_rate = amount_data_processed / dt
                         self.log.info("%d bytes processed in %d seconds" % (amount_data_processed,
                                                                             dt))
-                        self.log.info("Rate: %f" % (data_rate/dt))
+                        self.log.info("Rate: %f" % (data_rate / dt))
 
                     current_time_index = time_index
                 else:
@@ -159,14 +157,13 @@ class CitoContinousCommand(CitoCommand):
                     # my_db.command('repairDatabase')
                     # break
             except StopIteration:
-                raise#pass
+                raise  # pass
             except KeyboardInterrupt:
                 self.log.info("Ctrl-C caught so exiting.")
                 break
 
 
 class CitoShowOne(ShowOne):
-
     """Base class for all DB commands.
 
     Handles logging, descriptions, and common fuctions.

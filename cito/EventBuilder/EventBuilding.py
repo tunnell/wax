@@ -31,8 +31,8 @@
 import logging
 
 import numpy as np
-from cito.Trigger import Threshold
 
+from cito.Trigger import Threshold
 
 
 def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
@@ -48,7 +48,7 @@ def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
         time_start = peak + range_around_peak[0]
         time_stop = peak + range_around_peak[1]
 
-        if len(ranges) >= 1 and time_start < ranges[-1][1]: # ranges[-1] is latest range
+        if len(ranges) >= 1 and time_start < ranges[-1][1]:  # ranges[-1] is latest range
             logging.debug('Combining time ranges:')
             logging.debug('\t%s' % (str((time_start, time_stop))))
             logging.debug('\t%s' % str(ranges[-1]))
@@ -58,8 +58,6 @@ def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
             ranges.append([time_start, time_stop])
 
     return ranges
-
-
 
 
 def find_sum_in_data(data):
@@ -79,7 +77,6 @@ def find_sum_in_data(data):
 
 
 class EventBuilder():
-
     """From data, construct events
 
     This is a separate class since it has to keep track of event number"""
@@ -114,17 +111,16 @@ class EventBuilder():
         :raises: ValueError
         """
         ##
-        ## Step 1: Grab sum waveform:  this sum waveform will be used to identify S2 signals
+        # Step 1: Grab sum waveform:  this sum waveform will be used to identify S2 signals
         ##
         # sum0, sum1, time ranges
         sum_data = find_sum_in_data(data)
-
 
         sum0, sum1 = sum_data['indices'][0], sum_data['indices'][-1]
         self.log.debug('Sum waveform range: [%d, %d]', sum0, sum1)
 
         ##
-        ## Step 2: Identify peaks in sum waveform using a Trigger algorithm
+        # Step 2: Identify peaks in sum waveform using a Trigger algorithm
         ##
         peak_indices = Threshold.trigger(sum_data['indices'], sum_data['samples'])
         peaks = sum_data['indices'][peak_indices]
@@ -136,16 +132,14 @@ class EventBuilder():
             self.log.info("No peak found; returning")
             return []
 
-
         ##
-        ## Step 3: Flag ranges around peaks to save, then break into events
+        # Step 3: Flag ranges around peaks to save, then break into events
         ##
         event_ranges = compute_event_ranges(peaks)
         self.log.info('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
 
-
         ##
-        ## Step 4: For each trigger event, associate channel information
+        # Step 4: For each trigger event, associate channel information
         ##
         events = []
         for e0, e1 in event_ranges:
@@ -162,7 +156,8 @@ class EventBuilder():
 
             # If there data within our search range [e0, e1]?
             for key, value in data.items():
-                if key[2] == 'sum': continue
+                if key[2] == 'sum':
+                    continue
 
                 # d0 is start time for this channel data, d1 therefore end time
                 (d0, d1, num_pmt) = key
@@ -197,8 +192,8 @@ class EventBuilder():
                                             'samples': samples[s0:s1]}
 
             to_save['peaks'] = peaks
-            to_save['sum_data'] = {'samples' : sum_data['samples'].tolist(),
-                                   'indices' : sum_data['indices'].tolist(),}
+            to_save['sum_data'] = {'samples': sum_data['samples'].tolist(),
+                                   'indices': sum_data['indices'].tolist(), }
 
             to_save['evt_num'] = evt_num
             to_save['range'] = [int(e0), int(e1)]
@@ -206,9 +201,11 @@ class EventBuilder():
 
         return events
 
+
 if __name__ == '__main__':
     import sys
     from cito.main import CitoApp
+
     myapp = CitoApp()
     code = myapp.run(['process'])
     sys.exit(code)

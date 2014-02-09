@@ -10,11 +10,9 @@ from cito.EventBuilder import Tasks, Output
 
 
 class ProcessToMongoCommand(CitoContinousCommand):
-
     """Process time blocks and save to MongoDB
     """
 
     def get_tasks(self):
         tasks = [Tasks.ProcessTimeBlockTask(Output.MongoDBOutput())]
         return tasks
-

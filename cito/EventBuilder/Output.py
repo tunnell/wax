@@ -1,9 +1,10 @@
 __author__ = 'tunnell'
 
 import logging
-
 import pickle
+
 import snappy
+
 from cito.core import XeDB
 
 
@@ -37,7 +38,6 @@ class MongoDBOutput(OutputCommon):
 
         # MongoDB collection to put data in
         self.conn, self.my_db, self.collection = XeDB.get_mongo_db_objects(selection='output')
-
 
     def mongify_event(self, event_data):
         """Convert Python data to pickled and compressed data.

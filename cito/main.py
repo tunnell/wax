@@ -3,13 +3,13 @@ import logging.config
 import os
 import sys
 
-import cito
 from cliff.app import App
 from cliff.commandmanager import CommandManager
 
+import cito
+
 
 class CitoApp(App):
-
     def __init__(self):
         super(CitoApp, self).__init__(
             description='cito DAQ software.',
