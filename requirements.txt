@@ -1,8 +1,8 @@
 pymongo
 python-snappy # not pypy, pip install -e git+https://github.com/andrix/python-snappy.git#egg=python-snappy
+scipy # not pypy
 numpy # not pypy
 celery
 #anyjson
 cliff
-scipy # not pypy
 mongomock
