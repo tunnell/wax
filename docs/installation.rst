@@ -3,10 +3,10 @@ Installation
 ============
 
 Every attempt is made to make 'cito' as portable as possible and install in a wide range of environments.  Nevertheless,
- the scientific libraries that 'cito' relies on can sometimes cause installation problems.  For users who are
- unaccustomed to working with NumPy, SciPy, and Cython, it is recommended that they install
- "Anaconda":https://store.continuum.io/cshop/anaconda/, which includes all common Python packages.  The exact
- dependencies of cito can be found in the file requirements.txt.
+the scientific libraries that 'cito' relies on can sometimes cause installation problems.  For users who are
+unaccustomed to working with NumPy, SciPy, and Cython, it is recommended that they install
+"Anaconda":https://store.continuum.io/cshop/anaconda/, which includes all common Python packages.  The exact
+dependencies of cito can be found in the file requirements.txt.
 
 .. important::
     cito only works with Python3.

@@ -6,7 +6,7 @@ import os
 
 from setuptools import setup
 
-from cito import __version_string__
+#from cito import __version_string__
 
 
 if sys.argv[-1] == 'publish':
@@ -19,7 +19,7 @@ required = open('requirements.txt').read().splitlines()
 
 setup(
     name='cito',
-    version=__version_string__,
+    version='1.0.1', #__version_string__,
     description='Generic particle-physics software trigger with flash ADCs.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
