@@ -18,6 +18,8 @@ Contents:
    authors
    history
    data_format
+   jargon
+   profiling
 
 Indices and tables
 ==================
