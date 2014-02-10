@@ -9,8 +9,9 @@ from cliff.command import Command
 from cliff.commandmanager import CommandManager
 from cliff.show import ShowOne
 
+from cito.core import XeDB
+
 import cito
-from cito.core import __all__
 
 
 class CitoApp(App):
@@ -49,8 +50,6 @@ class CitoApp(App):
 def main(argv=sys.argv[1:]):
     myapp = CitoApp()
     return myapp.run(argv)
-
-
 
 
 class CitoCommand(Command):
@@ -232,6 +231,7 @@ class CitoShowOne(ShowOne):
         else:
             data = ['success']
         return columns, data
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))

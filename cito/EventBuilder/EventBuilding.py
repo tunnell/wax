@@ -204,7 +204,7 @@ class EventBuilder():
 
 if __name__ == '__main__':
     import sys
-    from cito.main import CitoApp
+    from cito.core.main import CitoApp
 
     myapp = CitoApp()
     code = myapp.run(['process'])

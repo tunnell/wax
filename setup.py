@@ -3,8 +3,11 @@
 
 import sys
 import os
+
 from setuptools import setup
-import cito
+
+from cito import __version_string__
+
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -16,7 +19,7 @@ required = open('requirements.txt').read().splitlines()
 
 setup(
     name='cito',
-    version=cito.__version_string__,
+    version=__version_string__,
     description='Generic particle-physics software trigger with flash ADCs.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
@@ -34,14 +37,14 @@ setup(
             'cito = cito.main:main'
         ],
         'cito.main': [
-            'doc inspector = cito.DocInspector:Inspector',
+            'doc inspector = cito.DocInspector:InputDocInspector',
             'db reset = cito.DBOperations:DBReset',
             'db inspector = cito.DBOperations:DBInspector',
             'db repair = cito.DBOperations:DBRepair',
             'db purge = cito.DBOperations:DBPurge',
             'duplicates = cito.DBOperations:DBDuplicates',
             'process = cito.Process:ProcessToMongoCommand',
-            'inspect trigger = cito.Inspector:TriggerInspector',
+            'inspect trigger = cito.InputDocInspector:OutputDocInspector',
             'file builder = cito.FileBuilder:FileBuilderCommand',
 
         ],

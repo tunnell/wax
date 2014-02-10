@@ -1,11 +1,7 @@
-"""Plot waveform
-
-Make a plot of the sum waveform for a time range.
-"""
+from cito.core.main import CitoContinousCommand
 
 __author__ = 'tunnell'
 
-from cito.CommandsBase import CitoContinousCommand
 from cito.EventBuilder import Tasks, Output
 
 

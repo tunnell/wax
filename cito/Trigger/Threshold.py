@@ -42,6 +42,7 @@ def trigger(indices, samples):
 
 
 def cwt(data, wavelet, widths):
+    """Copied from SciPy; don't test"""
     output = np.zeros([len(widths), len(data)])
     for ind, width in enumerate(widths):
         wavelet_data = wavelet(min(10 * width, len(data)), width)
@@ -52,7 +53,7 @@ def cwt(data, wavelet, widths):
 
 def find_peaks_cwt(vector, widths, wavelet=None, max_distances=None, gap_thresh=None,
                    min_length=None, min_snr=1, noise_perc=10):
-    """Stolen from Scipy"""
+    """Copied from SciPy; don't test"""
     if gap_thresh is None:
         gap_thresh = np.ceil(widths[0])
     if max_distances is None:

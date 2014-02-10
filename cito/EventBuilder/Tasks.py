@@ -47,12 +47,13 @@ class ProcessTimeBlockTask():
         # Build events (t0 and t1 used only for sanity checks)
         try:
             events = self.event_builder.build_event(data, t0, t1)
+
+            if len(events):
+                self.output.write_events(events)
+            else:
+                self.log.warning("No events found between %d and %d." % (t0, t1))
+
         except:
             logging.exception('Event building failed.')
-
-        if len(events):
-            self.output.write_events(events)
-        else:
-            self.log.warning("No events found between %d and %d." % (t0, t1))
 
         return size

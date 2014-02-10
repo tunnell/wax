@@ -1,9 +1,11 @@
 import pickle
 import gzip
+
 import matplotlib.pyplot as plt
 
+
 #restore the object
-f = gzip.open('testPickleFile.pklz','rb')
+f = gzip.open('testPickleFile.pklz', 'rb')
 doc = None
 
 #  You have to read all the events beforehand to get at an event
@@ -12,11 +14,8 @@ for i in range(10):
     doc = pickle.load(f)
 f.close()
 
-
 print(doc)
 print('Range:', doc['range'])
-
-import matplotlib.pyplot as plt
 
 plt.title('Range: %s' % str(doc['range']))
 

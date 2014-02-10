@@ -22,8 +22,7 @@ def mock_get_mongo_db_objects(a='127.0.0.1'):
     print("Using mock")
 
     # script directory
-    dir = os.path.dirname(
-        os.path.abspath(inspect.getfile(inspect.currentframe())))
+    dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
     file = gzip.open(os.path.join(dir, 'data.p'), 'rb')
     c = mongomock.Connection()
