@@ -15,8 +15,8 @@ Installing Anaconda
 ===================
 
 
-Instally snappy
-===============
+Install snappy
+==============
 
 Please install snappy, which is a compression library from Google.  The concept behind the library is when data is
 being transferred over a network, the CPU is normally doing nothing.  Therefore, if we use the CPU a little, we can

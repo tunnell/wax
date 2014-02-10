@@ -47,9 +47,11 @@ As of 22/October/2013, an example document is:
     }
 
 
-Ouput format
-============
+Output format
+=============
 
 
-* Processed: sum waveform (feature request)
-* Raw data: TBD format
+
+.. literalinclude:: analyze_example.py
+    :language: python
+    :linenos:
