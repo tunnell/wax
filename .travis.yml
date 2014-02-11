@@ -5,7 +5,6 @@ language: python
 python:
   - "3.3"
   - "3.2" # Mongo mock fails in 3.2
-  - "pypy"
 
 virtualenv:
   system_site_packages: false
@@ -15,9 +14,8 @@ before_install:
  - sudo apt-get install -qq libatlas-base-dev gfortran
  - sudo apt-get build-dep -qq python3-numpy
  - sudo apt-get build-dep -qq python3-scipy
- - sudo apt-get install -qq cython
  - sudo apt-get install -qq python-snappy libsnappy-dev libsnappy1
- - pip install -q numpy Cython
+ - pip install -q numpy
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -r requirements.txt

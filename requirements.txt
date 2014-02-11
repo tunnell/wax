@@ -3,6 +3,5 @@ python-snappy # not pypy, pip install -e git+https://github.com/andrix/python-sn
 scipy # not pypy
 numpy # not pypy
 celery
-#anyjson
 cliff
 mongomock
