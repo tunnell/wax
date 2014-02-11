@@ -16,7 +16,7 @@ required = open('requirements.txt').read().splitlines()
 
 setup(
     name='cito',
-    version='1.0.6',
+    version='1.0.7',
     description='Generic particle-physics software trigger with flash ADCs.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
