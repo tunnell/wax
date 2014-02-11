@@ -9,7 +9,7 @@ Code for Intelligent Triggering Online
   :target: https://travis-ci.org/tunnell/cito
 
 .. image:: https://pypip.in/d/cito/badge.png
-  :target: https://crate.io/packages/cito?version=latest
+  :target: https://crate.io/packages/cito
 
 
 This code constitutes a framework for software triggering intended for particle and astroparticle physics experiments
