@@ -6,9 +6,6 @@ import os
 
 from setuptools import setup
 
-from cito import __version__
-
-
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
     sys.exit()
@@ -19,7 +16,7 @@ required = open('requirements.txt').read().splitlines()
 
 setup(
     name='cito',
-    version=__version__,
+    version='1.0.2',
     description='Generic particle-physics software trigger with flash ADCs.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
