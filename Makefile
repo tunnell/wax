@@ -8,7 +8,9 @@ help:
 	@echo "testall - run tests on every Python version with tox"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
+	@echo "major - tag, push, package and upload a major release"
+	@echo "minor - tag, push, package and upload a minor release"
+	@echo "patch - tag, push, package and upload a patch release"
 	@echo "sdist - package"
 
 clean: clean-build clean-pyc
@@ -46,7 +48,19 @@ docs:
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
 
-release: clean
+major: clean
+	bumpversion major
+        git push --tags
+        python setup.py sdist upload
+
+minor: clean
+	bumpversion minor
+	git push --tags
+	python setup.py sdist upload
+
+patch: clean
+	bumpversion patch
+        git push --tags
 	python setup.py sdist upload
 
 sdist: clean
