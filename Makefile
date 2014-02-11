@@ -50,16 +50,19 @@ docs:
 
 major: clean
 	bumpversion major
+	git push
 	git push --tags
 	python setup.py sdist upload
 
 minor: clean
 	bumpversion minor
+	git push
 	git push --tags
 	python setup.py sdist upload
 
 patch: clean
 	bumpversion patch
+	git push
 	git push --tags
 	python setup.py sdist upload
 
