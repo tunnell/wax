@@ -1,7 +1,7 @@
 pymongo
 python-snappy
-#scipy
-#numpy
+scipy
+numpy
 celery
 cliff
 mongomock
