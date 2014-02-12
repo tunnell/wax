@@ -2,12 +2,16 @@
 Installation
 ============
 
+TODO: Make all 'cito' and program names small caps or bold or italic.
+
 Every attempt is made to make 'cito' as portable as possible and install in a wide range of environments.  However,
 installation instructions are given for Ubuntu 12 LTS.
 
 
-(Optional) Installing Python3.3
-===============================
+Installing Python3.3
+====================
+
+If you have Python 3.3, skip this.
 
 cito, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
 following, which is inspired from
@@ -53,6 +57,8 @@ Install the dependencies for scientific libraries in python::
 
     $ sudo apt-get build-dep -y python3-numpy
     $ sudo apt-get build-dep -y python3-scipy
+    $ sudo apt-get build-dep -y python-matplotlib
+    $ sudo apt-get install python-scitools
 
 
 Install snappy
@@ -71,8 +77,8 @@ we use the CPU a little, we can reduce the data size and send the data quicker.
 
 
 
-(Optional) Preparing Python environment
-=======================================
+Preparing Python environment
+============================
 
 It is advised to install within a virtualenv::
 
@@ -97,7 +103,6 @@ command line, using 'easy_install' or 'pip', install 'cito'::
 
 This line also installs all the Python dependencies of cito. If you observe a problem, please submit a bug report.
 
-.. hint::  On Mac, if can't find headers for C extensions, "export CPLUS_INCLUDE_PATH=/opt/local/include/"
 
 (Optional) Installing own MongoDB database
 ==========================================
