@@ -22,7 +22,7 @@ class CitoApp(App):
     def __init__(self):
         super(CitoApp, self).__init__(
             description='cito DAQ software.',
-            version=cito.__version_string__,
+            version=cito.__version__,
             command_manager=CommandManager('cito.main'),
         )
 

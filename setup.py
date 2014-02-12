@@ -31,9 +31,9 @@ setup(
     install_requires=required,
     entry_points={
         'console_scripts': [
-            'cito = cito.main:main'
+            'cito = cito.core.main:main'
         ],
-        'cito.main': [
+        'cito.core.main': [
             'doc inspector = cito.DocInspector:InputDocInspector',
             'db reset = cito.DBOperations:DBReset',
             'db inspector = cito.DBOperations:DBInspector',

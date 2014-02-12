@@ -1,7 +1,7 @@
-pymongo==2.6.3
-python-snappy==0.5 # not pypy, pip install -e git+https://github.com/andrix/python-snappy.git#egg=python-snappy
-scipy==0.13.2 # not pypy
-numpy==1.8.0 # not pypy
-celery==3.1.7
-cliff==1.4.4
-mongomock==1.2.0
+pymongo
+python-snappy
+#scipy
+#numpy
+celery
+cliff
+mongomock
