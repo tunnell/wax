@@ -3,6 +3,11 @@
 History
 -------
 
+1.1 (2014-02-12)
+++++++++++++++++
+
+* Fix some major bugs associated with 1.0 due to misplaced files and failed refactoring.
+
 1.0 (2014-02-10)
 ++++++++++++++++
 
