@@ -3,7 +3,6 @@
 import itertools
 
 import bson
-
 import matplotlib.pyplot as plt
 
 from cito.core import XeDB

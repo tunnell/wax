@@ -23,7 +23,7 @@ class CitoApp(App):
         super(CitoApp, self).__init__(
             description='cito DAQ software.',
             version=cito.__version__,
-            command_manager=CommandManager('cito.main'),
+            command_manager=CommandManager('cito.core.main'),
         )
 
     def initialize_app(self, argv):
