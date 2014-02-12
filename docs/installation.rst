@@ -88,7 +88,7 @@ It is advised to install within a virtualenv::
     $ source bin/activate
 
 To avoid potential complications with the order in which python packages are installed, we recommend installing numpy
-explicitly (i.e., scipy can be annoying)::
+explicitly (i.e., scipy can be `annoying <annoying`:https://github.com/scipy/scipy/pull/453>`_)::
 
     $ easy_install numpy
 
