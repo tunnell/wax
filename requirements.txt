@@ -5,3 +5,4 @@ numpy
 celery
 cliff
 mongomock
+bumpversion
