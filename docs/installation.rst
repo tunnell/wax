@@ -6,7 +6,16 @@ Every attempt is made to make 'cito' as portable as possible and install in a wi
 installation instructions are given for Ubuntu 12 LTS.
 
 .. important::
-    cito only works with Python3.
+    cito, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
+    following, which is taken from
+    `here <http://linuxg.net/how-to-install-python-3-3-on-ubuntu-13-04-12-10-and-12-04/>`_::
+
+        sudo add-apt-repository ppa:fkrull/deadsnakes
+        sudo apt-get update
+        sudo apt-get install -y python3.3-complete
+        wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O /tmp/ez_setup.py
+        sudo python3.3 /tmp/ez_setup.py
+        sudo easy_install-3.3 pip virtualenv==1.10
 
 
 Installing Dependencies
@@ -30,7 +39,7 @@ Install the dependencies for scientific libraries in python::
 Install snappy
 ==============
 
-Please install (snappy)[http://code.google.com/p/snappy/], which is a compression library from Google.  The concept
+Please install `snappy 1.0.2 <http://code.google.com/p/snappy/>`_, which is a compression library from Google.  The concept
 behind the library is when data is being transferred over a network, the CPU is normally doing nothing.  Therefore, if
 we use the CPU a little, we can reduce the data size and send the data quicker.
 
@@ -42,17 +51,18 @@ we use the CPU a little, we can reduce the data size and send the data quicker.
 
 
 
-For python-snappy, you must install snappy library >= 1.0.2 (or revision 27) http://code.google.com/p/snappy/
 
 Preparing Python dependencies
 =============================
 
 .. hint::  It is advised to install within a virtualenv::
 
-        $ sudo apt-get install python-virtualenv
-        $ virtualenv -p python3.2 citoenv
+
+        $ virtualenv-3.3 -p python3.3 citoenv
         $ cd citoenv
         $ source bin/activate
+
+
 
 Please install python-snappy using your favorite Python package manager.  For example::
 
