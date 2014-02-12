@@ -17,6 +17,7 @@ cito, due to the dependencies, is only tested on Python3.3.  To install this on 
 following, which is inspired from
 `here <http://linuxg.net/how-to-install-python-3-3-on-ubuntu-13-04-12-10-and-12-04/>`_::
 
+    sudo apt-get install python-software-properties
     sudo add-apt-repository ppa:fkrull/deadsnakes
     sudo apt-get update
     sudo apt-get install -y python3.3-complete
