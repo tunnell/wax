@@ -90,7 +90,7 @@ It is advised to install within a virtualenv::
 To avoid potential complications with the order in which python packages are installed, we recommend installing numpy
 explicitly (i.e., scipy can be annoying)::
 
-    $ pip install numpy
+    $ easy_install numpy
 
 Installing Cito
 ===============
