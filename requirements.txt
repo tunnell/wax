@@ -6,3 +6,4 @@ celery
 cliff
 mongomock
 bumpversion
+matplotlib
