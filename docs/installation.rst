@@ -97,6 +97,8 @@ command line, using 'easy_install' or 'pip', install 'cito'::
 
 This line also installs all the Python dependencies of cito. If you observe a problem, please submit a bug report.
 
+.. hint::  On Mac, if can't find headers for C extensions, "export CPLUS_INCLUDE_PATH=/opt/local/include/"
+
 (Optional) Installing own MongoDB database
 ==========================================
 

@@ -11,7 +11,7 @@ as a class here.
 import logging
 
 from cito.core import Waveform, XeDB
-from cito.EventBuilder import EventBuilding
+from cito.EventBuilder import Logic
 
 
 class ProcessTimeBlockTask():
@@ -20,7 +20,7 @@ class ProcessTimeBlockTask():
 
     def __init__(self, output):
         self.log = logging.getLogger(__name__)
-        self.event_builder = EventBuilding.EventBuilder()
+        self.event_builder = Logic.EventBuilder()
         self.output = output
 
     def process(self, t0, t1):
