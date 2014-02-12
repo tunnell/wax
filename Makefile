@@ -46,7 +46,7 @@ docs:
 	sphinx-apidoc -o docs/ cito
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	open docs/_build/html/index.html
+	echo open docs/_build/html/index.html
 
 major: clean
 	bumpversion major
