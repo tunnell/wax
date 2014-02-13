@@ -12,8 +12,7 @@ Code for Intelligent Triggering Online
   :target: https://crate.io/packages/cito
 
 
-This code constitutes a framework for software triggering intended for particle and astroparticle physics experiments
-with pre-trigger data rates of 300 MB/s.  The code scales to 300 MB/s by using celery over numerous computers, but the goal is to have a single thread be able to process a few MB/s.
+This code constitutes a framework for software triggering intended for particle and astroparticle physics experiments with pre-trigger data rates of 300 MB/s.  The code scales to 300 MB/s by using celery over numerous computers, but the goal is to have a single thread be able to process a few MB/s.
 
 * Free software: BSD license
 * Documentation: http://cito.rtfd.org.
