@@ -69,7 +69,7 @@ def trigger(indices, samples):
     return peaks
 
 
-def find_peaks(values, threshold=1, cwt_width=CWT_WIDTH):
+def find_peaks(values, threshold=1000, cwt_width=CWT_WIDTH):
     """Find peaks within list of values.
 
     Uses scipy to find peaks above a threshold.
@@ -118,16 +118,16 @@ def find_peaks_cwt(vector, widths=np.array([CWT_WIDTH])):
     max_locs = [x[1][0] for x in filtered]
 
 
-        ## the next code is just to visualize how this works
-    import matplotlib.pyplot as plt
-    plt.plot(vector)  # extent=(widths[0], widths[-1], times[0], times[-1]))
-    plt.plot(cwt_dat[0])
-    for l in ridge_lines:
-        plt.plot(l[1], l[0], 'k-')
-    for l in filtered:
-        plt.plot(l[1], l[0], 'r-')
+    #    ## the next code is just to visualize how this works
+    #import matplotlib.pyplot as plt
+    #plt.plot(vector)  # extent=(widths[0], widths[-1], times[0], times[-1]))
+    #plt.plot(cwt_dat[0])
+    #for l in ridge_lines:
+    #    plt.plot(l[1], l[0], 'k-')
+    #for l in filtered:
+    #    plt.plot(l[1], l[0], 'r-')
     #plt.plot(peaks_t, peaks_w, 'k*')  # not working
-    plt.show()
+    #plt.show()
 
     return sorted(max_locs)
 
