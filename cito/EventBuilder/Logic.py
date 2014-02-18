@@ -146,7 +146,7 @@ class EventBuilder():
                 # d0 is start time for this channel data, d1 therefore end time
                 (d0, d1, num_pmt) = key
 
-                if key[2] != 'sum':
+                if key[2] != 'sum' and key[2] != 'smooth':
                     assert len(samples) == (d1 - d0), '%d %d %d' % (samples.size, d0, d1)
 
                 s0, s1 = overlap_region((d0, d1), (e0, e1))
