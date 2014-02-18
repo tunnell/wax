@@ -157,7 +157,7 @@ class EventBuilder():
                     s0 = np.where(indices == s0)[0][0]
                     s1 = np.where(indices == s1-1)[0][0]
                 except IndexError:
-                    self.log.debug("%s %d %d %d %d" % (str(key), s0, s1, indices[0], indices[-1]))
+                    self.log.error("%s %d %d %d %d" % (str(key), s0, s1, indices[0], indices[-1]))
                     self.log.error(indices)
                     raise
 
