@@ -1,5 +1,6 @@
 from itertools import groupby
 import logging
+import numpy as np
 
 __author__ = 'tunnell'
 
@@ -67,3 +68,33 @@ def find_subranges(indices):
         ranges.append([values[0][0], values[-1][0]])
 
     return ranges
+
+def overlap_region(range1, range2):
+
+    # a0 must be smaller or equal to than b0
+    a0, a1 = range1
+    b0, b1 = range2
+    if a0 < b0:
+        a0, a1 = range2
+        b0, b1 = range1
+
+    # Overlap range
+    range_overlap = (None, None)
+
+    # If all of A is before B, or vice versa...
+    if a1 < b0:  # If true, no overlap
+        return range_overlap  # None, None
+    elif a0 <= b0 and b1 <= a1:  #  All of B contained in A
+        range_overlap = (b0, b1)
+    else:
+        logging.error("Partial overlap. slow")
+        overlap = np.intersect1d(np.arange(a0, a1), np.arange(b0, b1))
+        if overlap.size == 0:
+            raise ValueError('No overlap found?...')
+        range_overlap = (overlap[0], overlap[1])
+
+    return range_overlap
+
+
+def overlap(min1, max1, min2, max2):
+    return max(0, min(max1, max2) - max(min1, min2))

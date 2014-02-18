@@ -30,9 +30,8 @@
 import logging
 
 import numpy as np
-
 from cito.Trigger import PeakFinder
-from cito.core.math import compute_subranges
+from cito.core.math import compute_subranges, overlap_region
 
 
 def find_sum_in_data(data):
@@ -69,24 +68,7 @@ class EventBuilder():
             return self.event_number
 
 
-    def overlap_region(self, d0, d1, e0, e1, indices):
-        # If no data in our search range, continue
-        if d1 < e0 or e1 <= d0:  # If true, no overlap
-            pass
-        else:
 
-            if e0 <= d0 and d1 <= e1:  # Most common case:
-                s0 = 0
-                s1 = len(indices)
-            else:  # compute overlap
-                erange = np.arange(e0, e1)
-                overlap = np.intersect1d(np.arange(d0, d1), erange)
-                if overlap.size == 0:
-                    raise ValueError('No overlap found...')
-
-                s0 = np.where(indices == overlap[0])[0][0]
-                s1 = np.where(indices == overlap[-1])[0][0]
-        return s0, s1
 
     def build_event(self, data, t0=None, t1=None):
         """Build events out of raw data.
@@ -134,6 +116,10 @@ class EventBuilder():
         event_ranges = compute_subranges(peaks)
         self.log.info('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
 
+
+        data[(sum0, sum1, 'smooth')] = {'indices': sum_data['indices'],
+                                        'samples': smooth_waveform}
+
         ##
         # Step 4: For each trigger event, associate channel information
         ##
@@ -145,15 +131,13 @@ class EventBuilder():
             evt_num = self.get_event_number()
             self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
 
-
-
             #  This information will be saved about the trigger event
             to_save = {'data': {}}
 
             # If there data within our search range [e0, e1]?
             for key, value in data.items():
-                if key[2] == 'sum':
-                    continue
+                #if key[2] == 'sum':
+                #    continue
 
                 samples = value['samples']
                 indices = value['indices']
@@ -165,7 +149,10 @@ class EventBuilder():
                 if key[2] != 'sum':
                     assert len(samples) == (d1 - d0), '%d %d %d' % (samples.size, d0, d1)
 
-                s0, s1 = self.overlap_region(d0, d1, e0, e1, indices)
+                s0, s1 = overlap_region((d0, d1), (e0, e1))
+
+                s0 = np.where(indices == s0)[0][0]
+                s1 = np.where(indices == s1)[0][0]
 
                 if num_pmt == 'sum':
                     self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)
@@ -176,8 +163,8 @@ class EventBuilder():
                                             'samples': samples[s0:s1]}
 
             to_save['peaks'] = peaks
-            to_save['sum_data'] = {'samples': sum_data['samples'].tolist(),
-                                   'indices': sum_data['indices'].tolist(), }
+            #to_save['sum_data'] = {'samples': sum_data['samples'],
+            #                       'indices': sum_data['indices'], }
 
             to_save['evt_num'] = evt_num
             to_save['smooth'] = smooth_waveform
