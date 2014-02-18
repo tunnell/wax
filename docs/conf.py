@@ -41,7 +41,8 @@ class Mock(object):
 
 MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate',
                 'scipy.signal', 'numpy.dtype', 'scipy.signal._peak_finding', 'scipy.lib',
-                'scipy.lib.six', 'scipy.lib.six.moves', 'scipy.signal.wavelets', 'scipy.stats']
+                'scipy.lib.six', 'scipy.lib.six.moves', 'scipy.signal.wavelets', 'scipy.stats',
+                'snappy']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
 
