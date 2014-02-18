@@ -152,12 +152,12 @@ class EventBuilder():
                 s0, s1 = overlap_region((d0, d1), (e0, e1))
                 if s0 is None or s1 is None:
                     continue
-                self.log.debug("%s %d %d" % (str(key), s0, s1))
+
                 try:
                     s0 = np.where(indices == s0)[0][0]
                     s1 = np.where(indices == s1-1)[0][0]
                 except IndexError:
-                    self.log.error("%s %d %d" % (str(key), s0, s1))
+                    self.log.debug("%s %d %d %d %d" % (str(key), s0, s1, indices[0], indices[-1]))
                     self.log.error(indices)
                     raise
 
