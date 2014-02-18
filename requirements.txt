@@ -4,7 +4,6 @@ numpy
 scipy
 celery
 cliff
-mongomock
 bumpversion
 matplotlib
 sphinx

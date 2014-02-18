@@ -12,32 +12,8 @@ import os
 import numpy as np
 import pymongo
 import snappy
-import mongomock
-
 
 CONNECTIONS = {}
-
-
-def mock_get_mongo_db_objects(a='127.0.0.1'):
-    print("Using mock")
-
-    # script directory
-    dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
-    file = gzip.open(os.path.join(dir, 'data.p'), 'rb')
-    c = mongomock.Connection()
-    db = c.db
-    collection = db.collection
-
-    for doc in pickle.load(file):
-        if 'module' not in doc:
-            print(doc)
-        collection.insert(doc)
-
-    file.close()
-
-    return c, db, collection
-
 
 def get_server_name():
     """Get the current server name
@@ -123,17 +99,6 @@ def get_min_time(collection):
        int:  A time in units of 10 ns
 
     """
-    if isinstance(collection,
-                  mongomock.collection.Collection):  # See bug #6. https://github.com/tunnell/cito/issues/6
-        my_min = None
-
-        for doc in collection.find():
-            if my_min is None or doc['triggertime'] < my_min:
-                my_min = doc['triggertime']
-        if my_min is None:
-            raise RuntimeError("Can't find min time in mock")
-        return my_min
-
     sort_key = get_sort_key()
     sort_key = [(x[0], pymongo.ASCENDING) for x in sort_key]
 
