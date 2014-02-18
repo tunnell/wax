@@ -126,8 +126,9 @@ class EventBuilder():
         events = []
         for e0, e1 in event_ranges:
             # e0, e1 are the times for this trigger event
-            #e0 += t0
-            #e1 += t0
+
+            e = np.arange(e0, e1)
+
             evt_num = self.get_event_number()
             self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
 
@@ -143,39 +144,20 @@ class EventBuilder():
                 indices = value['indices']
                 assert samples.size == indices.size
 
+
+
                 # d0 is start time for this channel data, d1 therefore end time
-                (d0, d1, num_pmt) = key
+                num_pmt = key[2]
 
-                if key[2] != 'sum' and key[2] != 'smooth':
-                    assert len(samples) == (d1 - d0), '%d %d %d' % (samples.size, d0, d1)
-
-                s0, s1 = overlap_region((d0, d1), (e0, e1))
-                if s0 is None or s1 is None:
-                    continue
-
-                try:
-                    s0 = np.where(indices == s0)[0][0]
-                    s1 = np.where(indices == s1-1)[0][0]
-                except IndexError:
-                    self.log.error("%s %d %d %d %d" % (str(key), s0, s1, indices[0], indices[-1]))
-                    self.log.error(indices)
-                    raise
+                mask = np.in1d(value['indices'], e, assume_unique=True)
 
 
-                if num_pmt == 'sum':
-                    self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)
-                else:
-                    self.log.debug('\t\tData (PMT%d): [%d, %d]', num_pmt, d0, d1)
-
-                to_save['data'][num_pmt] = {'indices': indices[s0:s1],
-                                            'samples': samples[s0:s1]}
+                to_save['data'][num_pmt] = {'indices': indices[mask],
+                                            'samples': samples[mask]}
 
             to_save['peaks'] = peaks
-            #to_save['sum_data'] = {'samples': sum_data['samples'],
-            #                       'indices': sum_data['indices'], }
 
             to_save['evt_num'] = evt_num
-            to_save['smooth'] = smooth_waveform
             to_save['range'] = [int(e0), int(e1)]
             events.append(to_save)
 
