@@ -20,14 +20,9 @@ class CoreMathTestCase(unittest.TestCase):
 
         a = (offset, offset + 2)
 
-        self.assertEqual(f(a, (offset+4, offset+6), indices),
+        self.assertEqual(f(a, (offset+4, offset+6)),
                          (None, None))
 
-        c = f(a, a, indices)
-        print(c, indices[c[0]:c[1]])
-        for index in indices[c[0]:c[1]]:
-            self.assertGreaterEqual(index, a[0])
-            self.assertLessEqual(index, a[1])
 
 
 
