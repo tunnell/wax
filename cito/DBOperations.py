@@ -15,8 +15,14 @@ class DBReset(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
+                                                         selection='input')
         db.drop_collection(collection.name)
+
+        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
+                                                         selection='output')
+        db.drop_collection(collection.name)
+
         return self.get_status(db)
 
 
@@ -24,11 +30,12 @@ class DBPurge(CitoShowOne):
     """Delete/purge all DAQ documents without deleting collection.
 
     This can be used during a run.
+    TODO: specify input or output
     """
 
     def take_action(self, parsed_args):
         conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
-                                                         selection='input')
+                                                         selection='output')
         self.log.debug("Purging all documents")
         collection.remove({})
         return self.get_status(db)
