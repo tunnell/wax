@@ -33,7 +33,8 @@ class FileBuilderCommand(Command):
 
         self.log.debug("Getting mongo objects")
 
-        c, db, collection = XeDB.get_mongo_db_objects(selection='output')
+        c, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
+                                                      selection='output')
         f = gzip.open('testPickleFile.pklz', 'wb')
 
         for doc in collection.find():

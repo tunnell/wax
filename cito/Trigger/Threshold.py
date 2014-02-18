@@ -35,6 +35,18 @@ def subranges(indices):
     return ranges
 
 
+def merge_subranges(cwt_width, ranges):
+    combined_ranges = []
+    for subrange in ranges:
+        if len(combined_ranges) == 0:
+            combined_ranges.append(subrange)
+        elif combined_ranges[-1][1] + 2 * cwt_width > subrange[0]:
+            combined_ranges[-1][1] = subrange[1]
+        else:
+            combined_ranges.append(subrange)
+    return combined_ranges
+
+
 def trigger(indices, samples):
     """Find peaks within contigous ranges
 
@@ -46,18 +58,10 @@ def trigger(indices, samples):
     peaks = []  # Store the indices of peaks
 
     ranges = subranges(indices)
-
-    combined_ranges = []
-
-    for subrange in ranges:
-        if len(combined_ranges) == 0:
-            combined_ranges.append(subrange)
-        elif combined_ranges[-1][1] + 2 * cwt_width > subrange[0]:
-            combined_ranges[-1][1] = subrange[1]
-        else:
-            combined_ranges.append(subrange)
+    combined_ranges = merge_subranges(cwt_width, ranges)
 
     logging.debug("Ranges: %s" % str(ranges))
+    logging.debug("Combined ranges: %s" % str(combined_ranges))
 
     for subrange in combined_ranges:
         subsamples = samples[subrange[0]:subrange[1]]
@@ -96,6 +100,11 @@ def find_peaks(values, threshold=1000, cwt_width=CWT_WIDTH):
 
 
 def smooth(vector, widths=np.array([CWT_WIDTH])):
+    """Smooth a vector
+
+    Using a predefined width (which can be given as input), smooth the values
+    in 'vector'.  Return a numpy array the length of vector, but smoothed.
+    """
     width = widths[0]
     cwt_dat = np.zeros([1, len(vector)])
     wavelet = ricker
@@ -106,7 +115,9 @@ def smooth(vector, widths=np.array([CWT_WIDTH])):
 
 
 def find_peaks_cwt(vector, widths=np.array([CWT_WIDTH])):
-    """Copied from SciPy; don't test"""
+    """Find peaks
+
+    Returns list of peaks and debbuging info."""
     gap_thresh = np.ceil(widths[0])
     max_distances = widths / 4.0
 
@@ -117,19 +128,12 @@ def find_peaks_cwt(vector, widths=np.array([CWT_WIDTH])):
                                    min_snr=1, noise_perc=10)
     max_locs = [x[1][0] for x in filtered]
 
+    debugging_info = {}
+    debugging_info['cwt'] = cwt_dat[0]
+    debugging_info['ridge_lines'] = ridge_lines
+    debugging_info['filtered'] = filtered
 
-    #    ## the next code is just to visualize how this works
-    #import matplotlib.pyplot as plt
-    #plt.plot(vector)  # extent=(widths[0], widths[-1], times[0], times[-1]))
-    #plt.plot(cwt_dat[0])
-    #for l in ridge_lines:
-    #    plt.plot(l[1], l[0], 'k-')
-    #for l in filtered:
-    #    plt.plot(l[1], l[0], 'r-')
-    #plt.plot(peaks_t, peaks_w, 'k*')  # not working
-    #plt.show()
-
-    return sorted(max_locs)
+    return sorted(max_locs), debugging_info
 
 
 
