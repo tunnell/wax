@@ -4,10 +4,6 @@
 __author__ = 'tunnell'
 
 import logging
-import pickle
-import gzip
-import inspect
-import os
 
 import numpy as np
 import pymongo

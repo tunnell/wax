@@ -3,6 +3,7 @@ __author__ = 'tunnell'
 import logging
 import pickle
 import gzip
+from tqdm import tqdm
 
 from cliff.command import Command
 import snappy
@@ -31,14 +32,19 @@ class FileBuilderCommand(Command):
         self.log.debug('Initialized %s', self.__class__.__name__)
         self.log.debug('Args: %s', str(parsed_args))
 
-        self.log.debug("Getting mongo objects")
+        self.log.info("Establishing connection")
 
         c, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
                                                       selection='output')
         f = gzip.open('testPickleFile.pklz', 'wb')
 
-        for doc in collection.find():
-            self.log.debug('Processing doc: %s' % str(doc['_id']))
+        cursor = collection.find()
+        N = cursor.count()
+
+        self.log.info("Processing %d trigger events" % N)
+
+        for i in tqdm(range(N)):
+            doc = collection.next()
             doc2 = snappy.uncompress(doc['compressed_doc'])
             doc2 = pickle.loads(doc2)
 

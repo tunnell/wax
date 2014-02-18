@@ -10,7 +10,7 @@ from scipy.signal.wavelets import ricker
 
 from itertools import groupby
 
-CWT_WIDTH = 150
+CWT_WIDTH = 50
 
 def subranges(indices):
     """Identify groups of continuous numbers in a list
