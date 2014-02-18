@@ -36,7 +36,10 @@ from cito.Trigger import Threshold
 
 
 def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
-    """Determine overlapping ranges"""
+    """Determine overlapping ranges
+
+    range_around_peak in units of 10 ns
+    18000 means 180 us."""
     peaks.sort()
 
     assert len(range_around_peak) == 2
@@ -131,6 +134,8 @@ class EventBuilder():
         if len(peak_indices) == 0:  # If no peaks found, return
             self.log.info("No peak found; returning")
             return []
+        else:
+            self.log.info("Peaks found: %s")
 
         ##
         # Step 3: Flag ranges around peaks to save, then break into events

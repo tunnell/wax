@@ -1,3 +1,4 @@
+cmd2
 pymongo
 python-snappy
 numpy
