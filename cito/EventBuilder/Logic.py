@@ -150,7 +150,8 @@ class EventBuilder():
                     assert len(samples) == (d1 - d0), '%d %d %d' % (samples.size, d0, d1)
 
                 s0, s1 = overlap_region((d0, d1), (e0, e1))
-
+                if s0 is None or s1 is None:
+                    continue
                 self.log.debug("%s %d %d" % (str(key), s0, s1))
                 s0 = np.where(indices == s0)[0][0]
                 s1 = np.where(indices == s1)[0][0]
