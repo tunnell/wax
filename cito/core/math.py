@@ -71,21 +71,19 @@ def find_subranges(indices):
 
 def overlap_region(range1, range2):
 
-    # a0 must be smaller or equal to than b0
     a0, a1 = range1
     b0, b1 = range2
-    if a0 < b0:
-        a0, a1 = range2
-        b0, b1 = range1
 
     # Overlap range
     range_overlap = (None, None)
 
     # If all of A is before B, or vice versa...
-    if a1 <= b0:  # If true, no overlap
+    if a1 < b0 or b1 < a0:  # If true, no overlap
         return range_overlap  # None, None
     elif a0 <= b0 and b1 <= a1:  #  All of B contained in A
         range_overlap = (b0, b1)
+    elif b0 <= a0 and a1 <= b1:  #  All of A contained in B
+        range_overlap = (a0, a1)
     else:
         logging.error("Partial overlap. slow")
         overlap = np.intersect1d(np.arange(a0, a1), np.arange(b0, b1))
