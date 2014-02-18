@@ -25,14 +25,13 @@
     interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
     example, for peak_k > peak_i, if peak_i + t_post > peak_k - t_pre, these are one event.
 
-    TODO: Store metadata that stores the time of each trigger.
 
 """
 import logging
 
 import numpy as np
 
-from cito.Trigger import Threshold
+from cito.Trigger import PeakFinder
 
 
 def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
@@ -96,7 +95,26 @@ class EventBuilder():
             self.event_number += 1
             return self.event_number
 
-    #@profile
+
+    def overlap_region(self, d0, d1, e0, e1, indices):
+        # If no data in our search range, continue
+        if d1 < e0 or e1 <= d0:  # If true, no overlap
+            pass
+        else:
+
+            if e0 <= d0 and d1 <= e1:  # Most common case:
+                s0 = 0
+                s1 = len(indices)
+            else:  # compute overlap
+                erange = np.arange(e0, e1)
+                overlap = np.intersect1d(np.arange(d0, d1), erange)
+                if overlap.size == 0:
+                    raise ValueError('No overlap found...')
+
+                s0 = np.where(indices == overlap[0])[0][0]
+                s1 = np.where(indices == overlap[-1])[0][0]
+        return s0, s1
+
     def build_event(self, data, t0=None, t1=None):
         """Build events out of raw data.
 
@@ -125,7 +143,7 @@ class EventBuilder():
         ##
         # Step 2: Identify peaks in sum waveform using a Trigger algorithm
         ##
-        peak_indices, smooth_waveform = Threshold.trigger(sum_data['indices'], sum_data['samples'])
+        peak_indices, smooth_waveform = PeakFinder.trigger(sum_data['indices'], sum_data['samples'])
         peaks = sum_data['indices'][peak_indices]
         for peak in peaks:  # Check peak in sum waveform
             assert sum_data['indices'][0] < peak < sum_data['indices'][-1]
@@ -154,7 +172,7 @@ class EventBuilder():
             evt_num = self.get_event_number()
             self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
 
-            erange = np.arange(e0, e1)
+
 
             #  This information will be saved about the trigger event
             to_save = {'data': {}}
@@ -164,29 +182,17 @@ class EventBuilder():
                 if key[2] == 'sum':
                     continue
 
-                # d0 is start time for this channel data, d1 therefore end time
-                (d0, d1, num_pmt) = key
                 samples = value['samples']
                 indices = value['indices']
+                assert samples.size == indices.size
+
+                # d0 is start time for this channel data, d1 therefore end time
+                (d0, d1, num_pmt) = key
 
                 if key[2] != 'sum':
                     assert len(samples) == (d1 - d0), '%d %d %d' % (samples.size, d0, d1)
 
-                # If no data in our search range, continue
-                if d1 < e0 or e1 <= d0:  # If true, no overlap
-                    continue
-
-                if e0 <= d0 and d1 <= e1:  # Most common case:
-                    s0 = 0
-                    s1 = len(samples)
-                else:  # compute overlap
-                    overlap = np.intersect1d(np.arange(d0, d1), erange)
-                    if overlap.size == 0:
-                        self.log.warn('No overlap found... not saving %s.' % key)
-                        continue
-
-                    s0 = np.where(indices == overlap[0])[0][0]
-                    s1 = np.where(indices == overlap[-1])[0][0]
+                s0, s1 = self.overlap_region(d0, d1, e0, e1, indices)
 
                 if num_pmt == 'sum':
                     self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)

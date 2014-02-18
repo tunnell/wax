@@ -3,8 +3,8 @@ __author__ = 'tunnell'
 import logging
 import pickle
 import gzip
-from tqdm import tqdm
 
+from tqdm import tqdm
 from cliff.command import Command
 import snappy
 
@@ -36,7 +36,7 @@ class FileBuilderCommand(Command):
 
         c, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
                                                       selection='output')
-        f = gzip.open('testPickleFile.pklz', 'wb')
+        f = gzip.open('cito_file.pklz', 'wb')
 
         cursor = collection.find()
         N = cursor.count()

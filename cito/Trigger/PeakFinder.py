@@ -2,13 +2,13 @@ __author__ = 'tunnell'
 
 import logging
 import time
+from itertools import groupby
 
 from scipy import signal
 import numpy as np
 from scipy.signal._peak_finding import _filter_ridge_lines, _identify_ridge_lines
 from scipy.signal.wavelets import ricker
 
-from itertools import groupby
 
 CWT_WIDTH = 50
 
@@ -35,7 +35,7 @@ def subranges(indices):
     return ranges
 
 
-def merge_subranges(cwt_width, ranges):
+def merge_subranges(ranges, cwt_width):
     combined_ranges = []
     for subrange in ranges:
         if len(combined_ranges) == 0:

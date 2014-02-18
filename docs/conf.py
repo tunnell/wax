@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys, os
+import sys
+import os
+
 print("python exec:", sys.executable)
 print("sys.path:", sys.path)
 try:
@@ -42,7 +44,7 @@ class Mock(object):
 MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate',
                 'scipy.signal', 'numpy.dtype', 'scipy.signal._peak_finding', 'scipy.lib',
                 'scipy.lib.six', 'scipy.lib.six.moves', 'scipy.signal.wavelets', 'scipy.stats',
-                'snappy']
+                'snappy', 'cmd2']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
 
