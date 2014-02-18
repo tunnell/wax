@@ -1,8 +1,9 @@
+from cito.core.math import merge_subranges, find_subranges
+
 __author__ = 'tunnell'
 
 import logging
 import time
-from itertools import groupby
 
 from scipy import signal
 import numpy as np
@@ -12,39 +13,6 @@ from scipy.signal.wavelets import ricker
 
 CWT_WIDTH = 50
 
-def subranges(indices):
-    """Identify groups of continuous numbers in a list
-
-    For example, if indices is:
-
-        [2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 20]
-
-    Then the location within the list of continuous ranges are at:
-
-        [(0,3), (4, 9), (10, 10)]
-
-    """
-    ranges = []
-    for k, g in groupby(enumerate(indices), lambda i_x:i_x[0]-i_x[1]):
-        # Each value is formated as: (location in array, value in array)
-        values = list(g)
-
-        # values[0] and values[-1] are range boundaries
-        ranges.append([values[0][0], values[-1][0]])
-
-    return ranges
-
-
-def merge_subranges(ranges, cwt_width):
-    combined_ranges = []
-    for subrange in ranges:
-        if len(combined_ranges) == 0:
-            combined_ranges.append(subrange)
-        elif combined_ranges[-1][1] + 2 * cwt_width > subrange[0]:
-            combined_ranges[-1][1] = subrange[1]
-        else:
-            combined_ranges.append(subrange)
-    return combined_ranges
 
 
 def trigger(indices, samples):
@@ -60,7 +28,7 @@ def trigger(indices, samples):
 
     peaks = []  # Store the indices of peaks
 
-    ranges = subranges(indices)
+    ranges = find_subranges(indices)
     combined_ranges = merge_subranges(cwt_width, ranges)
 
     logging.debug("Ranges: %s" % str(ranges))

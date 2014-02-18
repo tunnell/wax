@@ -32,34 +32,7 @@ import logging
 import numpy as np
 
 from cito.Trigger import PeakFinder
-
-
-def compute_event_ranges(peaks, range_around_peak=(-18000, 18000)):
-    """Determine overlapping ranges
-
-    range_around_peak in units of 10 ns
-    18000 means 180 us."""
-    peaks.sort()
-
-    assert len(range_around_peak) == 2
-    assert range_around_peak[0] < range_around_peak[1]
-
-    ranges = []
-
-    for peak in peaks:
-        time_start = peak + range_around_peak[0]
-        time_stop = peak + range_around_peak[1]
-
-        if len(ranges) >= 1 and time_start < ranges[-1][1]:  # ranges[-1] is latest range
-            logging.debug('Combining time ranges:')
-            logging.debug('\t%s' % (str((time_start, time_stop))))
-            logging.debug('\t%s' % str(ranges[-1]))
-
-            ranges[-1][1] = time_stop
-        else:
-            ranges.append([time_start, time_stop])
-
-    return ranges
+from cito.core.math import compute_subranges
 
 
 def find_sum_in_data(data):
@@ -153,12 +126,12 @@ class EventBuilder():
             self.log.info("No peak found; returning")
             return []
         else:
-            self.log.info("Peaks found: %s")
+            self.log.info("Peaks found: %s" % str(peaks))
 
         ##
         # Step 3: Flag ranges around peaks to save, then break into events
         ##
-        event_ranges = compute_event_ranges(peaks)
+        event_ranges = compute_subranges(peaks)
         self.log.info('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
 
         ##
