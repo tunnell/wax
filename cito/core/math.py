@@ -82,7 +82,7 @@ def overlap_region(range1, range2):
     range_overlap = (None, None)
 
     # If all of A is before B, or vice versa...
-    if a1 < b0:  # If true, no overlap
+    if a1 <= b0:  # If true, no overlap
         return range_overlap  # None, None
     elif a0 <= b0 and b1 <= a1:  #  All of B contained in A
         range_overlap = (b0, b1)
@@ -90,7 +90,7 @@ def overlap_region(range1, range2):
         logging.error("Partial overlap. slow")
         overlap = np.intersect1d(np.arange(a0, a1), np.arange(b0, b1))
         if overlap.size == 0:
-            raise ValueError('No overlap found?...')
+            raise ValueError('No overlap found?... (%d, %d) (%d, %d)' % (a0, a1, b0, b1))
         range_overlap = (overlap[0], overlap[1])
 
     return range_overlap
