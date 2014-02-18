@@ -155,7 +155,7 @@ class EventBuilder():
                 self.log.debug("%s %d %d" % (str(key), s0, s1))
                 try:
                     s0 = np.where(indices == s0)[0][0]
-                    s1 = np.where(indices == s1)[0][0]
+                    s1 = np.where(indices == s1-1)[0][0]
                 except IndexError:
                     self.log.error("%s %d %d" % (str(key), s0, s1))
                     self.log.error(indices)
