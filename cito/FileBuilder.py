@@ -44,7 +44,7 @@ class FileBuilderCommand(Command):
         self.log.info("Processing %d trigger events" % N)
 
         for i in tqdm(range(N)):
-            doc = collection.next()
+            doc = cursor.next()
             doc2 = snappy.uncompress(doc['compressed_doc'])
             doc2 = pickle.loads(doc2)
 
