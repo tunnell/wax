@@ -153,8 +153,14 @@ class EventBuilder():
                 if s0 is None or s1 is None:
                     continue
                 self.log.debug("%s %d %d" % (str(key), s0, s1))
-                s0 = np.where(indices == s0)[0][0]
-                s1 = np.where(indices == s1)[0][0]
+                try:
+                    s0 = np.where(indices == s0)[0][0]
+                    s1 = np.where(indices == s1)[0][0]
+                except IndexError:
+                    self.log.error("%s %d %d" % (str(key), s0, s1))
+                    self.log.error(indices)
+                    raise
+
 
                 if num_pmt == 'sum':
                     self.log.debug('\t\tData (sum): [%d, %d]', d0, d1)
