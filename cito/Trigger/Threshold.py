@@ -50,10 +50,13 @@ def merge_subranges(cwt_width, ranges):
 def trigger(indices, samples):
     """Find peaks within contigous ranges
 
-    Within continous subranges, find peaks above threshold.
+    Within continous subranges, find peaks above threshold.  This is typically the entry point into this
+    module.
     """
 
-    cwt_width=50 # samples
+    smoothed_sum = np.zeros_like(indices)
+
+    cwt_width=CWT_WIDTH # samples
 
     peaks = []  # Store the indices of peaks
 
@@ -63,17 +66,19 @@ def trigger(indices, samples):
     logging.debug("Ranges: %s" % str(ranges))
     logging.debug("Combined ranges: %s" % str(combined_ranges))
 
-    for subrange in combined_ranges:
-        subsamples = samples[subrange[0]:subrange[1]]
+    for s in combined_ranges:
+        subsamples = samples[s[0]:s[1]]
 
-        high_extrema = find_peaks(subsamples, cwt_width=cwt_width)
+        high_extrema, trigger_meta_data = find_peaks(subsamples, cwt_width=cwt_width)
         for value in high_extrema:
             peaks.append(value)
 
-    return peaks
+        smoothed_sum[s[0]:s[1]] = trigger_meta_data['cwt']
+
+    return peaks, smoothed_sum
 
 
-def find_peaks(values, threshold=1000, cwt_width=CWT_WIDTH):
+def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     """Find peaks within list of values.
 
     Uses scipy to find peaks above a threshold.
@@ -91,12 +96,28 @@ def find_peaks(values, threshold=1000, cwt_width=CWT_WIDTH):
     # 20 is the wavelet width
     logging.debug('CWT with n=%d' % values.size)
     t0 = time.time()
-    peakind = find_peaks_cwt(values, np.array([cwt_width]))
+    gap_thresh = np.ceil(widths[0])
+    max_distances = widths / 4.0
+
+    cwt_dat = smooth(values, widths)
+
+    ridge_lines = _identify_ridge_lines(cwt_dat, max_distances, gap_thresh)
+    filtered = _filter_ridge_lines(cwt_dat, ridge_lines, min_length=None,
+                                   min_snr=1, noise_perc=10)
+    max_locs = [x[1][0] for x in filtered]
+
+    trigger_meta_data = {}
+    trigger_meta_data['cwt'] = cwt_dat[0]
+    trigger_meta_data['ridge_lines'] = ridge_lines
+    trigger_meta_data['filtered'] = filtered
+
+    peakind = sorted(max_locs)
+    
     peaks_over_threshold = [x for x in peakind if values[x] > threshold]
     t1 = time.time()
 
     logging.debug('Convolution duration: %f s' % (t1 - t0))
-    return np.array(peaks_over_threshold, dtype=np.uint32)
+    return np.array(peaks_over_threshold, dtype=np.uint32), trigger_meta_data
 
 
 def smooth(vector, widths=np.array([CWT_WIDTH])):
@@ -118,22 +139,7 @@ def find_peaks_cwt(vector, widths=np.array([CWT_WIDTH])):
     """Find peaks
 
     Returns list of peaks and debbuging info."""
-    gap_thresh = np.ceil(widths[0])
-    max_distances = widths / 4.0
 
-    cwt_dat = smooth(vector, widths)
-
-    ridge_lines = _identify_ridge_lines(cwt_dat, max_distances, gap_thresh)
-    filtered = _filter_ridge_lines(cwt_dat, ridge_lines, min_length=None,
-                                   min_snr=1, noise_perc=10)
-    max_locs = [x[1][0] for x in filtered]
-
-    debugging_info = {}
-    debugging_info['cwt'] = cwt_dat[0]
-    debugging_info['ridge_lines'] = ridge_lines
-    debugging_info['filtered'] = filtered
-
-    return sorted(max_locs), debugging_info
 
 
 

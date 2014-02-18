@@ -122,7 +122,7 @@ class EventBuilder():
         ##
         # Step 2: Identify peaks in sum waveform using a Trigger algorithm
         ##
-        peak_indices = Threshold.trigger(sum_data['indices'], sum_data['samples'])
+        peak_indices, smooth_waveform = Threshold.trigger(sum_data['indices'], sum_data['samples'])
         peaks = sum_data['indices'][peak_indices]
         for peak in peaks:  # Check peak in sum waveform
             assert sum_data['indices'][0] < peak < sum_data['indices'][-1]
@@ -196,6 +196,7 @@ class EventBuilder():
                                    'indices': sum_data['indices'].tolist(), }
 
             to_save['evt_num'] = evt_num
+            to_save['smooth'] = smooth_waveform
             to_save['range'] = [int(e0), int(e1)]
             events.append(to_save)
 
