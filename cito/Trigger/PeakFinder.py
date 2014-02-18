@@ -24,12 +24,10 @@ def trigger(indices, samples):
 
     smoothed_sum = np.zeros_like(indices)
 
-    cwt_width=CWT_WIDTH # samples
-
     peaks = []  # Store the indices of peaks
 
     ranges = find_subranges(indices)
-    combined_ranges = merge_subranges(cwt_width, ranges)
+    combined_ranges = merge_subranges(ranges, 10 * CWT_WIDTH)
 
     logging.debug("Ranges: %s" % str(ranges))
     logging.debug("Combined ranges: %s" % str(combined_ranges))
