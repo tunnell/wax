@@ -69,7 +69,7 @@ def trigger(indices, samples):
     for s in combined_ranges:
         subsamples = samples[s[0]:s[1]]
 
-        high_extrema, trigger_meta_data = find_peaks(subsamples, cwt_width=cwt_width)
+        high_extrema, trigger_meta_data = find_peaks(subsamples)
         for value in high_extrema:
             peaks.append(value)
 
