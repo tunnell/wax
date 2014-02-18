@@ -38,6 +38,7 @@ class FileBuilderCommand(Command):
         f = gzip.open('testPickleFile.pklz', 'wb')
 
         for doc in collection.find():
+            self.log.debug('Processing doc: %s' % str(doc['_id']))
             doc2 = snappy.uncompress(doc['compressed_doc'])
             doc2 = pickle.loads(doc2)
 
