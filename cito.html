@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cito package &mdash; Code for Intelligent Triggering Online 1.3.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.3.6 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cito-package">
+<h1>cito package<a class="headerlink" href="#cito-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cito.EventBuilder.html">cito.EventBuilder package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cito.EventBuilder.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.EventBuilder.html#module-cito.EventBuilder.Logic">cito.EventBuilder.Logic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cito.EventBuilder.html#cito-core-eventbuilding">cito.core.EventBuilding</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cito.EventBuilder.html#module-cito.EventBuilder.Output">cito.EventBuilder.Output module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.EventBuilder.html#module-cito.EventBuilder.Tasks">cito.EventBuilder.Tasks module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.EventBuilder.html#module-cito.EventBuilder">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cito.Trigger.html">cito.Trigger package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cito.Trigger.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.Trigger.html#module-cito.Trigger.PeakFinder">cito.Trigger.PeakFinder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.Trigger.html#module-cito.Trigger">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cito.core.html">cito.core package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cito.core.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.core.html#module-cito.core.Waveform">cito.core.Waveform module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.core.html#module-cito.core.XeDB">cito.core.XeDB module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.core.html#module-cito.core.main">cito.core.main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.core.html#module-cito.core.math">cito.core.math module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.core.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-cito.DBOperations">
+<span id="cito-dboperations-module"></span><h2>cito.DBOperations module<a class="headerlink" href="#module-cito.DBOperations" title="Permalink to this headline">¶</a></h2>
+<p>Commands for the command line interface for DB operations.</p>
+<p>All of these commands are simple enough that they don&#8217;t rely too
+much on XeDB.  Maybe these commands should be moved there though?</p>
+<dl class="class">
+<dt id="cito.DBOperations.DBPurge">
+<em class="property">class </em><tt class="descclassname">cito.DBOperations.</tt><tt class="descname">DBPurge</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBPurge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBPurge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Delete/purge all DAQ documents without deleting collection.</p>
+<p>This can be used during a run.
+TODO: specify input or output</p>
+<dl class="method">
+<dt id="cito.DBOperations.DBPurge.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBPurge.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBPurge.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.DBOperations.DBRepair">
+<em class="property">class </em><tt class="descclassname">cito.DBOperations.</tt><tt class="descname">DBRepair</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBRepair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBRepair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Repair DB to regain unused space.</p>
+<p>MongoDB can&#8217;t know how what to do with space after a document is deleted,
+so there can exist small blocks of memory that are too small for new
+documents but non-zero.  This is called fragmentation.  This command
+copies all the data into a new database, then replaces the old database
+with the new one.  This is an expensive operation and will slow down
+operation of the database.</p>
+<dl class="method">
+<dt id="cito.DBOperations.DBRepair.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBRepair.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBRepair.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.DBOperations.DBReset">
+<em class="property">class </em><tt class="descclassname">cito.DBOperations.</tt><tt class="descname">DBReset</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBReset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBReset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Reset the database by dropping the default collection.</p>
+<p>Warning: this cannot be used during a run as it will kill the DAQ writer.</p>
+<dl class="method">
+<dt id="cito.DBOperations.DBReset.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBReset.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBReset.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cito.FileBuilder">
+<span id="cito-filebuilder-module"></span><h2>cito.FileBuilder module<a class="headerlink" href="#module-cito.FileBuilder" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="cito.FileBuilder.FileBuilderCommand">
+<em class="property">class </em><tt class="descclassname">cito.FileBuilder.</tt><tt class="descname">FileBuilderCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/FileBuilder.html#FileBuilderCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.FileBuilder.FileBuilderCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
+<p>Continously build files</p>
+<p>TODO: merge with other commands</p>
+<dl class="method">
+<dt id="cito.FileBuilder.FileBuilderCommand.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/FileBuilder.html#FileBuilderCommand.get_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.FileBuilder.FileBuilderCommand.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.FileBuilder.FileBuilderCommand.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/FileBuilder.html#FileBuilderCommand.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.FileBuilder.FileBuilderCommand.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.FileBuilder.FileBuilderCommand.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/FileBuilder.html#FileBuilderCommand.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.FileBuilder.FileBuilderCommand.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cito.Inspector">
+<span id="cito-inspector-module"></span><h2>cito.Inspector module<a class="headerlink" href="#module-cito.Inspector" title="Permalink to this headline">¶</a></h2>
+<p>For analyzing single documents</p>
+<dl class="class">
+<dt id="cito.Inspector.InputDBInspector">
+<em class="property">class </em><tt class="descclassname">cito.Inspector.</tt><tt class="descname">InputDBInspector</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Show statistics on DB collection</p>
+<dl class="staticmethod">
+<dt id="cito.Inspector.InputDBInspector.formatter2">
+<em class="property">static </em><tt class="descname">formatter2</tt><big>(</big><em>start</em>, <em>end</em>, <em>step</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.formatter2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.formatter2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDBInspector.helper">
+<tt class="descname">helper</tt><big>(</big><em>lst</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.helper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.helper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDBInspector.re_range">
+<tt class="descname">re_range</tt><big>(</big><em>lst</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.re_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.re_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDBInspector.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.Inspector.InputDocInspector">
+<em class="property">class </em><tt class="descclassname">cito.Inspector.</tt><tt class="descname">InputDocInspector</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDocInspector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDocInspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Grab DAQ document from MongoDB and print it.</p>
+<p>A DAQ document contains the V1724 flash ADC data.  If data in the document is
+compressed, it will decompress it.</p>
+<dl class="method">
+<dt id="cito.Inspector.InputDocInspector.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDocInspector.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDocInspector.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define what command line arguments we want this to be able to do</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDocInspector.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDocInspector.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDocInspector.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.Inspector.OutputDocInspector">
+<em class="property">class </em><tt class="descclassname">cito.Inspector.</tt><tt class="descname">OutputDocInspector</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#OutputDocInspector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.OutputDocInspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Inspect information about trigger event.</p>
+<dl class="method">
+<dt id="cito.Inspector.OutputDocInspector.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#OutputDocInspector.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.OutputDocInspector.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Be able to specify trigger index</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.OutputDocInspector.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#OutputDocInspector.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.OutputDocInspector.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cito">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cito" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">cito package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-cito.DBOperations">cito.DBOperations module</a></li>
+<li><a class="reference internal" href="#module-cito.FileBuilder">cito.FileBuilder module</a></li>
+<li><a class="reference internal" href="#module-cito.Inspector">cito.Inspector module</a></li>
+<li><a class="reference internal" href="#module-cito">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/cito.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christopher Tunnell.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

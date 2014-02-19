@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.3.6 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.3.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.3.6 documentation" href="../../../index.html" />
+    <link rel="up" title="cito.EventBuilder" href="../EventBuilder.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../EventBuilder.html" accesskey="U">cito.EventBuilder</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for cito.EventBuilder.Logic</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    cito.core.EventBuilding</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">    Event building converts time blocks of data (from different digitizer boards) into DAQ events.</span>
+
+<span class="sd">    Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,</span>
+<span class="sd">    using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined</span>
+<span class="sd">    that performs the following sequential operations:</span>
+
+<span class="sd">    * Build sum waveform</span>
+<span class="sd">    * Using trigger algorithm, identify peaks in time.</span>
+<span class="sd">    * If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before</span>
+<span class="sd">      and after each peak.</span>
+
+<span class="sd">    More technically, a boolean array is created for each time sample, where True corresponds to a sample being saved</span>
+<span class="sd">    and false corresponds to an event being discarded.  These values default to false.  Two variables are defined by the</span>
+<span class="sd">    user: t_pre and t_post.  For each peak that the triggering algorithm identifies (e.g., charge above 100 pe), the</span>
+<span class="sd">    range [peak_i - t_pre, peak_i + t_post] is set to true  (see get_index_mask_for_trigger).  Subsequently, continuous</span>
+<span class="sd">    blocks of &#39;true&#39; are called an event.</span>
+
+<span class="sd">    In other words, if two particles interact in the detector within a typical &#39;event window&#39;, then these two</span>
+<span class="sd">    interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For</span>
+<span class="sd">    example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">cito.Trigger</span> <span class="kn">import</span> <span class="n">PeakFinder</span>
+<span class="kn">from</span> <span class="nn">cito.core.math</span> <span class="kn">import</span> <span class="n">compute_subranges</span><span class="p">,</span> <span class="n">overlap_region</span>
+
+
+<div class="viewcode-block" id="find_sum_in_data"><a class="viewcode-back" href="../../../cito.EventBuilder.html#cito.EventBuilder.Logic.find_sum_in_data">[docs]</a><span class="k">def</span> <span class="nf">find_sum_in_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find sum waveform in channel data</span>
+
+
+<span class="sd">    :param data: Initial time to query.</span>
+<span class="sd">    :type data: dict.</span>
+<span class="sd">    :returns:  dict -- Sum waveform indices and samples.</span>
+<span class="sd">    :raises: ValueError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">pmt_num</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="n">pmt_num</span> <span class="o">==</span> <span class="s">&#39;sum&#39;</span><span class="p">:</span>
+            <span class="n">sum0</span><span class="p">,</span> <span class="n">sum1</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Sum waveform range: [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span><span class="p">,</span> <span class="n">sum0</span><span class="p">,</span> <span class="n">sum1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Sum waveform not found&quot;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="EventBuilder"><a class="viewcode-back" href="../../../cito.EventBuilder.html#cito.EventBuilder.Logic.EventBuilder">[docs]</a><span class="k">class</span> <span class="nc">EventBuilder</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;From data, construct events</span>
+
+<span class="sd">    This is a separate class since it has to keep track of event number&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_number</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="EventBuilder.get_event_number"><a class="viewcode-back" href="../../../cito.EventBuilder.html#cito.EventBuilder.Logic.EventBuilder.get_event_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_event_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_number</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event_number</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_number</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event_number</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_number</span>
+
+
+
+</div>
+<div class="viewcode-block" id="EventBuilder.build_event"><a class="viewcode-back" href="../../../cito.EventBuilder.html#cito.EventBuilder.Logic.EventBuilder.build_event">[docs]</a>    <span class="k">def</span> <span class="nf">build_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build events out of raw data.</span>
+
+<span class="sd">        Using the sum waveform provided as an input, distinct events are identified.</span>
+<span class="sd">        Subsequently, all of the relevant individual channel PMT information (also</span>
+<span class="sd">        an input) is saved for that specific event.</span>
+
+<span class="sd">        :param data: Data to query, including sum waveform and individual channels</span>
+<span class="sd">        :type data: dict.</span>
+<span class="sd">        :param t0: Earliest possible time for sanity checks.  If None, skip check.</span>
+<span class="sd">        :type t0: int.</span>
+<span class="sd">        :param t1: Latest possible time for sanity checks.  If None, skip check.</span>
+<span class="sd">        :type t1: int.</span>
+<span class="sd">        :returns:  dict -- Sum waveform indices and samples.</span>
+<span class="sd">        :raises: ValueError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">##</span>
+        <span class="c"># Step 1: Grab sum waveform:  this sum waveform will be used to identify S2 signals</span>
+        <span class="c">##</span>
+        <span class="c"># sum0, sum1, time ranges</span>
+        <span class="n">sum_data</span> <span class="o">=</span> <span class="n">find_sum_in_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c">##</span>
+        <span class="c"># Step 2: Identify peaks in sum waveform using a Trigger algorithm</span>
+        <span class="c">##</span>
+        <span class="n">peak_indices</span><span class="p">,</span> <span class="n">smooth_waveform</span> <span class="o">=</span> <span class="n">PeakFinder</span><span class="o">.</span><span class="n">identify_nonoverlapping_trigger_windows</span><span class="p">(</span><span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">],</span>
+                                                                                           <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">])</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="n">peak_indices</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>  <span class="c"># Check peak in sum waveform</span>
+            <span class="k">assert</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">peak</span> <span class="o">&lt;</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Peak indices: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Peak local indices: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c"># If no peaks found, return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No peak found; returning&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Peaks found: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span>
+
+        <span class="c">##</span>
+        <span class="c"># Step 3: Flag ranges around peaks to save, then break into events</span>
+        <span class="c">##</span>
+        <span class="n">event_ranges</span> <span class="o">=</span> <span class="n">compute_subranges</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%d</span><span class="s"> trigger events from </span><span class="si">%d</span><span class="s"> peaks&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_ranges</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">))</span>
+
+
+        <span class="n">data</span><span class="p">[(</span><span class="n">sum0</span><span class="p">,</span> <span class="n">sum1</span><span class="p">,</span> <span class="s">&#39;smooth&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">],</span>
+                                        <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">smooth_waveform</span><span class="p">}</span>
+
+        <span class="c">##</span>
+        <span class="c"># Step 4: For each trigger event, associate channel information</span>
+        <span class="c">##</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">event_ranges</span><span class="p">:</span>
+            <span class="c"># e0, e1 are the times for this trigger event</span>
+
+            <span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+
+            <span class="n">evt_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_number</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">Event </span><span class="si">%d</span><span class="s">: [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span><span class="p">,</span> <span class="n">evt_num</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+
+            <span class="c">#  This information will be saved about the trigger event</span>
+            <span class="n">to_save</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+
+            <span class="c"># If there data within our search range [e0, e1]?</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c">#if key[2] == &#39;sum&#39;:</span>
+                <span class="c">#    continue</span>
+
+                <span class="n">samples</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">]</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span>
+
+                <span class="c"># d0 is start time for this channel data, d1 therefore end time</span>
+                <span class="n">num_pmt</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">],</span> <span class="n">e</span><span class="p">,</span> <span class="n">assume_unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+                <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="n">num_pmt</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">indices</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                                            <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">samples</span><span class="p">[</span><span class="n">mask</span><span class="p">]}</span>
+
+            <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">peak</span> <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span> <span class="k">if</span> <span class="n">e0</span> <span class="o">&lt;</span> <span class="n">peak</span> <span class="o">&lt;</span> <span class="n">e1</span><span class="p">]</span>
+
+            <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;evt_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">evt_num</span>
+            <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">e0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e1</span><span class="p">)]</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_save</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">events</span>
+
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">cito.core.main</span> <span class="kn">import</span> <span class="n">CitoApp</span>
+
+    <span class="n">myapp</span> <span class="o">=</span> <span class="n">CitoApp</span><span class="p">()</span>
+    <span class="kn">import</span> <span class="nn">cProfile</span>
+    <span class="n">cProfile</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&quot;&quot;&quot;myapp.run([&#39;process&#39;,&#39;--chunksize&#39;,&#39;10000000&#39;,&#39;--hostname&#39;,&#39;145.102.133.77&#39;,&#39;-n&#39;, &#39;10&#39;])&quot;&quot;&quot;</span><span class="p">,</span> <span class="s">&#39;profile&#39;</span><span class="p">)</span>
+    <span class="c">#code = myapp.run([&#39;process&#39;])</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../EventBuilder.html" >cito.EventBuilder</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christopher Tunnell.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

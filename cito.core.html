@@ -1,0 +1,443 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cito.core package &mdash; Code for Intelligent Triggering Online 1.3.6 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.3.6 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cito-core-package">
+<h1>cito.core package<a class="headerlink" href="#cito-core-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-cito.core.Waveform">
+<span id="cito-core-waveform-module"></span><h2>cito.core.Waveform module<a class="headerlink" href="#module-cito.core.Waveform" title="Permalink to this headline">¶</a></h2>
+<p>Perform operations on sets of blocks</p>
+<dl class="function">
+<dt id="cito.core.Waveform.get_data_and_sum_waveform">
+<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_data_and_sum_waveform</tt><big>(</big><em>cursor</em>, <em>n_samples</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_data_and_sum_waveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_data_and_sum_waveform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get inverted sum waveform from mongo</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first docutils">
+<dt>cursor (iterable):  An iterable object of documents containing Caen</dt>
+<dd>blocks.  This can be a pymongo Cursor.</dd>
+</dl>
+<p class="last">offset (int): An integer start time
+n_samples (int): How many samples to store</p>
+</dd>
+<dt>Returns:</dt>
+<dd>dict: Results dictionary with key &#8216;size&#8217; and &#8216;occurences&#8217;</dd>
+<dt>Todo: go through and check all the types</dt>
+<dd><ul class="first last simple">
+<li>Longer int since summing many, otherwise wrap around.</li>
+<li>use 8 bit and divide by num channels?  combine adjacent?</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.Waveform.get_samples">
+<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_samples</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_samples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-cito.core.XeDB">
+<span id="cito-core-xedb-module"></span><h2>cito.core.XeDB module<a class="headerlink" href="#module-cito.core.XeDB" title="Permalink to this headline">¶</a></h2>
+<p>Interface and schema for DB access</p>
+<dl class="function">
+<dt id="cito.core.XeDB.get_data_docs">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_data_docs</tt><big>(</big><em>t0</em>, <em>t1</em><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_data_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_data_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch from DB the documents within time range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t0</strong> (<em>int.</em>) &#8211; Initial time to query.</li>
+<li><strong>t1</strong> (<em>int.</em>) &#8211; Final time.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list &#8211; Input documents see docs <em class="xref std std-ref">data_format#input</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">AssertionError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.XeDB.get_data_from_doc">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_data_from_doc</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_data_from_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_data_from_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a mongo document, fetch the data payload and decompress if
+necessary</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>doc (dictionary):  Document from mongodb to analyze</dd>
+<dt>Returns:</dt>
+<dd>bytes: decompressed data</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.XeDB.get_max_time">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_max_time</tt><big>(</big><em>collection</em>, <em>min_time=0</em><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_max_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_max_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get maximum time that has been seen by all boards.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>collection (Collection):  A pymongo Collection that will be queried
+min_time (int): Time that the max must be larger than</dd>
+<dt>Returns:</dt>
+<dd>int:  A time in units of 10 ns</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.XeDB.get_min_time">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_min_time</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_min_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_min_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get minimum time in collection.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>collection (Collection):  A pymongo Collection that will be queried</dd>
+<dt>Returns:</dt>
+<dd>int:  A time in units of 10 ns</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.XeDB.get_mongo_db_objects">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_mongo_db_objects</tt><big>(</big><em>server='127.0.0.1'</em>, <em>selection='input'</em><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_mongo_db_objects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_mongo_db_objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns pymongo objects</p>
+<p>This does all the connection setup, that is specific to this program.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>selection</strong> (<em>str.</em>) &#8211; &#8216;input&#8217; if caen blocks, otherwise &#8216;output&#8217; for output</li>
+<li><strong>server</strong> (<em>str.</em>) &#8211; The server IP or DNS name MongoDB.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list &#8211; [Connection, Database, Collection]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">pymongo.errors.PyMongoError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.XeDB.get_pymongo_collection">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_pymongo_collection</tt><big>(</big><em>selection='input'</em><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_pymongo_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_pymongo_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current pymongo collection.</p>
+<p>selection is &#8216;input&#8217; for input Caen blocks, &#8216;output&#8217; for trigger events
+:returns:  Collection &#8211; Mongo collection with docs</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.XeDB.get_server_name">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_server_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_server_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_server_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current server name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str &#8211; server address</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.XeDB.get_sort_key">
+<tt class="descclassname">cito.core.XeDB.</tt><tt class="descname">get_sort_key</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/XeDB.html#get_sort_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.XeDB.get_sort_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort key used for MongoDB sorting and indexing.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>None</dd>
+<dt>Returns:</dt>
+<dd>list:  Returns, per pymongo format, a list of (variable, order) pairs.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cito.core.main">
+<span id="cito-core-main-module"></span><h2>cito.core.main module<a class="headerlink" href="#module-cito.core.main" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="cito.core.main.CitoApp">
+<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoApp</tt><a class="reference internal" href="_modules/cito/core/main.html#CitoApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.app.App</span></tt></p>
+<p>Cito Cliff application</p>
+<p>See cliff documentation to understand this.</p>
+<dl class="method">
+<dt id="cito.core.main.CitoApp.clean_up">
+<tt class="descname">clean_up</tt><big>(</big><em>cmd</em>, <em>result</em>, <em>err</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoApp.clean_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp.clean_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoApp.initialize_app">
+<tt class="descname">initialize_app</tt><big>(</big><em>argv</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoApp.initialize_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp.initialize_app" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoApp.prepare_to_run_command">
+<tt class="descname">prepare_to_run_command</tt><big>(</big><em>cmd</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoApp.prepare_to_run_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp.prepare_to_run_command" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.core.main.CitoCommand">
+<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
+<p>CitoSingleCommand base class</p>
+<p>This only looks over some range t0 till t1</p>
+<dl class="method">
+<dt id="cito.core.main.CitoCommand.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.get_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoCommand.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoCommand.get_tasks">
+<tt class="descname">get_tasks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.get_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.get_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoCommand.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoCommand.take_action_wrapped">
+<tt class="descname">take_action_wrapped</tt><big>(</big><em>chunk_size</em>, <em>padding</em>, <em>min_time</em>, <em>collection</em>, <em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.take_action_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.take_action_wrapped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapped version of take action</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.core.main.CitoContinousCommand">
+<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoContinousCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cito.core.main.CitoCommand" title="cito.core.main.CitoCommand"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoCommand</span></tt></a></p>
+<p>CitoSingleCommand base class</p>
+<p>This only looks over some range t0 till t1</p>
+<dl class="method">
+<dt id="cito.core.main.CitoContinousCommand.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoContinousCommand.get_tasks">
+<tt class="descname">get_tasks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand.get_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand.get_tasks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoContinousCommand.take_action_wrapped">
+<tt class="descname">take_action_wrapped</tt><big>(</big><em>chunk_size</em>, <em>padding</em>, <em>min_time</em>, <em>collection</em>, <em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand.take_action_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand.take_action_wrapped" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.core.main.CitoShowOne">
+<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoShowOne</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.show.ShowOne</span></tt></p>
+<p>Base class for all DB commands.</p>
+<p>Handles logging, descriptions, and common fuctions.</p>
+<dl class="method">
+<dt id="cito.core.main.CitoShowOne.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne.get_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoShowOne.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.core.main.CitoShowOne.get_status">
+<tt class="descname">get_status</tt><big>(</big><em>db</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne.get_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return DB errors, if any</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cito.core.main.CitoShowOne.log">
+<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x107aa5810&gt;</em><a class="headerlink" href="#cito.core.main.CitoShowOne.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.core.main.CitoSingleCommand">
+<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoSingleCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoSingleCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoSingleCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cito.core.main.CitoCommand" title="cito.core.main.CitoCommand"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoCommand</span></tt></a></p>
+<p>CitoSingleCommand base class</p>
+<p>This only looks over some range t0 till t1</p>
+<dl class="method">
+<dt id="cito.core.main.CitoSingleCommand.take_action_wrapped">
+<tt class="descname">take_action_wrapped</tt><big>(</big><em>chunk_size</em>, <em>padding</em>, <em>min_time</em>, <em>collection</em>, <em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoSingleCommand.take_action_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoSingleCommand.take_action_wrapped" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.main.main">
+<tt class="descclassname">cito.core.main.</tt><tt class="descname">main</tt><big>(</big><em>argv=['-b', 'html', '-d', '_build/doctrees', '.', '_build/html']</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-cito.core.math">
+<span id="cito-core-math-module"></span><h2>cito.core.math module<a class="headerlink" href="#module-cito.core.math" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="cito.core.math.compute_subranges">
+<tt class="descclassname">cito.core.math.</tt><tt class="descname">compute_subranges</tt><big>(</big><em>peaks</em>, <em>range_around_peak=(-18000</em>, <em>18000)</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#compute_subranges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.compute_subranges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine overlapping ranges</p>
+<p>range_around_peak in units of 10 ns
+18000 means 180 us.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.math.find_subranges">
+<tt class="descclassname">cito.core.math.</tt><tt class="descname">find_subranges</tt><big>(</big><em>indices</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#find_subranges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.find_subranges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify continuous ranges in a list and return their location.</p>
+<p>For example, if indices is:</p>
+<blockquote>
+<div>[2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 20]</div></blockquote>
+<p>Then the continuous ranges are at:</p>
+<blockquote>
+<div>[(0,3), (4, 9), (10, 10)]</div></blockquote>
+<p>See <a class="reference external" href="http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list">http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.math.merge_subranges">
+<tt class="descclassname">cito.core.math.</tt><tt class="descname">merge_subranges</tt><big>(</big><em>ranges</em>, <em>indices</em>, <em>distance</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#merge_subranges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.merge_subranges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ranges is a list of tuples, that are merged if less than distance between them</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.core.math.overlap">
+<tt class="descclassname">cito.core.math.</tt><tt class="descname">overlap</tt><big>(</big><em>min1</em>, <em>max1</em>, <em>min2</em>, <em>max2</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#overlap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.overlap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cito.core.math.overlap_region">
+<tt class="descclassname">cito.core.math.</tt><tt class="descname">overlap_region</tt><big>(</big><em>range1</em>, <em>range2</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#overlap_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.overlap_region" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-cito.core"></span></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">cito.core package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-cito.core.Waveform">cito.core.Waveform module</a></li>
+<li><a class="reference internal" href="#module-cito.core.XeDB">cito.core.XeDB module</a></li>
+<li><a class="reference internal" href="#module-cito.core.main">cito.core.main module</a></li>
+<li><a class="reference internal" href="#module-cito.core.math">cito.core.math module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/cito.core.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christopher Tunnell.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

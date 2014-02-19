@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cito.core.XeDB &mdash; Code for Intelligent Triggering Online 1.3.6 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.3.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.3.6 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for cito.core.XeDB</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Interface and schema for DB access</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;tunnell&#39;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">import</span> <span class="nn">snappy</span>
+
+<span class="n">CONNECTIONS</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="get_server_name"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_server_name">[docs]</a><span class="k">def</span> <span class="nf">get_server_name</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Get the current server name</span>
+
+<span class="sd">    .. todo:: should this be a &#39;config&#39; item or somethign?</span>
+<span class="sd">    :returns: str -- server address</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;127.0.0.1&quot;</span>
+
+</div>
+<div class="viewcode-block" id="get_sort_key"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_sort_key">[docs]</a><span class="k">def</span> <span class="nf">get_sort_key</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Sort key used for MongoDB sorting and indexing.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       list:  Returns, per pymongo format, a list of (variable, order) pairs.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="s">&#39;triggertime&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">&#39;_id&#39;</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">)]</span>
+
+</div>
+<div class="viewcode-block" id="get_mongo_db_objects"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_mongo_db_objects">[docs]</a><span class="k">def</span> <span class="nf">get_mongo_db_objects</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="n">get_server_name</span><span class="p">(),</span> <span class="n">selection</span><span class="o">=</span><span class="s">&#39;input&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function returns pymongo objects</span>
+
+<span class="sd">    This does all the connection setup, that is specific to this program.</span>
+
+<span class="sd">    :param selection: &#39;input&#39; if caen blocks, otherwise &#39;output&#39; for output</span>
+<span class="sd">    :type selection: str.</span>
+<span class="sd">    :param server: The server IP or DNS name MongoDB.</span>
+<span class="sd">    :type server: str.</span>
+<span class="sd">    :returns:  list -- [Connection, Database, Collection]</span>
+<span class="sd">    :raises: pymongo.errors.PyMongoError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">selection</span> <span class="ow">in</span> <span class="n">CONNECTIONS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">CONNECTIONS</span><span class="p">[</span><span class="n">selection</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s">&#39;input&#39;</span><span class="p">:</span>
+        <span class="n">db_name</span> <span class="o">=</span> <span class="s">&#39;data&#39;</span>  <span class="c"># todo: config?</span>
+        <span class="n">collection_name</span> <span class="o">=</span> <span class="s">&#39;XENON100&#39;</span>  <span class="c"># todo: config?</span>
+    <span class="k">elif</span> <span class="n">selection</span> <span class="o">==</span> <span class="s">&#39;output&#39;</span><span class="p">:</span>
+        <span class="n">db_name</span> <span class="o">=</span> <span class="s">&#39;output&#39;</span>
+        <span class="n">collection_name</span> <span class="o">=</span> <span class="s">&#39;somerun&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">server</span><span class="p">)</span>
+
+    <span class="n">db</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">db_name</span><span class="p">]</span>
+    <span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">collection_name</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s">&#39;input&#39;</span><span class="p">:</span>
+        <span class="n">num_docs_in_collection</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">num_docs_in_collection</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Collection </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s"> contains no events; can&#39;t continue&quot;</span> <span class="o">%</span>
+                               <span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">))</span>
+
+        <span class="n">collection</span><span class="o">.</span><span class="n">ensure_index</span><span class="p">(</span><span class="n">get_sort_key</span><span class="p">(),</span>
+                                <span class="n">background</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">CONNECTIONS</span><span class="p">[</span><span class="n">selection</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span>
+
+</div>
+<div class="viewcode-block" id="get_pymongo_collection"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_pymongo_collection">[docs]</a><span class="k">def</span> <span class="nf">get_pymongo_collection</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="s">&#39;input&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the current pymongo collection.</span>
+
+<span class="sd">    selection is &#39;input&#39; for input Caen blocks, &#39;output&#39; for trigger events</span>
+<span class="sd">    :returns:  Collection -- Mongo collection with docs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_mongo_db_objects</span><span class="p">(</span><span class="n">selection</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="get_min_time"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_min_time">[docs]</a><span class="k">def</span> <span class="nf">get_min_time</span><span class="p">(</span><span class="n">collection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get minimum time in collection.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       collection (Collection):  A pymongo Collection that will be queried</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       int:  A time in units of 10 ns</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sort_key</span> <span class="o">=</span> <span class="n">get_sort_key</span><span class="p">()</span>
+    <span class="n">sort_key</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sort_key</span><span class="p">]</span>
+
+    <span class="n">cursor</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">({},</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;triggertime&#39;</span><span class="p">],</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+
+    <span class="n">doc</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;trig time: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;triggertime&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;No time found when searching for minimal time&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Minimum time: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">time</span>
+
+</div>
+<div class="viewcode-block" id="get_max_time"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_max_time">[docs]</a><span class="k">def</span> <span class="nf">get_max_time</span><span class="p">(</span><span class="n">collection</span><span class="p">,</span> <span class="n">min_time</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get maximum time that has been seen by all boards.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       collection (Collection):  A pymongo Collection that will be queried</span>
+<span class="sd">       min_time (int): Time that the max must be larger than</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       int:  A time in units of 10 ns</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sort_key</span> <span class="o">=</span> <span class="n">get_sort_key</span><span class="p">()</span>
+    <span class="n">modules</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">)</span>
+
+    <span class="n">times</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">modules</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No data for any module found&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;module&#39;</span><span class="p">:</span> <span class="n">module</span><span class="p">,</span>
+                 <span class="s">&#39;triggertime&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$gt&#39;</span><span class="p">:</span> <span class="n">min_time</span><span class="p">}}</span>
+
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
+                                 <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;triggertime&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">],</span>
+                                 <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                 <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+
+        <span class="c"># assert(cursor.explain()[&#39;indexOnly&#39;])</span>
+
+        <span class="n">times</span><span class="p">[</span><span class="n">module</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">cursor</span><span class="p">)[</span><span class="s">&#39;triggertime&#39;</span><span class="p">]</span>
+
+    <span class="c"># Want the earliest time (i.e., the min) of all the max times</span>
+    <span class="c"># for the boards.</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">time</span>
+
+</div>
+<div class="viewcode-block" id="get_data_from_doc"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_data_from_doc">[docs]</a><span class="k">def</span> <span class="nf">get_data_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;From a mongo document, fetch the data payload and decompress if</span>
+<span class="sd">    necessary</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       doc (dictionary):  Document from mongodb to analyze</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">       bytes: decompressed data</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;zipped&#39;</span><span class="p">]:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">snappy</span><span class="o">.</span><span class="n">uncompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+                         <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s">&quot;Data has zero length&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span>
+
+</div>
+<div class="viewcode-block" id="get_data_docs"><a class="viewcode-back" href="../../../cito.core.html#cito.core.XeDB.get_data_docs">[docs]</a><span class="k">def</span> <span class="nf">get_data_docs</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fetch from DB the documents within time range.</span>
+
+<span class="sd">    .. todo:: Must this know padding?  Maybe just hand cursor so can mock?</span>
+
+<span class="sd">    :param t0: Initial time to query.</span>
+<span class="sd">    :type t0: int.</span>
+<span class="sd">    :param t1: Final time.</span>
+<span class="sd">    :type t1: int.</span>
+<span class="sd">    :returns:  list -- Input documents see docs :ref:`data_format#input`</span>
+<span class="sd">    :raises: AssertionError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conn</span><span class="p">,</span> <span class="n">mongo_db_obj</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">get_mongo_db_objects</span><span class="p">()</span>
+
+    <span class="c"># $gte and $lt are special mongo functions for greater than and less than</span>
+    <span class="n">subset_query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;triggertime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">t0</span><span class="p">,</span>
+                                    <span class="s">&#39;$lt&#39;</span><span class="p">:</span> <span class="n">t1</span><span class="p">}}</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">subset_query</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christopher Tunnell.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

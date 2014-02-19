@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cito.Inspector &mdash; Code for Intelligent Triggering Online 1.3.6 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.3.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.3.6 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for cito.Inspector</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;For analyzing single documents</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">bson</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">cito.core</span> <span class="kn">import</span> <span class="n">XeDB</span>
+<span class="kn">from</span> <span class="nn">cito.core.main</span> <span class="kn">import</span> <span class="n">CitoShowOne</span>
+
+
+<div class="viewcode-block" id="OutputDocInspector"><a class="viewcode-back" href="../../cito.html#cito.Inspector.OutputDocInspector">[docs]</a><span class="k">class</span> <span class="nc">OutputDocInspector</span><span class="p">(</span><span class="n">CitoShowOne</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inspect information about trigger event.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="OutputDocInspector.get_parser"><a class="viewcode-back" href="../../cito.html#cito.Inspector.OutputDocInspector.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Be able to specify trigger index&quot;&quot;&quot;</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">OutputDocInspector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;--index&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Trigger index&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parser</span>
+</div>
+<div class="viewcode-block" id="OutputDocInspector.take_action"><a class="viewcode-back" href="../../cito.html#cito.Inspector.OutputDocInspector.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
+        <span class="n">conn</span><span class="p">,</span> <span class="n">my_db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_mongo_db_objects</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+
+        <span class="c"># TODO: move into XeDB</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="s">&#39;output&#39;</span><span class="p">][</span><span class="s">&#39;somerun&#39;</span><span class="p">]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Searching for trigger event </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">index</span><span class="p">)</span>
+
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;evt_num&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">})</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Event number&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;evt_num&#39;</span><span class="p">]))</span>
+
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Range [10 ns]&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]))</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Range [us]&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span> <span class="o">/</span> <span class="mi">100</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]]))</span>
+
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Span [10 ns]&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])))</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Span [us]&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">100</span><span class="p">))</span>
+
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Peaks&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]))</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Channels with data&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+            <span class="n">scale</span> <span class="o">=</span> <span class="mi">100</span>
+
+            <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">/</span> <span class="n">scale</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;sum_data&#39;</span><span class="p">][</span><span class="s">&#39;indices&#39;</span><span class="p">]]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;sum_data&#39;</span><span class="p">][</span><span class="s">&#39;samples&#39;</span><span class="p">]</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;o&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">peak</span> <span class="o">/</span> <span class="n">scale</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">scale</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">scale</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;$\mu$s&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;sum_</span><span class="si">%d</span><span class="s">.eps&#39;</span> <span class="o">%</span> <span class="n">index</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Sum plot&#39;</span><span class="p">,</span> <span class="s">&#39;sum_</span><span class="si">%d</span><span class="s">.eps&#39;</span> <span class="o">%</span> <span class="n">index</span><span class="p">))</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">channel</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">i</span> <span class="o">/</span> <span class="n">scale</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">]],</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;$\mu$s&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;channels_</span><span class="si">%d</span><span class="s">.eps&#39;</span> <span class="o">%</span> <span class="n">index</span><span class="p">)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Channel plot&#39;</span><span class="p">,</span> <span class="s">&#39;channels_</span><span class="si">%d</span><span class="s">.eps&#39;</span> <span class="o">%</span> <span class="n">index</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s">&#39;fail to inspect&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">output</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="InputDocInspector"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDocInspector">[docs]</a><span class="k">class</span> <span class="nc">InputDocInspector</span><span class="p">(</span><span class="n">CitoShowOne</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Grab DAQ document from MongoDB and print it.</span>
+
+<span class="sd">    A DAQ document contains the V1724 flash ADC data.  If data in the document is</span>
+<span class="sd">    compressed, it will decompress it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InputDocInspector.get_parser"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDocInspector.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Define what command line arguments we want this to be able to do&quot;&quot;&quot;</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">InputDocInspector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--print&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                            <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;nondata&#39;</span><span class="p">,</span> <span class="s">&#39;all&#39;</span><span class="p">),</span>
+                            <span class="n">default</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
+                            <span class="n">help</span><span class="o">=</span><span class="s">&#39;Print only certain keys within document(s)&#39;</span><span class="p">)</span>
+
+        <span class="n">subparser</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">subparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="s">&#39;--newest&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s">&#39;Get newest DAQ document&#39;</span><span class="p">)</span>
+        <span class="n">subparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;--id&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s">&#39;Get DAQ document by ID&#39;</span><span class="p">)</span>
+        <span class="n">subparser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&#39;--random&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span><span class="p">,</span>
+                               <span class="n">help</span><span class="o">=</span><span class="s">&#39;Grab random DAQ document&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parser</span>
+</div>
+<div class="viewcode-block" id="InputDocInspector.take_action"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDocInspector.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
+        <span class="n">conn</span><span class="p">,</span> <span class="n">my_db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_mongo_db_objects</span><span class="p">(</span>
+            <span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">newest</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+                <span class="n">doc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;triggertime&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">})</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&#39;Runtime error: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+                <span class="n">doc</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c"># must be by ID since these args in in mutually exclusive group</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Building BSON ID from string&quot;</span><span class="p">)</span>
+            <span class="n">id_bson</span> <span class="o">=</span> <span class="n">bson</span><span class="o">.</span><span class="n">objectid</span><span class="o">.</span><span class="n">ObjectId</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;ID: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;_id&#39;</span><span class="p">:</span> <span class="n">id_bson</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;No document found.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">([],</span> <span class="p">[])</span>
+
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="k">print</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># For every key in the doc, which is like every &#39;variable&#39;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;data&#39;</span><span class="p">:</span>  <span class="c"># For data, we have a special printing format</span>
+                <span class="k">if</span> <span class="n">selection</span> <span class="o">==</span> <span class="s">&#39;nondata&#39;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c"># Get data from doc (and decompress if necessary)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_data_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Data: </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+                <span class="c"># A try/except block to see if the InterfaceV1724 class throwns</span>
+                <span class="c"># any assertion exceptions when checking for data consistency.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(good header?)&#39;</span><span class="p">,</span> <span class="n">InterfaceV1724</span><span class="o">.</span><span class="n">check_header</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+                    <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(good header?)&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">))</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(trigger time tag)&#39;</span><span class="p">,</span>
+                                       <span class="n">InterfaceV1724</span><span class="o">.</span><span class="n">get_trigger_time_tag</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+                    <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(trigger time tag)&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">))</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">size</span> <span class="o">=</span> <span class="n">InterfaceV1724</span><span class="o">.</span><span class="n">get_block_size</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(size from header in words)&#39;</span><span class="p">,</span>
+                                       <span class="n">size</span><span class="p">))</span>
+                    <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(size from header in words)&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">))</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">InterfaceV1724</span><span class="o">.</span><span class="n">get_waveform</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(processing exception)&#39;</span><span class="p">,</span>
+                                       <span class="s">&#39;none&#39;</span><span class="p">))</span>
+                        <span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data(processing exception)&#39;</span><span class="p">,</span>
+                                       <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+
+                    <span class="c"># Loop over 32-bits words</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)):</span>
+                        <span class="c"># Print out 8 hex characters. After printing, the rightmost</span>
+                        <span class="c"># character on the string corresponds to the 0th bit.  The</span>
+                        <span class="c"># leftmost then corresponds to the highest 31st bit.</span>
+                        <span class="n">word</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;data[</span><span class="si">%d</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+                                       <span class="s">&#39;</span><span class="si">%08x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">word</span><span class="p">))</span>
+
+                <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c"># AssertionErrors are thrown when checking, for example, header</span>
+                    <span class="c"># consistency of the data.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;!!Bad data. Caught exception: &#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+                    <span class="c"># This shouldn&#39;t happen since the interface was told not to</span>
+                    <span class="c"># raise assertion errors</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+
+            <span class="c"># If not &#39;data&#39; and data-only printing off</span>
+            <span class="k">elif</span> <span class="n">selection</span> <span class="o">!=</span> <span class="s">&#39;data&#39;</span><span class="p">:</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">output</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="InputDBInspector"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDBInspector">[docs]</a><span class="k">class</span> <span class="nc">InputDBInspector</span><span class="p">(</span><span class="n">CitoShowOne</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Show statistics on DB collection</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="InputDBInspector.formatter2"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDBInspector.formatter2">[docs]</a>    <span class="k">def</span> <span class="nf">formatter2</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;{}-{}:{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;{}-{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InputDBInspector.helper"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDBInspector.helper">[docs]</a>    <span class="k">def</span> <span class="nf">helper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">lst</span><span class="p">)),</span> <span class="p">[]</span>
+
+        <span class="n">step</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">lst</span><span class="p">[</span><span class="mi">2</span><span class="p">:]):</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">step</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter2</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">step</span><span class="p">),</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter2</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lst</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="p">),</span> <span class="p">[]</span>
+</div>
+<div class="viewcode-block" id="InputDBInspector.re_range"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDBInspector.re_range">[docs]</a>    <span class="k">def</span> <span class="nf">re_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">lst</span><span class="p">:</span>
+            <span class="n">partial</span><span class="p">,</span> <span class="n">lst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">helper</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partial</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InputDBInspector.take_action"><a class="viewcode-back" href="../../cito.html#cito.Inspector.InputDBInspector.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
+        <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_mongo_db_objects</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Number of documents&#39;</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()]</span>
+
+        <span class="n">modules</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">)</span>
+        <span class="n">modules</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Modules&#39;</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_range</span><span class="p">(</span><span class="n">modules</span><span class="p">))</span>
+
+        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Module count&#39;</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">))))</span>
+
+        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Missing modules&#39;</span><span class="p">)</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">)</span>
+        <span class="n">missing_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">modules</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">modules</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">]</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">re_range</span><span class="p">(</span><span class="n">missing_modules</span><span class="p">))</span>
+
+        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;Missing modules count&#39;</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">missing_modules</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">columns</span><span class="p">,</span> <span class="n">data</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Code for Intelligent Triggering Online 1.3.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christopher Tunnell.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
