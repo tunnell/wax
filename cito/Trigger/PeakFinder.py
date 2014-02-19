@@ -30,6 +30,7 @@ from scipy.signal import filtfilt
 
 
 CWT_WIDTH = 50
+MAX_DRIFT = 18000
 
 
 def identify_nonoverlapping_trigger_windows(indices, samples):
@@ -43,11 +44,18 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
 
     peaks = []  # Store the indices of peaks
 
+    # find_subranges returns the LOCATION within the array; not the value.
+    # This is required because we need to use these later to find what samples
+    # these correspond to.
     ranges = find_subranges(indices)
-    combined_ranges = merge_subranges(ranges, 10 * CWT_WIDTH)
 
-    logging.error("Ranges: %s" % str(ranges))
-    logging.error("Combined ranges: %s" % str(combined_ranges))
+    # Combine any ranges within max_drift, which requires having indices
+    # so we know what 'ranges' means.  Once again, what is returned
+    # is locations within the array.  This is used later so we know where
+    # samples are.
+    combined_ranges = merge_subranges(ranges, indices, MAX_DRIFT)
+
+    logging.info("Combined ranges: %s" % str(combined_ranges))
 
     for s in combined_ranges:
         subsamples = samples[s[0]:s[1]]
@@ -78,7 +86,7 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     """
 
     # 20 is the wavelet width
-    logging.debug('Filtering with n=%d' % values.size)
+    logging.info('Filtering with n=%d' % values.size)
     t0 = time.time()
     gap_thresh = np.ceil(widths[0])
     max_distances = widths / 4.0
@@ -107,7 +115,7 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     peaks_over_threshold = [x for x in peakind if values[x] > threshold]
     t1 = time.time()
 
-    logging.debug('Filtering duration: %f s' % (t1 - t0))
+    logging.info('Filtering duration: %f s' % (t1 - t0))
     return np.array(peaks_over_threshold, dtype=np.uint32), trigger_meta_data
 
 

@@ -46,7 +46,10 @@ def find_sum_in_data(data):
     for key, value in data.items():
         start, stop, pmt_num = key
         if pmt_num == 'sum':
+            sum0, sum1 = value['indices'][0], value['indices'][-1]
+            logging.debug('Sum waveform range: [%d, %d]', sum0, sum1)
             return value
+
     raise ValueError("Sum waveform not found")
 
 
@@ -91,9 +94,6 @@ class EventBuilder():
         ##
         # sum0, sum1, time ranges
         sum_data = find_sum_in_data(data)
-
-        sum0, sum1 = sum_data['indices'][0], sum_data['indices'][-1]
-        self.log.debug('Sum waveform range: [%d, %d]', sum0, sum1)
 
         ##
         # Step 2: Identify peaks in sum waveform using a Trigger algorithm
@@ -154,7 +154,7 @@ class EventBuilder():
                 to_save['data'][num_pmt] = {'indices': indices[mask],
                                             'samples': samples[mask]}
 
-            to_save['peaks'] = peaks
+            to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
 
             to_save['evt_num'] = evt_num
             to_save['range'] = [int(e0), int(e1)]
@@ -168,5 +168,7 @@ if __name__ == '__main__':
     from cito.core.main import CitoApp
 
     myapp = CitoApp()
-    code = myapp.run(['process'])
-    sys.exit(code)
+    import cProfile
+    cProfile.run("""myapp.run(['process','--chunksize','10000000','--hostname','145.102.133.77','-n', '10'])""", 'profile')
+    #code = myapp.run(['process'])
+    sys.exit(0)

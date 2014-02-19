@@ -1,6 +1,7 @@
 from itertools import groupby
 import logging
 import numpy as np
+from operator import itemgetter
 
 __author__ = 'tunnell'
 
@@ -21,7 +22,7 @@ def compute_subranges(peaks, range_around_peak=(-18000, 18000)):
         time_start = peak + range_around_peak[0]
         time_stop = peak + range_around_peak[1]
 
-        if len(ranges) >= 1 and time_start <= ranges[-1][1] + 1:  # ranges[-1] is latest range
+        if len(ranges) >= 1 and time_start <= ranges[-1][1]:  # ranges[-1] is latest range
             logging.debug('Combining time ranges:')
             logging.debug('\t%s' % (str((time_start, time_stop))))
             logging.debug('\t%s' % str(ranges[-1]))
@@ -33,14 +34,14 @@ def compute_subranges(peaks, range_around_peak=(-18000, 18000)):
     return ranges
 
 
-def merge_subranges(ranges, distance):
+def merge_subranges(ranges, indices, distance):
     """Ranges is a list of tuples, that are merged if less than distance between them
     """
     combined_ranges = []
     for subrange in ranges:
         if len(combined_ranges) == 0:
             combined_ranges.append(subrange)
-        elif combined_ranges[-1][1] + distance > subrange[0]:
+        elif indices[combined_ranges[-1][1]] + distance > indices[subrange[0]]:
             combined_ranges[-1][1] = subrange[1]
         else:
             combined_ranges.append(subrange)
@@ -48,20 +49,20 @@ def merge_subranges(ranges, distance):
 
 
 def find_subranges(indices):
-    """Identify groups of continuous numbers in a list
+    """Identify continuous ranges in a list and return their location.
 
     For example, if indices is:
 
         [2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 20]
 
-    Then the location within the list of continuous ranges are at:
+    Then the continuous ranges are at:
 
         [(0,3), (4, 9), (10, 10)]
 
+    See http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list
     """
     ranges = []
     for k, g in groupby(enumerate(indices), lambda i_x:i_x[0]-i_x[1]):
-        # Each value is formated as: (location in array, value in array)
         values = list(g)
 
         # values[0] and values[-1] are range boundaries
