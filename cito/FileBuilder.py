@@ -25,6 +25,9 @@ class FileBuilderCommand(Command):
         parser.add_argument("--hostname", help="MongoDB database address",
                             type=str,
                             default='127.0.0.1')
+        parser.add_argument("--filename", help="Output filename of pickled data",
+                            type=str,
+                            default='cito_file.pklz')
         return parser
 
     def take_action(self, parsed_args):
@@ -36,7 +39,7 @@ class FileBuilderCommand(Command):
 
         c, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
                                                       selection='output')
-        f = gzip.open('cito_file.pklz', 'wb')
+        f = gzip.open(parsed_args.filename, 'wb')
 
         cursor = collection.find()
         N = cursor.count()
