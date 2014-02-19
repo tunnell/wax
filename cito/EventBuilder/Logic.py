@@ -118,7 +118,7 @@ class EventBuilder():
         self.log.info('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
 
 
-        data[(sum0, sum1, 'smooth')] = {'indices': sum_data['indices'],
+        data[(0, 0, 'smooth')] = {'indices': sum_data['indices'],
                                         'samples': smooth_waveform}
 
         ##
