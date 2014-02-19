@@ -145,7 +145,7 @@ class CitoContinousCommand(CitoCommand):
         current_time_index = int(min_time / chunk_size)
         self.log.debug('Current time index %d', current_time_index)
 
-        tasks = self.get_tasks()
+        tasks = self.get_tasks(parsed_args)
 
         start_time = time.time()
         amount_data_processed = 0

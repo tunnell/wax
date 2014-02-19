@@ -33,11 +33,12 @@ class MongoDBOutput(OutputCommon):
     may still be being processed.
     """
 
-    def __init__(self):
+    def __init__(self, hostname='127.0.0.1'):
         OutputCommon.__init__(self)
 
         # MongoDB collection to put data in
-        self.conn, self.my_db, self.collection = XeDB.get_mongo_db_objects(selection='output')
+        self.conn, self.my_db, self.collection = XeDB.get_mongo_db_objects(server=hostname,
+                                                                           selection='output')
 
     def mongify_event(self, event_data):
         """Convert Python data to pickled and compressed data.
