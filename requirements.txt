@@ -1,8 +1,8 @@
-cmd2
 pymongo
 python-snappy
 numpy
 scipy
+sphinx_rtd_theme
 celery
 cliff
 bumpversion

@@ -3,6 +3,13 @@
 History
 -------
 
+1.3 (2014-02-19)
+++++++++++++++++
+
+* Switch from convolution to filtering using a butter filter.
+* Expansion of command line argument options.
+* Fixed bug that resulted in filtering/convolution occuring over the entire 1s window.
+
 1.1 (2014-02-12)
 ++++++++++++++++
 

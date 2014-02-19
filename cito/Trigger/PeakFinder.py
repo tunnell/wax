@@ -16,7 +16,7 @@ where, for example, filtering and identification of ridge lines is performed.
 
 __author__ = 'tunnell'
 
-
+import scipy
 
 from cito.core.math import merge_subranges, find_subranges
 
@@ -98,17 +98,18 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
 
     # The identification and filtering of ridge lines expect a 2D image, but
     # our data is 1D.  Therefore, we reshape the smooth_data array.
-    smooth_data = np.reshape(smooth_data, (1, smooth_data.size))
+    #smooth_data = np.reshape(smooth_data, (1, smooth_data.size))
+    max_locs = scipy.signal.argrelmax(smooth_data)[0]
 
-    ridge_lines = _identify_ridge_lines(smooth_data, max_distances, gap_thresh)
-    filtered = _filter_ridge_lines(smooth_data, ridge_lines, min_length=None,
-                                   min_snr=1, noise_perc=10)
-    max_locs = [x[1][0] for x in filtered]
-
+    #ridge_lines = _identify_ridge_lines(smooth_data, max_distances, gap_thresh)
+    #filtered = _filter_ridge_lines(smooth_data, ridge_lines, min_length=None,
+    #                               min_snr=1, noise_perc=10)
+    #max_locs = [x[1][0] for x in filtered]
+    logging.error(max_locs)
     trigger_meta_data = {}
     trigger_meta_data['smooth'] = smooth_data[0]
-    trigger_meta_data['ridge_lines'] = ridge_lines
-    trigger_meta_data['filtered'] = filtered
+    #trigger_meta_data['ridge_lines'] = ridge_lines
+    #trigger_meta_data['filtered'] = filtered
 
     peakind = sorted(max_locs)
 

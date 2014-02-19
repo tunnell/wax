@@ -48,26 +48,23 @@ docs:
 	$(MAKE) -C docs html
 
 	cp -r docs/_build/html/* ../citodocs/
-	cd ../citodocs
-	git add -A
-	git commit -m "Generated gh-pages"
-	git push origin git@github.com:tunnell/cito.git HEAD:gh-pages
-	cd ../cito
+	bash -c "cd ../citodocs;git add -A;git commit -m \"Generated gh-pages\";git push origin gh-pages;cd ../cito"
+
 	echo open docs/_build/html/index.html
 
-major: clean
+major: clean docs
 	bumpversion major
 	git push
 	git push --tags
 	python setup.py sdist upload
 
-minor: clean
+minor: clean docs
 	bumpversion minor
 	git push
 	git push --tags
 	python setup.py sdist upload
 
-patch: clean
+patch: clean docs
 	bumpversion patch
 	git push
 	git push --tags

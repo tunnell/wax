@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b3849271-ef85-4eed-8b2e-6df6c5c08e54" name="Default" comment="Mock cmd2" />
+    <list default="true" id="b3849271-ef85-4eed-8b2e-6df6c5c08e54" name="Default" comment="Mock cmd2">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AUTHORS.rst" afterPath="$PROJECT_DIR$/AUTHORS.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HISTORY.rst" afterPath="$PROJECT_DIR$/HISTORY.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cito/Trigger/PeakFinder.py" afterPath="$PROJECT_DIR$/cito/Trigger/PeakFinder.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/conf.py" afterPath="$PROJECT_DIR$/docs/conf.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    </list>
     <ignored path="cito.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -26,10 +34,19 @@
       <file leaf-file-name="PeakFinder.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cito/Trigger/PeakFinder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="93" column="4" selection-start="2623" selection-end="2652" vertical-scroll-proportion="-2.5384614" vertical-offset="1329" max-vertical-offset="1980">
+            <state line="101" column="53" selection-start="3002" selection-end="3002" vertical-scroll-proportion="-3.490196" vertical-offset="1337" max-vertical-offset="1995">
               <folding>
-                <element signature="e#459#517#0" expanded="true" />
+                <element signature="e#457#469#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HISTORY.rst" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/HISTORY.rst">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="86" selection-start="262" selection-end="262" vertical-scroll-proportion="0.42016807" vertical-offset="0" max-vertical-offset="465">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -48,7 +65,7 @@
       <file leaf-file-name="Logic.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/build/lib/cito/EventBuilder/Logic.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="125" column="19" selection-start="4923" selection-end="4923" vertical-scroll-proportion="13.615385" vertical-offset="2169" max-vertical-offset="2625">
+            <state line="127" column="27" selection-start="4985" selection-end="4987" vertical-scroll-proportion="-2.2156863" vertical-offset="1732" max-vertical-offset="2625">
               <folding />
             </state>
           </provider>
@@ -57,43 +74,7 @@
       <file leaf-file-name="__init__.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cito/EventBuilder/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="64" selection-start="443" selection-end="456" vertical-scroll-proportion="-9.807693" vertical-offset="0" max-vertical-offset="390">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Tasks.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cito/EventBuilder/Tasks.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="57" column="0" selection-start="1667" selection-end="1667" vertical-scroll-proportion="0.0" vertical-offset="448" max-vertical-offset="930">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestCoreMath.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/TestCoreMath.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="0" selection-start="591" selection-end="591" vertical-scroll-proportion="0.0" vertical-offset="35" max-vertical-offset="540">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Waveform.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cito/core/Waveform.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="73" column="33" selection-start="1934" selection-end="1945" vertical-scroll-proportion="12.576923" vertical-offset="1362" max-vertical-offset="1800">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.rst" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.rst">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="47" selection-start="785" selection-end="785" vertical-scroll-proportion="0.3382353" vertical-offset="140" max-vertical-offset="480">
+            <state line="17" column="64" selection-start="443" selection-end="456" vertical-scroll-proportion="-5.0" vertical-offset="0" max-vertical-offset="390">
               <folding />
             </state>
           </provider>
@@ -188,21 +169,23 @@
         <option value="$PROJECT_DIR$/cito/core/main.py" />
         <option value="$PROJECT_DIR$/cito/EventBuilder/__init__.py" />
         <option value="$PROJECT_DIR$/cito/EventBuilder/Output.py" />
-        <option value="$PROJECT_DIR$/cito/Trigger/PeakFinder.py" />
         <option value="$PROJECT_DIR$/cito/core/math.py" />
         <option value="$PROJECT_DIR$/cito/EventBuilder/Logic.py" />
         <option value="$PROJECT_DIR$/build/lib/cito/EventBuilder/Logic.py" />
         <option value="$PROJECT_DIR$/docs/analyze_example.py" />
         <option value="$PROJECT_DIR$/docs/installation.rst" />
         <option value="$PROJECT_DIR$/README.rst" />
+        <option value="$PROJECT_DIR$/AUTHORS.rst" />
+        <option value="$PROJECT_DIR$/cito/Trigger/PeakFinder.py" />
+        <option value="$PROJECT_DIR$/HISTORY.rst" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="499" />
-    <option name="y" value="56" />
-    <option name="width" value="878" />
-    <option name="height" value="795" />
+    <option name="x" value="116" />
+    <option name="y" value="23" />
+    <option name="width" value="1240" />
+    <option name="height" value="778" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -687,16 +670,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="499" y="56" width="878" height="795" extended-state="0" />
+    <frame x="116" y="23" width="1240" height="778" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32941177" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.35714287" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3660322" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3667426" sideWeight="0.70498085" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2596774" sideWeight="0.70498085" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35714287" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
@@ -866,19 +849,9 @@
         <state line="1" column="22" selection-start="45" selection-end="45" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="135" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AUTHORS.rst">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="758" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docs/usage.rst">
       <provider selected="true" editor-type-id="text-editor">
         <state line="2" column="5" selection-start="17" selection-end="17" vertical-scroll-proportion="0.06550218" vertical-offset="0" max-vertical-offset="458" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CONTRIBUTING.rst">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="113" column="0" selection-start="3173" selection-end="3173" vertical-scroll-proportion="0.0" vertical-offset="795" max-vertical-offset="1785" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/docs/index.rst">
@@ -930,13 +903,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/TestCoreMath.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="0" selection-start="591" selection-end="591" vertical-scroll-proportion="0.0" vertical-offset="35" max-vertical-offset="540">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cito/core/math.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="26" column="18" selection-start="703" selection-end="703" vertical-scroll-proportion="-6.423077" vertical-offset="223" max-vertical-offset="1560">
@@ -953,13 +919,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cito/EventBuilder/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="64" selection-start="443" selection-end="456" vertical-scroll-proportion="-9.807693" vertical-offset="0" max-vertical-offset="390">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cito/DBOperations.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="26" selection-start="1423" selection-end="1434" vertical-scroll-proportion="0.0" vertical-offset="493" max-vertical-offset="975">
@@ -971,7 +930,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="34" selection-start="1308" selection-end="1308" vertical-scroll-proportion="-7.4615383" vertical-offset="451" max-vertical-offset="930">
           <folding>
-            <element signature="e#24#38#0" expanded="true" />
+            <element signature="e#24#38#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -987,15 +946,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="102" column="14" selection-start="2710" selection-end="2714" vertical-scroll-proportion="0.0" vertical-offset="2533" max-vertical-offset="3015">
           <folding>
-            <element signature="e#67#81#0" expanded="true" />
+            <element signature="e#67#81#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cito/EventBuilder/Tasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="0" selection-start="1667" selection-end="1667" vertical-scroll-proportion="0.0" vertical-offset="220" max-vertical-offset="930">
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1010,22 +962,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="161" column="0" selection-start="6157" selection-end="6157" vertical-scroll-proportion="0.0" vertical-offset="2128" max-vertical-offset="2640">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/lib/cito/EventBuilder/Logic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="125" column="19" selection-start="4923" selection-end="4923" vertical-scroll-proportion="13.615385" vertical-offset="2169" max-vertical-offset="2625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cito/Trigger/PeakFinder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="4" selection-start="2623" selection-end="2652" vertical-scroll-proportion="-2.5384614" vertical-offset="1329" max-vertical-offset="1980">
-          <folding>
-            <element signature="e#459#517#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1059,7 +995,65 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.rst">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="47" selection-start="785" selection-end="785" vertical-scroll-proportion="0.3382353" vertical-offset="140" max-vertical-offset="480">
+        <state line="17" column="47" selection-start="785" selection-end="785" vertical-scroll-proportion="0.75443786" vertical-offset="0" max-vertical-offset="480">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AUTHORS.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="34" selection-start="165" selection-end="165" vertical-scroll-proportion="0.51282054" vertical-offset="0" max-vertical-offset="351">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CONTRIBUTING.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="112" column="0" selection-start="3115" selection-end="3115" vertical-scroll-proportion="0.7337278" vertical-offset="1432" max-vertical-offset="1770">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestCoreMath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="0" selection-start="591" selection-end="591" vertical-scroll-proportion="0.96153843" vertical-offset="35" max-vertical-offset="540">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cito/EventBuilder/Tasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="57" column="0" selection-start="1667" selection-end="1667" vertical-scroll-proportion="0.91183877" vertical-offset="448" max-vertical-offset="930">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cito/EventBuilder/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="64" selection-start="443" selection-end="456" vertical-scroll-proportion="-5.0" vertical-offset="0" max-vertical-offset="390">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/lib/cito/EventBuilder/Logic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="127" column="27" selection-start="4985" selection-end="4987" vertical-scroll-proportion="-2.2156863" vertical-offset="1732" max-vertical-offset="2625">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cito/Trigger/PeakFinder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="101" column="53" selection-start="3002" selection-end="3002" vertical-scroll-proportion="-3.490196" vertical-offset="1337" max-vertical-offset="1995">
+          <folding>
+            <element signature="e#457#469#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HISTORY.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="86" selection-start="262" selection-end="262" vertical-scroll-proportion="0.42016807" vertical-offset="0" max-vertical-offset="465">
           <folding />
         </state>
       </provider>
