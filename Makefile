@@ -51,7 +51,7 @@ docs:
 	cd ../citodocs
 	git add -A
 	git commit -m "Generated gh-pages"
-	git push git@github.com:tunnell/cito.git HEAD:gh-pages
+	git push origin gh-pages #git@github.com:tunnell/cito.git HEAD:gh-pages
 	cd ../cito
 	echo open docs/_build/html/index.html
 
