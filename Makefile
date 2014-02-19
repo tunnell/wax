@@ -50,7 +50,7 @@ docs:
 	cp -r docs/_build/html/* ../citodocs/
 	cd ../citodocs
 	git add -A
-	git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`" && git push 
+	git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`" && git push origin gh-pages
 	cd ../cito
 	echo open docs/_build/html/index.html
 
