@@ -46,8 +46,8 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     ranges = find_subranges(indices)
     combined_ranges = merge_subranges(ranges, 10 * CWT_WIDTH)
 
-    logging.debug("Ranges: %s" % str(ranges))
-    logging.debug("Combined ranges: %s" % str(combined_ranges))
+    logging.error("Ranges: %s" % str(ranges))
+    logging.error("Combined ranges: %s" % str(combined_ranges))
 
     for s in combined_ranges:
         subsamples = samples[s[0]:s[1]]

@@ -98,7 +98,8 @@ class EventBuilder():
         ##
         # Step 2: Identify peaks in sum waveform using a Trigger algorithm
         ##
-        peak_indices, smooth_waveform = PeakFinder.identify_nonoverlapping_trigger_windows(sum_data['indices'], sum_data['samples'])
+        peak_indices, smooth_waveform = PeakFinder.identify_nonoverlapping_trigger_windows(sum_data['indices'],
+                                                                                           sum_data['samples'])
         peaks = sum_data['indices'][peak_indices]
         for peak in peaks:  # Check peak in sum waveform
             assert sum_data['indices'][0] < peak < sum_data['indices'][-1]
