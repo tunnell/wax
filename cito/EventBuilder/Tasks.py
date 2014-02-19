@@ -36,7 +36,7 @@ class ProcessTimeBlockTask():
         :raises: AssertionError
         """
         data_docs = XeDB.get_data_docs(t0, t1)
-        data, size = Waveform.get_data_and_sum_waveform(data_docs, t1 - t0)
+        data, size = Waveform.get_data_and_sum_waveform(data_docs)
 
         # If no data analyzed, return
         self.log.debug("Size of data analyzed: %d", size)

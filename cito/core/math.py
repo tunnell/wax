@@ -1,7 +1,7 @@
 from itertools import groupby
 import logging
 import numpy as np
-from operator import itemgetter
+
 
 __author__ = 'tunnell'
 
@@ -97,3 +97,49 @@ def overlap_region(range1, range2):
 
 def overlap(min1, max1, min2, max2):
     return max(0, min(max1, max2) - max(min1, min2))
+
+
+def speed_in1d_continous(a, b, x, y):
+    """A speedy version of numpy.in1d if dealing with ranges.
+
+     We know that a <= b and x <= y
+
+     Combinatorics: all permutations of (a, b, x, y) where x < y and a < b:
+
+     Seperate:
+         ('a', 'b', 'x', 'y')
+         ('x', 'y', 'a', 'b')
+    Embedded:
+         ('x', 'a', 'b', 'y')
+         ('a', 'x', 'y', 'b')
+    Partially embedded:
+         ('a', 'x', 'b', 'y')
+         ('x', 'a', 'y', 'b')
+
+    """
+
+    assert a <= b
+    assert x <= y
+
+    mask = np.zeros(b-a, dtype=np.bool)
+
+    # Shortcut case
+    if a == x and b == y:  # Most common case?
+        mask[:] = True
+
+    if a <= b <= x <= y:
+        pass # Leave everything to false
+    elif x <= y <= a <= b:
+        pass # Leave everything to false
+    elif x <= a <= b <= y: # If (a,b) in (x,y)
+        mask[:] = True # Leave everything false
+    elif a <= x <= y <= b: # If (x,y) in (a,b)
+        mask[x-a:y-a] = True
+    elif a <= x <= b <= y:
+        mask[x-a:b-a] = True
+    elif x <= a <= y <= b:
+        mask[0:y-a] = True
+    else:
+        raise ValueError()
+
+    return mask

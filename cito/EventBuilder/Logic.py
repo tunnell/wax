@@ -31,7 +31,7 @@ import logging
 
 import numpy as np
 from cito.Trigger import PeakFinder
-from cito.core.math import compute_subranges, overlap_region
+from cito.core.math import compute_subranges, speed_in1d_continous
 
 
 def find_sum_in_data(data):
@@ -128,8 +128,6 @@ class EventBuilder():
         for e0, e1 in event_ranges:
             # e0, e1 are the times for this trigger event
 
-            e = np.arange(e0, e1)
-
             evt_num = self.get_event_number()
             self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
 
@@ -148,7 +146,8 @@ class EventBuilder():
                 # d0 is start time for this channel data, d1 therefore end time
                 num_pmt = key[2]
 
-                mask = np.in1d(value['indices'], e, assume_unique=True)
+                mask = speed_in1d_continous(value['indices'][0], value['indices'][0],
+                                            e0, e1)
 
 
                 to_save['data'][num_pmt] = {'indices': indices[mask],
@@ -169,6 +168,6 @@ if __name__ == '__main__':
 
     myapp = CitoApp()
     import cProfile
-    cProfile.run("""myapp.run(['process','--chunksize','10000000','--hostname','145.102.133.77','-n', '10'])""", 'profile')
+    cProfile.run("""myapp.run(['process','--chunksize','1000000','-n', '10'])""", 'profile')
     #code = myapp.run(['process'])
     sys.exit(0)

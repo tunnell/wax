@@ -19,8 +19,8 @@ def get_samples(data):
 
     samples = np.frombuffer(data, dtype=SAMPLE_TYPE)
 
-    if np.max(samples) >= MAX_ADC_VALUE or np.min(samples) < 0:
-        raise ValueError('Corrupt data since more than 14 bits used')
+    #if np.max(samples) >= MAX_ADC_VALUE or np.min(samples) < 0:
+    #    raise ValueError('Corrupt data since more than 14 bits used')
 
     # Sanity check
     # for i in range(len(data)):
@@ -34,7 +34,7 @@ def get_samples(data):
     return samples
 
 
-def get_data_and_sum_waveform(cursor, n_samples):
+def get_data_and_sum_waveform(cursor):
     """Get inverted sum waveform from mongo
 
     Args:
