@@ -3,7 +3,7 @@
 History
 -------
 
-1.3 (2014-02-19)
+1.4 (2014-02-19)
 ++++++++++++++++
 
 * Switch from convolution to filtering using a butter filter.

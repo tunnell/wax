@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b3849271-ef85-4eed-8b2e-6df6c5c08e54" name="Default" comment="Mock cmd2">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AUTHORS.rst" afterPath="$PROJECT_DIR$/AUTHORS.rst" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HISTORY.rst" afterPath="$PROJECT_DIR$/HISTORY.rst" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cito/Trigger/PeakFinder.py" afterPath="$PROJECT_DIR$/cito/Trigger/PeakFinder.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/conf.py" afterPath="$PROJECT_DIR$/docs/conf.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/requirements.txt" afterPath="$PROJECT_DIR$/requirements.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="cito.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -45,7 +39,7 @@
       <file leaf-file-name="HISTORY.rst" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/HISTORY.rst">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="86" selection-start="262" selection-end="262" vertical-scroll-proportion="0.42016807" vertical-offset="0" max-vertical-offset="465">
+            <state line="5" column="3" selection-start="36" selection-end="36" vertical-scroll-proportion="0.19736843" vertical-offset="0" max-vertical-offset="465">
               <folding />
             </state>
           </provider>
@@ -58,15 +52,6 @@
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Logic.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build/lib/cito/EventBuilder/Logic.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="127" column="27" selection-start="4985" selection-end="4987" vertical-scroll-proportion="-2.2156863" vertical-offset="1732" max-vertical-offset="2625">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -256,20 +241,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="docs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cito" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cito" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cito.egg-info" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1035,13 +1006,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/lib/cito/EventBuilder/Logic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="127" column="27" selection-start="4985" selection-end="4987" vertical-scroll-proportion="-2.2156863" vertical-offset="1732" max-vertical-offset="2625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cito/Trigger/PeakFinder.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="101" column="53" selection-start="3002" selection-end="3002" vertical-scroll-proportion="-3.490196" vertical-offset="1337" max-vertical-offset="1995">
@@ -1053,7 +1017,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/HISTORY.rst">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="86" selection-start="262" selection-end="262" vertical-scroll-proportion="0.42016807" vertical-offset="0" max-vertical-offset="465">
+        <state line="5" column="3" selection-start="36" selection-end="36" vertical-scroll-proportion="0.19736843" vertical-offset="0" max-vertical-offset="465">
           <folding />
         </state>
       </provider>
