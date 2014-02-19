@@ -3,51 +3,6 @@
 import sys
 import os
 
-print("python exec:", sys.executable)
-print("sys.path:", sys.path)
-try:
-    import numpy
-    print("numpy: %s, %s" % (numpy.__version__, numpy.__file__))
-except ImportError:
-    print("no numpy")
-try:
-    import matplotlib
-    print("matplotlib: %s, %s" % (matplotlib.__version__, matplotlib.__file__))
-except ImportError:
-    print("no matplotlib")
-try:
-    import IPython
-    print("ipython: %s, %s" % (IPython.__version__, IPython.__file__))
-except ImportError:
-    print("no ipython")
-
-
-#MOCK
-class Mock(object):
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def __call__(self, *args, **kwargs):
-        return Mock()
-
-    @classmethod
-    def __getattr__(cls, name):
-        if name in ('__file__', '__path__'):
-            return '/dev/null'
-        elif name[0] == name[0].upper():
-            mockType = type(name, (), {})
-            mockType.__module__ = __name__
-            return mockType
-        else:
-            return Mock()
-
-MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate',
-                'scipy.signal', 'numpy.dtype', 'scipy.signal._peak_finding', 'scipy.lib',
-                'scipy.lib.six', 'scipy.lib.six.moves', 'scipy.signal.wavelets', 'scipy.stats',
-                'snappy', 'cmd2']
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = Mock()
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
