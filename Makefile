@@ -46,6 +46,12 @@ docs:
 	sphinx-apidoc -o docs/ cito
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+
+	cp -r docs/_build/html/* ../citodocs/
+	cd ../citodocs
+	git add -A
+	git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout master
+	cd ../cito
 	echo open docs/_build/html/index.html
 
 major: clean
