@@ -1,0 +1,38 @@
+cito.Database package
+=====================
+
+Submodules
+----------
+
+cito.Database.DBBase module
+---------------------------
+
+.. automodule:: cito.Database.DBBase
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cito.Database.InputDBInterface module
+-------------------------------------
+
+.. automodule:: cito.Database.InputDBInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cito.Database.OutputDBInterface module
+--------------------------------------
+
+.. automodule:: cito.Database.OutputDBInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: cito.Database
+    :members:
+    :undoc-members:
+    :show-inheritance:
