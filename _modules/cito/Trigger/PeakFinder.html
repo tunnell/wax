@@ -156,20 +156,17 @@
 <span class="sd">where, for example, filtering and identification of ridge lines is performed.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-
 <span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;tunnell&#39;</span>
-
-<span class="kn">import</span> <span class="nn">scipy</span>
-
-<span class="kn">from</span> <span class="nn">cito.core.math</span> <span class="kn">import</span> <span class="n">merge_subranges</span><span class="p">,</span> <span class="n">find_subranges</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
+<span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.signal._peak_finding</span> <span class="kn">import</span> <span class="n">_filter_ridge_lines</span><span class="p">,</span> <span class="n">_identify_ridge_lines</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">butter</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">filtfilt</span>
+
+<span class="kn">from</span> <span class="nn">cito.core.math</span> <span class="kn">import</span> <span class="n">merge_subranges</span><span class="p">,</span> <span class="n">find_subranges</span>
 
 
 <span class="n">CWT_WIDTH</span> <span class="o">=</span> <span class="mi">50</span>

@@ -158,14 +158,9 @@ that performs the following sequential operations:</p>
 <li>If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before
 and after each peak.</li>
 </ul>
-<p>More technically, a boolean array is created for each time sample, where True corresponds to a sample being saved
-and false corresponds to an event being discarded.  These values default to false.  Two variables are defined by the
-user: t_pre and t_post.  For each peak that the triggering algorithm identifies (e.g., charge above 100 pe), the
-range [peak_i - t_pre, peak_i + t_post] is set to true  (see get_index_mask_for_trigger).  Subsequently, continuous
-blocks of &#8216;true&#8217; are called an event.</p>
-<p>In other words, if two particles interact in the detector within a typical &#8216;event window&#8217;, then these two
-interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
-example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</p>
+<p>More technically about pileup, if two particles interact in the detector within a typical &#8216;event window&#8217;, then
+these two interactions are saved as one event.  Identifying how to break up the event is thus left for
+postprocessing.  For example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</p>
 <dl class="class">
 <dt id="cito.EventBuilder.Logic.EventBuilder">
 <em class="property">class </em><tt class="descclassname">cito.EventBuilder.Logic.</tt><tt class="descname">EventBuilder</tt><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#EventBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.EventBuilder" title="Permalink to this definition">¶</a></dt>

@@ -149,8 +149,8 @@
 <li class="toctree-l2"><a class="reference internal" href="cito.Database.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cito.Database.html#cito-database-dbbase-module">cito.Database.DBBase module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cito.Database.html#cito-database-inputdbinterface-module">cito.Database.InputDBInterface module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cito.Database.html#cito-database-outputdbinterface-module">cito.Database.OutputDBInterface module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cito.Database.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.Database.html#module-cito.Database.OutputDBInterface">cito.Database.OutputDBInterface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cito.Database.html#module-cito.Database">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cito.EventBuilder.html">cito.EventBuilder package</a><ul>
@@ -185,56 +185,8 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-cito.DBOperations">
-<span id="cito-dboperations-module"></span><h2>cito.DBOperations module<a class="headerlink" href="#module-cito.DBOperations" title="Permalink to this headline">¶</a></h2>
-<p>Commands for the command line interface for DB operations.</p>
-<p>All of these commands are simple enough that they don&#8217;t rely too
-much on XeDB.  Maybe these commands should be moved there though?</p>
-<dl class="class">
-<dt id="cito.DBOperations.DBPurge">
-<em class="property">class </em><tt class="descclassname">cito.DBOperations.</tt><tt class="descname">DBPurge</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBPurge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBPurge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
-<p>Delete/purge all DAQ documents without deleting collection.</p>
-<p>This can be used during a run.
-TODO: specify input or output</p>
-<dl class="method">
-<dt id="cito.DBOperations.DBPurge.take_action">
-<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBPurge.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBPurge.take_action" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cito.DBOperations.DBRepair">
-<em class="property">class </em><tt class="descclassname">cito.DBOperations.</tt><tt class="descname">DBRepair</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBRepair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBRepair" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
-<p>Repair DB to regain unused space.</p>
-<p>MongoDB can&#8217;t know how what to do with space after a document is deleted,
-so there can exist small blocks of memory that are too small for new
-documents but non-zero.  This is called fragmentation.  This command
-copies all the data into a new database, then replaces the old database
-with the new one.  This is an expensive operation and will slow down
-operation of the database.</p>
-<dl class="method">
-<dt id="cito.DBOperations.DBRepair.take_action">
-<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBRepair.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBRepair.take_action" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cito.DBOperations.DBReset">
-<em class="property">class </em><tt class="descclassname">cito.DBOperations.</tt><tt class="descname">DBReset</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBReset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBReset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
-<p>Reset the database by dropping the default collection.</p>
-<p>Warning: this cannot be used during a run as it will kill the DAQ writer.</p>
-<dl class="method">
-<dt id="cito.DBOperations.DBReset.take_action">
-<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBReset.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBReset.take_action" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="cito-dboperations-module">
+<h2>cito.DBOperations module<a class="headerlink" href="#cito-dboperations-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-cito.FileBuilder">
 <span id="cito-filebuilder-module"></span><h2>cito.FileBuilder module<a class="headerlink" href="#module-cito.FileBuilder" title="Permalink to this headline">¶</a></h2>
@@ -243,7 +195,8 @@ operation of the database.</p>
 <em class="property">class </em><tt class="descclassname">cito.FileBuilder.</tt><tt class="descname">FileBuilderCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/FileBuilder.html#FileBuilderCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.FileBuilder.FileBuilderCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
 <p>Continously build files</p>
-<p>TODO: merge with other commands</p>
+<p>the output format is Pickled.
+TODO: merge with other commands</p>
 <dl class="method">
 <dt id="cito.FileBuilder.FileBuilderCommand.get_description">
 <tt class="descname">get_description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/FileBuilder.html#FileBuilderCommand.get_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.FileBuilder.FileBuilderCommand.get_description" title="Permalink to this definition">¶</a></dt>

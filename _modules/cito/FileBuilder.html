@@ -150,13 +150,14 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">cliff.command</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">import</span> <span class="nn">snappy</span>
-
 <span class="kn">from</span> <span class="nn">cito.core</span> <span class="kn">import</span> <span class="n">XeDB</span>
 
 
 <div class="viewcode-block" id="FileBuilderCommand"><a class="viewcode-back" href="../../cito.html#cito.FileBuilder.FileBuilderCommand">[docs]</a><span class="k">class</span> <span class="nc">FileBuilderCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Continously build files</span>
 
+
+<span class="sd">    the output format is Pickled.</span>
 <span class="sd">    TODO: merge with other commands&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FileBuilderCommand.get_description"><a class="viewcode-back" href="../../cito.html#cito.FileBuilder.FileBuilderCommand.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
