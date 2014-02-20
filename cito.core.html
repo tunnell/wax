@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.core package &mdash; Code for Intelligent Triggering Online 1.3.6 documentation</title>
+  <title>cito.core package &mdash; Code for Intelligent Triggering Online 1.4.0 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'1.3.6',
+        VERSION:'1.4.0',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.3.6 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 1.4.0 documentation" href="index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
@@ -94,7 +94,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="history.html#id1">1.3 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html#id1">1.4 (2014-02-19)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id2">1.1 (2014-02-12)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id3">1.0 (2014-02-10)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id4">0.1 (2013-08-11)</a></li>
@@ -147,7 +147,7 @@
 <p>Perform operations on sets of blocks</p>
 <dl class="function">
 <dt id="cito.core.Waveform.get_data_and_sum_waveform">
-<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_data_and_sum_waveform</tt><big>(</big><em>cursor</em>, <em>n_samples</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_data_and_sum_waveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_data_and_sum_waveform" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_data_and_sum_waveform</tt><big>(</big><em>cursor</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_data_and_sum_waveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_data_and_sum_waveform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get inverted sum waveform from mongo</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -406,7 +406,7 @@ min_time (int): Time that the max must be larger than</dd>
 
 <dl class="attribute">
 <dt id="cito.core.main.CitoShowOne.log">
-<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x10bd83e50&gt;</em><a class="headerlink" href="#cito.core.main.CitoShowOne.log" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x108be3f50&gt;</em><a class="headerlink" href="#cito.core.main.CitoShowOne.log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -468,6 +468,29 @@ min_time (int): Time that the max must be larger than</dd>
 <dt id="cito.core.math.overlap_region">
 <tt class="descclassname">cito.core.math.</tt><tt class="descname">overlap_region</tt><big>(</big><em>range1</em>, <em>range2</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#overlap_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.overlap_region" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="cito.core.math.speed_in1d_continous">
+<tt class="descclassname">cito.core.math.</tt><tt class="descname">speed_in1d_continous</tt><big>(</big><em>a</em>, <em>b</em>, <em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#speed_in1d_continous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.speed_in1d_continous" title="Permalink to this definition">¶</a></dt>
+<dd><p>A speedy version of numpy.in1d if dealing with ranges.</p>
+<blockquote>
+<div><p>We know that a &lt;= b and x &lt;= y</p>
+<p>Combinatorics: all permutations of (a, b, x, y) where x &lt; y and a &lt; b:</p>
+<dl class="docutils">
+<dt>Seperate:</dt>
+<dd>(&#8216;a&#8217;, &#8216;b&#8217;, &#8216;x&#8217;, &#8216;y&#8217;)
+(&#8216;x&#8217;, &#8216;y&#8217;, &#8216;a&#8217;, &#8216;b&#8217;)</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Embedded:</dt>
+<dd>(&#8216;x&#8217;, &#8216;a&#8217;, &#8216;b&#8217;, &#8216;y&#8217;)
+(&#8216;a&#8217;, &#8216;x&#8217;, &#8216;y&#8217;, &#8216;b&#8217;)</dd>
+<dt>Partially embedded:</dt>
+<dd>(&#8216;a&#8217;, &#8216;x&#8217;, &#8216;b&#8217;, &#8216;y&#8217;)
+(&#8216;x&#8217;, &#8216;a&#8217;, &#8216;y&#8217;, &#8216;b&#8217;)</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-contents">
