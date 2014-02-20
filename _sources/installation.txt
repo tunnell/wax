@@ -2,9 +2,7 @@
 Installation
 ============
 
-TODO: Make all 'cito' and program names small caps or bold or italic.
-
-Every attempt is made to make 'cito' as portable as possible and install in a wide range of environments.  However,
+Every attempt is made to make `cito` as portable as possible and install in a wide range of environments.  However,
 installation instructions are given for Ubuntu 12 LTS.
 
 
@@ -13,7 +11,7 @@ Installing Python3.3
 
 If you have Python 3.3, skip this.
 
-cito, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
+`cito`, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
 following, which is inspired from
 `here <http://linuxg.net/how-to-install-python-3-3-on-ubuntu-13-04-12-10-and-12-04/>`_::
 
@@ -96,13 +94,13 @@ explicitly (i.e., scipy can be `annoying <annoying`:http://github.com/scipy/scip
 Installing Cito
 ===============
 
-Up to this point, you've been installing the dependencies of cito.  However, installing cito itself is easy.  At the
-command line, using 'easy_install' or 'pip', install 'cito'::
+Up to this point, you've been installing the dependencies of `cito`.  However, installing `cito` itself is easy.  At the
+command line, using 'easy_install' or 'pip', install `cito`::
 
     $ easy_install cito
 
 
-This line also installs all the Python dependencies of cito. If you observe a problem, please submit a bug report.
+This line also installs all the Python dependencies of `cito`. If you observe a problem, please submit a bug report.
 
 
 (Optional) Installing own MongoDB database

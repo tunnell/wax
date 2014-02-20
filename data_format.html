@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Data formats &mdash; Code for Intelligent Triggering Online 1.4.0 documentation</title>
+  <title>Internal data formats &mdash; Code for Intelligent Triggering Online 1.4.0 documentation</title>
   
 
   
@@ -45,7 +45,7 @@
   
     <link rel="top" title="Code for Intelligent Triggering Online 1.4.0 documentation" href="index.html"/>
         <link rel="next" title="Jargon" href="jargon.html"/>
-        <link rel="prev" title="History" href="history.html"/> 
+        <link rel="prev" title="Analyzing data" href="analyze_data.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
@@ -82,7 +82,19 @@
 <li class="toctree-l2"><a class="reference internal" href="installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#event-builder">Event Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#file-builder">File Builder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Internal data formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-to-event-builder-format">Input to Event Builder format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-from-event-builder-input-to-file-builder-format">Output from Event Builder, input to File Builder format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-from-file-builder-format">File from File Builder  format</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jargon.html">Jargon</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#get-started">Get Started!</a></li>
@@ -100,16 +112,6 @@
 <li class="toctree-l2"><a class="reference internal" href="history.html#id2">1.1 (2014-02-12)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id3">1.0 (2014-02-10)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id4">0.1 (2013-08-11)</a></li>
-</ul>
-</li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Data formats</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#input">Input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#output-format">Output format</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="jargon.html">Jargon</a></li>
-<li class="toctree-l1"><a class="reference internal" href="profiling.html">Notes on code speed and profiling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="profiling.html#line-hits-time-per-hit-time-line-contents">Line #      Hits         Time  Per Hit   % Time  Line Contents</a></li>
 </ul>
 </li>
 </ul>
@@ -133,17 +135,18 @@
         <div class="rst-content">
           <ul class="wy-breadcrumbs">
   <li><a href="index.html">Docs</a> &raquo;</li>
-  <li><a href="">Data formats</a></li>
+  <li><a href="">Internal data formats</a></li>
   
 </ul>
 <hr/>
 
           
-  <div class="section" id="data-formats">
-<h1>Data formats<a class="headerlink" href="#data-formats" title="Permalink to this headline">¶</a></h1>
-<p>Here reviewed are data formats</p>
-<div class="section" id="input">
-<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="internal-data-formats">
+<h1>Internal data formats<a class="headerlink" href="#internal-data-formats" title="Permalink to this headline">¶</a></h1>
+<p>All of the data formats specified refer to how data is stored within MongoDB.</p>
+<div class="section" id="input-to-event-builder-format">
+<h2>Input to Event Builder format<a class="headerlink" href="#input-to-event-builder-format" title="Permalink to this headline">¶</a></h2>
+<p>This data is input to the event builder.</p>
 <p>The data input format is a BSON document.  Per digitizer board, a document is created that must contain the keys:</p>
 <ul class="simple">
 <li>Module: identifies the digitizer board</li>
@@ -152,7 +155,7 @@ from the system clock.  Each step is 10 ns.  There is enough range with 64 bits 
 10000 years, which from now was around when creation was in the Jewish calendar.</li>
 <li>Data: The actual payload.  This is the raw Caen format (maybe compressed) and must be converted into a usable
 format.</li>
-<li>Zipped: Is the data compressed using snappy?</li>
+<li>Zipped: Is the data compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a>?</li>
 </ul>
 <p>Given that we are using a NoSQL database, variables may be added.  However, the schema only requires the four fields
 above.</p>
@@ -168,95 +171,30 @@ above.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="output-from-event-builder-input-to-file-builder-format">
+<h2>Output from Event Builder, input to File Builder format<a class="headerlink" href="#output-from-event-builder-input-to-file-builder-format" title="Permalink to this headline">¶</a></h2>
+<p>This is output of the event builder and input to the file builder.</p>
+<ul class="simple">
+<li>The <cite>_id</cite> field is a hex string used for internal bookkeeping within MongoDB.</li>
+<li><cite>evt_num</cite> is an integer event number (if one has been assigned).</li>
+<li><cite>range</cite> is two integers that correspond to the beginning and end of the trigger window.</li>
+<li><cite>compressed_doc</cite> is binary data compressed with snappy and contains all the data that will go to file.  For more
+information, see <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</li>
+</ul>
+<p>Said differently:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
-   <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;525186149d7a330faeae9d65&quot;</span><span class="p">),</span>
-   <span class="s2">&quot;insertsize&quot;</span><span class="o">:</span> <span class="nx">NumberInt</span><span class="p">(</span><span class="mi">46151</span><span class="p">),</span>
-   <span class="s2">&quot;module&quot;</span><span class="o">:</span> <span class="nx">NumberInt</span><span class="p">(</span><span class="mi">770</span><span class="p">),</span>
-   <span class="s2">&quot;triggertime&quot;</span><span class="o">:</span> <span class="nx">NumberLong</span><span class="p">(</span><span class="mi">1055247650512</span><span class="p">),</span>
-   <span class="s2">&quot;zipped&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-   <span class="s2">&quot;datalength&quot;</span><span class="o">:</span> <span class="nx">NumberInt</span><span class="p">(</span><span class="mi">752</span><span class="p">),</span>
-   <span class="s2">&quot;data&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;Mongo Binary Data&gt;&quot;</span>
+    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="nx">hex_string</span><span class="p">,</span>
+    <span class="s2">&quot;evt_num&quot;</span><span class="o">:</span> <span class="kr">int</span><span class="p">,</span>
+    <span class="s2">&quot;range&quot;</span><span class="o">:</span> <span class="p">[</span><span class="kr">int</span><span class="p">,</span> <span class="kr">int</span><span class="p">],</span>
+    <span class="s2">&quot;compressed_doc&quot;</span><span class="o">:</span> <span class="nx">binary</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="output-format">
-<h2>Output format<a class="headerlink" href="#output-format" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">import</span> <span class="nn">gzip</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-
-<span class="c"># Load the cito output file</span>
-<span class="n">f</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;cito_file.pklz&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
-
-<span class="c">#  You have to read all the events beforehand to get at an event</span>
-<span class="c"># therefore it reads &#39;n&#39; times to get to event &#39;n&#39;</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-    <span class="n">doc</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;sum&#39;</span><span class="p">][</span><span class="s">&#39;indices&#39;</span><span class="p">]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;sum&#39;</span><span class="p">][</span><span class="s">&#39;samples&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;unsmoothed sum&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;smooth&#39;</span><span class="p">][</span><span class="s">&#39;samples&#39;</span><span class="p">],</span>
-         <span class="s">&#39;--&#39;</span><span class="p">,</span>
-         <span class="n">label</span><span class="o">=</span><span class="s">&#39;smooth sum&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]:</span>
-    <span class="c"># Plot peaks</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">peak</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Range: </span><span class="si">%s</span><span class="s">, Peaks: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">])))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time [10 ns]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Charge [ADC counts]&#39;</span><span class="p">)</span>
-
-<span class="c"># Make a figure with all channels</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">channel</span><span class="p">,</span> <span class="n">data2</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data2</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">],</span> <span class="n">data2</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Range: </span><span class="si">%s</span><span class="s">, Peaks: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">])))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time [10 ns]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Charge [ADC counts]&#39;</span><span class="p">)</span>
-
-<span class="c"># Show plots</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</td></tr></table></div>
+<div class="section" id="file-from-file-builder-format">
+<h2>File from File Builder  format<a class="headerlink" href="#file-from-file-builder-format" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a></p>
 </div>
 </div>
 
@@ -268,7 +206,7 @@ above.</p>
         <a href="jargon.html" class="btn btn-neutral float-right" title="Jargon"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="history.html" class="btn btn-neutral" title="History"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="analyze_data.html" class="btn btn-neutral" title="Analyzing data"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   

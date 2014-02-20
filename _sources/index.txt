@@ -14,12 +14,13 @@ Contents:
    readme
    installation
    usage
+   analyze_data
+   data_format
+   jargon
    contributing
    authors
    history
-   data_format
-   jargon
-   profiling
+
 
 Indices and tables
 ==================

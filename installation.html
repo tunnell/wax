@@ -82,7 +82,19 @@
 <li class="toctree-l2"><a class="reference internal" href="#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#event-builder">Event Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#file-builder">File Builder</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_format.html">Internal data formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_format.html#input-to-event-builder-format">Input to Event Builder format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_format.html#output-from-event-builder-input-to-file-builder-format">Output from Event Builder, input to File Builder format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_format.html#file-from-file-builder-format">File from File Builder  format</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jargon.html">Jargon</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#get-started">Get Started!</a></li>
@@ -100,16 +112,6 @@
 <li class="toctree-l2"><a class="reference internal" href="history.html#id2">1.1 (2014-02-12)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id3">1.0 (2014-02-10)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id4">0.1 (2013-08-11)</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="data_format.html">Data formats</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data_format.html#input">Input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_format.html#output-format">Output format</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="jargon.html">Jargon</a></li>
-<li class="toctree-l1"><a class="reference internal" href="profiling.html">Notes on code speed and profiling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="profiling.html#line-hits-time-per-hit-time-line-contents">Line #      Hits         Time  Per Hit   % Time  Line Contents</a></li>
 </ul>
 </li>
 </ul>
@@ -141,13 +143,12 @@
           
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>TODO: Make all &#8216;cito&#8217; and program names small caps or bold or italic.</p>
-<p>Every attempt is made to make &#8216;cito&#8217; as portable as possible and install in a wide range of environments.  However,
+<p>Every attempt is made to make <cite>cito</cite> as portable as possible and install in a wide range of environments.  However,
 installation instructions are given for Ubuntu 12 LTS.</p>
 <div class="section" id="installing-python3-3">
 <h2>Installing Python3.3<a class="headerlink" href="#installing-python3-3" title="Permalink to this headline">¶</a></h2>
 <p>If you have Python 3.3, skip this.</p>
-<p>cito, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
+<p><cite>cito</cite>, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
 following, which is inspired from
 <a class="reference external" href="http://linuxg.net/how-to-install-python-3-3-on-ubuntu-13-04-12-10-and-12-04/">here</a>:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo apt-get install python-software-properties
@@ -218,12 +219,12 @@ explicitly (i.e., scipy can be <a href="#id1"><span class="problematic" id="id2"
 </div>
 <div class="section" id="installing-cito">
 <h2>Installing Cito<a class="headerlink" href="#installing-cito" title="Permalink to this headline">¶</a></h2>
-<p>Up to this point, you&#8217;ve been installing the dependencies of cito.  However, installing cito itself is easy.  At the
-command line, using &#8216;easy_install&#8217; or &#8216;pip&#8217;, install &#8216;cito&#8217;:</p>
+<p>Up to this point, you&#8217;ve been installing the dependencies of <cite>cito</cite>.  However, installing <cite>cito</cite> itself is easy.  At the
+command line, using &#8216;easy_install&#8217; or &#8216;pip&#8217;, install <cite>cito</cite>:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ easy_install cito
 </pre></div>
 </div>
-<p>This line also installs all the Python dependencies of cito. If you observe a problem, please submit a bug report.</p>
+<p>This line also installs all the Python dependencies of <cite>cito</cite>. If you observe a problem, please submit a bug report.</p>
 </div>
 <div class="section" id="optional-installing-own-mongodb-database">
 <h2>(Optional) Installing own MongoDB database<a class="headerlink" href="#optional-installing-own-mongodb-database" title="Permalink to this headline">¶</a></h2>
