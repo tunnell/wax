@@ -20,7 +20,7 @@ This code constitutes a framework for software triggering intended for particle 
 Usage
 -----
 
-To run `cito`:
+To run `cito`::
 
     $ pip install cito
     $ cito process
