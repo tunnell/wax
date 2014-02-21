@@ -13,20 +13,17 @@ which is allows the peak finder to run on multiple spacially seperate trigger
 where, for example, filtering and identification of ridge lines is performed.
 """
 
-
 __author__ = 'tunnell'
-
-import scipy
-
-from cito.core.math import merge_subranges, find_subranges
 
 import logging
 import time
 
+import scipy
 import numpy as np
-from scipy.signal._peak_finding import _filter_ridge_lines, _identify_ridge_lines
 from scipy.signal import butter
 from scipy.signal import filtfilt
+
+from cito.core.math import merge_subranges, find_subranges
 
 
 CWT_WIDTH = 50

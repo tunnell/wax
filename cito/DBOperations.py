@@ -4,7 +4,7 @@ All of these commands are simple enough that they don't rely too
 much on XeDB.  Maybe these commands should be moved there though?
 """
 
-from cito.core import XeDB
+from cito.Database import DBBase
 from cito.core.main import CitoShowOne
 
 
@@ -15,12 +15,12 @@ class DBReset(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
-                                                         selection='input')
+        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname,
+                                                        selection='input')
         db.drop_collection(collection.name)
 
-        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
-                                                         selection='output')
+        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname,
+                                                        selection='output')
         db.drop_collection(collection.name)
 
         return self.get_status(db)
@@ -34,8 +34,8 @@ class DBPurge(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
-                                                         selection='output')
+        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname,
+                                                        selection='output')
         self.log.debug("Purging all documents")
         collection.remove({})
         return self.get_status(db)
@@ -53,7 +53,7 @@ class DBRepair(CitoShowOne):
     """
 
     def take_action(self, parsed_args):
-        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname)
         db.command('repairDatabase')
         return self.get_status(db)
 

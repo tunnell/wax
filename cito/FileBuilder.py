@@ -7,13 +7,14 @@ import gzip
 from tqdm import tqdm
 from cliff.command import Command
 import snappy
-
 from cito.core import XeDB
 
 
 class FileBuilderCommand(Command):
     """Continously build files
 
+
+    the output format is Pickled.
     TODO: merge with other commands"""
 
     def get_description(self):

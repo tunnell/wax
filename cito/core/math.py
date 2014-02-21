@@ -1,5 +1,6 @@
 from itertools import groupby
 import logging
+
 import numpy as np
 
 
@@ -62,7 +63,7 @@ def find_subranges(indices):
     See http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list
     """
     ranges = []
-    for k, g in groupby(enumerate(indices), lambda i_x:i_x[0]-i_x[1]):
+    for k, g in groupby(enumerate(indices), lambda i_x: i_x[0] - i_x[1]):
         values = list(g)
 
         # values[0] and values[-1] are range boundaries
@@ -70,8 +71,8 @@ def find_subranges(indices):
 
     return ranges
 
-def overlap_region(range1, range2):
 
+def overlap_region(range1, range2):
     a0, a1 = range1
     b0, b1 = range2
 
@@ -121,24 +122,24 @@ def speed_in1d_continous(a, b, x, y):
     assert a <= b
     assert x <= y
 
-    mask = np.zeros(b-a, dtype=np.bool)
+    mask = np.zeros(b - a, dtype=np.bool)
 
     # Shortcut case
     if a == x and b == y:  # Most common case?
         mask[:] = True
 
     if a <= b <= x <= y:
-        pass # Leave everything to false
+        pass  # Leave everything to false
     elif x <= y <= a <= b:
-        pass # Leave everything to false
-    elif x <= a <= b <= y: # If (a,b) in (x,y)
-        mask[:] = True # Leave everything false
-    elif a <= x <= y <= b: # If (x,y) in (a,b)
-        mask[x-a:y-a] = True
+        pass  # Leave everything to false
+    elif x <= a <= b <= y:  # If (a,b) in (x,y)
+        mask[:] = True  # Leave everything false
+    elif a <= x <= y <= b:  # If (x,y) in (a,b)
+        mask[x - a:y - a] = True
     elif a <= x <= b <= y:
-        mask[x-a:b-a] = True
+        mask[x - a:b - a] = True
     elif x <= a <= y <= b:
-        mask[0:y-a] = True
+        mask[0:y - a] = True
     else:
         raise ValueError()
 

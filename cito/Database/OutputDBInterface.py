@@ -4,8 +4,11 @@ import logging
 import pickle
 
 import snappy
-
 from cito.core import XeDB
+
+
+DB_NAME = 'output'
+COLLECTION_NAME = 'somerun'
 
 
 class OutputCommon():

@@ -1,13 +1,17 @@
-from cito.core.math import find_subranges, overlap_region, speed_in1d_continous
+from cito.Database import InputDBInterface
 
 __author__ = 'tunnell'
 
 import unittest
 import numpy as np
+import pymongo
+
+class InputDBInterfaceTestCase(unittest.TestCase):
+    def test_get_sort_key(self):
+        InputDBInterface.get_sort_key()
 
 
-class CoreMathTestCase(unittest.TestCase):
-    def test_subrange(self):
+
         self.assertEqual(find_subranges([2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 20]),
                          [[0, 3], [4, 9], [10, 10]])
 

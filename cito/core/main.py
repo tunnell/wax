@@ -8,9 +8,7 @@ from cliff.app import App
 from cliff.command import Command
 from cliff.commandmanager import CommandManager
 from cliff.show import ShowOne
-
 from cito.core import XeDB
-
 import cito
 
 

@@ -15,21 +15,12 @@
     * If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before
       and after each peak.
 
-    More technically, a boolean array is created for each time sample, where True corresponds to a sample being saved
-    and false corresponds to an event being discarded.  These values default to false.  Two variables are defined by the
-    user: t_pre and t_post.  For each peak that the triggering algorithm identifies (e.g., charge above 100 pe), the
-    range [peak_i - t_pre, peak_i + t_post] is set to true  (see get_index_mask_for_trigger).  Subsequently, continuous
-    blocks of 'true' are called an event.
-
-    In other words, if two particles interact in the detector within a typical 'event window', then these two
-    interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
-    example, for peak_k > peak_i, if peak_i + t_post > peak_k - t_pre, these are one event.
-
-
+    More technically about pileup, if two particles interact in the detector within a typical 'event window', then
+    these two interactions are saved as one event.  Identifying how to break up the event is thus left for
+    postprocessing.  For example, for peak_k > peak_i, if peak_i + t_post > peak_k - t_pre, these are one event.
 """
 import logging
 
-import numpy as np
 from cito.Trigger import PeakFinder
 from cito.core.math import compute_subranges, speed_in1d_continous
 
@@ -69,8 +60,6 @@ class EventBuilder():
         else:
             self.event_number += 1
             return self.event_number
-
-
 
 
     def build_event(self, data, t0=None, t1=None):
@@ -117,9 +106,8 @@ class EventBuilder():
         event_ranges = compute_subranges(peaks)
         self.log.info('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
 
-
         data[(0, 0, 'smooth')] = {'indices': sum_data['indices'],
-                                        'samples': smooth_waveform}
+                                  'samples': smooth_waveform}
 
         ##
         # Step 4: For each trigger event, associate channel information
@@ -149,7 +137,6 @@ class EventBuilder():
                 mask = speed_in1d_continous(value['indices'][0], value['indices'][0],
                                             e0, e1)
 
-
                 to_save['data'][num_pmt] = {'indices': indices[mask],
                                             'samples': samples[mask]}
 
@@ -168,6 +155,7 @@ if __name__ == '__main__':
 
     myapp = CitoApp()
     import cProfile
+
     cProfile.run("""myapp.run(['process','--chunksize','1000000','-n', '10'])""", 'profile')
     #code = myapp.run(['process'])
     sys.exit(0)

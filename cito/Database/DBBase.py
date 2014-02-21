@@ -1,13 +1,14 @@
-"""Base class for all DB operationsInterface and schema for DB access
+"""Base class for all DB interfaces.
+
+This class provides various functions for creating connections to MongoDB and
+also locating the MongoDB server.
 """
 from cito.Database.InputDBInterface import get_sort_key
-
-__author__ = 'tunnell'
-
 import pymongo
 
 CONNECTIONS = {}
 HOSTNAME = "127.0.0.1"
+
 
 def get_db_connection(selection='input',
                       hostname=HOSTNAME):
@@ -19,9 +20,12 @@ def get_db_connection(selection='input',
 
     :param hostname: The IP or DNS name where MongoDB is hosted on port 27017
     :type hostname: str.
-    :param selection: 'input' for EventBuilder input,  blocks, otherwise 'output' for output
+    :param selection: 'input' for EventBuilder input,  blocks, otherwise
+                      'output' for output
     :type selection: str.
-    :returns:  list -- [pymongo.Connection, pymongo.Database, pymongo.Collection]
+    :returns:  list -- [pymongo.Connection,
+                        pymongo.Database,
+                        pymongo.Collection]
     :raises: pymongo.errors.PyMongoError
     """
     # Check if in cache
@@ -56,10 +60,3 @@ def get_db_connection(selection='input',
                                 background=True)
     CONNECTIONS[selection] = (c, db, collection)
     return c, db, collection
-
-
-
-
-
-
-

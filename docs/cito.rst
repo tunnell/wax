@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    cito.Database
     cito.EventBuilder
     cito.Trigger
     cito.core

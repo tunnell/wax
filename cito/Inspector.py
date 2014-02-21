@@ -2,9 +2,9 @@
 """
 import itertools
 
-import bson
 import matplotlib.pyplot as plt
 
+import bson
 from cito.core import XeDB
 from cito.core.main import CitoShowOne
 

@@ -5,7 +5,7 @@ Code for Intelligent Triggering Online
 .. image:: https://badge.fury.io/py/cito.png
   :target: http://badge.fury.io/py/cito
     
-.. image:: https://travis-ci.org/tunnell/cito.png?branch=master
+.. image:: https://travis-ci.org/tunnell/cito.png
   :target: https://travis-ci.org/tunnell/cito
 
 .. image:: https://pypip.in/d/cito/badge.png
@@ -17,6 +17,17 @@ This code constitutes a framework for software triggering intended for particle 
 * Free software: BSD license
 * Documentation: http://tunnell.github.io/cito/
 
+Usage
+-----
+
+To run `cito`:
+
+    pip install cito
+    cito process
+    cito file builder
+
+See the usage section in the documentation for more information.
+
 Features
 --------
 
@@ -25,3 +36,8 @@ Features
 * Flexible trigger windows and thresholds
 * MongoDB data backend
 * First open-source software trigger framework
+
+Overview
+--------
+
+The program `cito` consists of two main components: data processing and data recording.  
