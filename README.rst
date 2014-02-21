@@ -22,9 +22,9 @@ Usage
 
 To run `cito`:
 
-    pip install cito
-    cito process
-    cito file builder
+    $ pip install cito
+    $ cito process
+    $ cito file builder
 
 See the usage section in the documentation for more information.
 
