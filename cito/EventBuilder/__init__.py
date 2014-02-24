@@ -6,7 +6,8 @@ from cito.core.main import CitoContinousCommand
 
 import logging
 
-from cito.core import Waveform, XeDB
+from cito.core import Waveform
+from cito.Database import InputDBInterface
 from cito.EventBuilder import Logic
 
 
@@ -31,7 +32,7 @@ class ProcessTimeBlockTask():
         :returns:  int -- number of bytes processed
         :raises: AssertionError
         """
-        data_docs = XeDB.get_data_docs(t0, t1)
+        data_docs = InputDBInterface.get_data_docs(t0, t1)
         data, size = Waveform.get_data_and_sum_waveform(data_docs)
 
         # If no data analyzed, return

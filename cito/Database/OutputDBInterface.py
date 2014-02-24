@@ -2,14 +2,50 @@ __author__ = 'tunnell'
 
 import logging
 import pickle
-
+from cito.Database import DBBase
 import snappy
-from cito.core import XeDB
-
+import pymongo
 
 DB_NAME = 'output'
 COLLECTION_NAME = 'somerun'
+CONNECTION = None
 
+def get_db_connection(hostname=DBBase.HOSTNAME):
+    """Get database connection objects for the input or output databases.
+
+    This function creates MongoDB connections to either the input or output
+    databases.  It also maintains a cache of connections that have already been
+    created to speed things up.
+
+    :param hostname: The IP or DNS name where MongoDB is hosted on port 27017
+    :type hostname: str.
+    :param selection: 'input' for EventBuilder input,  blocks, otherwise
+                      'output' for output
+    :type selection: str.
+    :returns:  list -- [pymongo.Connection,
+                        pymongo.Database,
+                        pymongo.Collection]
+    :raises: pymongo.errors.PyMongoError
+    """
+    # Check if in cache
+    global CONNECTION
+    if CONNECTION is not None:
+        return CONNECTION
+
+
+    # If not in cache, make new connection, db, and collection objects
+    c = pymongo.MongoClient(hostname)
+    db = c[DB_NAME]
+    collection = db[COLLECTION_NAME]
+
+    # For the input database, we also want to create some indices to speed up
+    # queries.
+    num_docs_in_collection = collection.count()
+    logging.info("Collection %s.%s has %d events" %
+                        (DB_NAME, COLLECTION_NAME, num_docs_in_collection))
+
+    CONNECTION = (c, db, collection)
+    return CONNECTION
 
 class OutputCommon():
     """Base class for all output
@@ -40,8 +76,8 @@ class MongoDBOutput(OutputCommon):
         OutputCommon.__init__(self)
 
         # MongoDB collection to put data in
-        self.conn, self.my_db, self.collection = XeDB.get_mongo_db_objects(server=hostname,
-                                                                           selection='output')
+        self.conn, self.my_db, self.collection = get_db_connection(hostname=hostname)
+
 
     def mongify_event(self, event_data):
         """Convert Python data to pickled and compressed data.
@@ -62,3 +98,4 @@ class MongoDBOutput(OutputCommon):
         mongofied_list = [self.mongify_event(x) for x in event_data_list]
 
         self.collection.insert(mongofied_list)
+

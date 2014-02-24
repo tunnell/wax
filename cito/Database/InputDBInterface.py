@@ -8,13 +8,14 @@ import numpy as np
 
 import pymongo
 import snappy
-from cito.Database.DBBase import get_db_connection
-
+from cito.Database import DBBase
 
 __author__ = 'tunnell'
 
+
 DB_NAME = 'data'
 COLLECTION_NAME = 'XENON100'
+CONNECTION = None
 
 
 def get_sort_key(order=pymongo.DESCENDING):
@@ -27,7 +28,7 @@ def get_sort_key(order=pymongo.DESCENDING):
 
 
     """
-    if order != pymongo.DESCENDING or order != pymongo.ASCENDING:
+    if order != pymongo.DESCENDING and order != pymongo.ASCENDING:
         raise ValueError()
 
     return [('triggertime', order),
@@ -145,3 +146,44 @@ def get_data_from_doc(doc):
         raise IndexError("Data has zero length")
 
     return data
+
+
+def get_db_connection(hostname=DBBase.HOSTNAME):
+    """Get database connection objects for the input or output databases.
+
+    This function creates MongoDB connections to either the input or output
+    databases.  It also maintains a cache of connections that have already been
+    created to speed things up.
+
+    :param hostname: The IP or DNS name where MongoDB is hosted on port 27017
+    :type hostname: str.
+    :param selection: 'input' for EventBuilder input,  blocks, otherwise
+                      'output' for output
+    :type selection: str.
+    :returns:  list -- [pymongo.Connection,
+                        pymongo.Database,
+                        pymongo.Collection]
+    :raises: pymongo.errors.PyMongoError
+    """
+    # Check if in cache
+    global CONNECTION
+    if CONNECTION is not None:
+        return CONNECTION
+
+
+    # If not in cache, make new connection, db, and collection objects
+    c = pymongo.MongoClient(hostname)
+    db = c[DB_NAME]
+    collection = db[COLLECTION_NAME]
+
+    # For the input database, we also want to create some indices to speed up
+    # queries.
+    num_docs_in_collection = collection.count()
+    if num_docs_in_collection == 0:
+        logging.warning("Collection %s.%s has no events" %
+                        (DB_NAME, COLLECTION_NAME))
+
+    collection.ensure_index(get_sort_key(),
+                            background=True)
+    CONNECTION = (c, db, collection)
+    return CONNECTION

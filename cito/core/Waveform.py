@@ -5,7 +5,7 @@ import logging
 
 import numpy as np
 
-from cito.core import XeDB
+from cito.Database import InputDBInterface
 
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
 SAMPLE_TYPE = np.int16
@@ -64,7 +64,7 @@ def get_data_and_sum_waveform(cursor):
 
     for doc in cursor:
         log.debug('Processing doc %s', str(doc['_id']))
-        data = XeDB.get_data_from_doc(doc)
+        data = InputDBInterface.get_data_from_doc(doc)
         num_channel = doc['module']
 
         size += len(data)
@@ -107,13 +107,14 @@ def get_data_and_sum_waveform(cursor):
     new_indices = np.array(new_indices, dtype=np.int64)
     new_samples = np.array(new_samples, dtype=np.int32)
 
-    key = (new_indices[0],
-           new_indices[-1],
-           'sum')
+    if len(new_indices) >= 2:
+        key = (new_indices[0],
+               new_indices[-1],
+               'sum')
 
-    #  Here, we store indices as well as the range (in the key) because
-    # the samples of the sum waveform need not be contigous
-    interpreted_data[key] = {'indices': new_indices,
-                             'samples': new_samples}
+        #  Here, we store indices as well as the range (in the key) because
+        # the samples of the sum waveform need not be contigous
+        interpreted_data[key] = {'indices': new_indices,
+                                 'samples': new_samples}
 
     return interpreted_data, size

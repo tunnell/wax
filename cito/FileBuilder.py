@@ -7,7 +7,7 @@ import gzip
 from tqdm import tqdm
 from cliff.command import Command
 import snappy
-from cito.core import XeDB
+from cito.Database import OutputDBInterface
 
 
 class FileBuilderCommand(Command):
@@ -38,12 +38,15 @@ class FileBuilderCommand(Command):
 
         self.log.info("Establishing connection")
 
-        c, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname,
-                                                      selection='output')
-        f = gzip.open(parsed_args.filename, 'wb')
+        c, db, collection = OutputDBInterface.get_db_connection(hostname=parsed_args.hostname)
 
         cursor = collection.find()
         N = cursor.count()
+        if N == 0:
+            self.log.error("No events in the output database; no file made.")
+            return
+
+        f = gzip.open(parsed_args.filename, 'wb')
 
         self.log.info("Processing %d trigger events" % N)
 
@@ -53,5 +56,6 @@ class FileBuilderCommand(Command):
             doc2 = pickle.loads(doc2)
 
             pickle.dump(doc2, f)
+
 
         f.close()

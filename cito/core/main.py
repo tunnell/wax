@@ -8,7 +8,7 @@ from cliff.app import App
 from cliff.command import Command
 from cliff.commandmanager import CommandManager
 from cliff.show import ShowOne
-from cito.core import XeDB
+from cito.Database import InputDBInterface
 import cito
 
 
@@ -89,10 +89,9 @@ class CitoCommand(Command):
         self.log.debug('Args: %s', str(parsed_args))
 
         self.log.debug("Getting mongo objects")
-        conn, my_db, collection = XeDB.get_mongo_db_objects(selection='input',
-                                                            server=parsed_args.hostname)
+        conn, my_db, collection = InputDBInterface.get_db_connection(hostname=parsed_args.hostname)
         self.log.error(collection.count())
-        min_time = XeDB.get_min_time(collection)
+        min_time = InputDBInterface.get_min_time(collection)
 
         self.log.debug("take_action_wrapped")
         self.take_action_wrapped(chunk_size, padding, min_time,
@@ -153,7 +152,7 @@ class CitoContinousCommand(CitoCommand):
             self.log.debug("Entering while loop; use Ctrl-C to exit")
 
             try:
-                max_time = XeDB.get_max_time(collection)
+                max_time = InputDBInterface.get_max_time(collection)
                 time_index = int(max_time / chunk_size)
 
                 self.log.debug("Current max time: %d", max_time)
@@ -216,6 +215,7 @@ class CitoShowOne(ShowOne):
         parser.add_argument("--hostname", help="MongoDB database address",
                             type=str,
                             default='127.0.0.1')
+
 
         return parser
 

@@ -57,7 +57,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     for s in combined_ranges:
         subsamples = samples[s[0]:s[1]]
 
-        high_extrema, trigger_meta_data = find_peaks(subsamples)
+        high_extrema, trigger_meta_data = find_peaks(subsamples, 10)
         for value in high_extrema:
             peaks.append(value)
 

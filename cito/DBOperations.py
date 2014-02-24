@@ -3,45 +3,91 @@
 All of these commands are simple enough that they don't rely too
 much on XeDB.  Maybe these commands should be moved there though?
 """
+import logging
+from cito.Database import InputDBInterface, OutputDBInterface
+from cliff.show import ShowOne
 
-from cito.Database import DBBase
-from cito.core.main import CitoShowOne
+
+class CitoDBShowOne(ShowOne):
+    """Base class for all DB commands.
+
+    Handles logging, descriptions, and common fuctions.
+    """
+    log = logging.getLogger(__name__)
+
+    def get_description(self):
+        return self.__doc__
+
+    def get_parser(self, prog_name):
+        parser = super(ShowOne, self).get_parser(prog_name)
+
+        parser.add_argument("--hostname", help="MongoDB database address",
+                            type=str,
+                            default='127.0.0.1')
+        parser.add_argument("--db", help="Input or output DB (or all)",
+                            type=str,
+                            default='input',
+                            choices=['input', 'output', 'all'])
+
+        return parser
+
+    def get_status(self, db):
+        """Return DB errors, if any"""
+        error = db.error()
+        if error:
+            self.log.error(error)
+            data = error
+        else:
+            data = 'success'
+        return data
+
+    def take_action(self, parsed_args):
+        results = []
+        if parsed_args.db =='input' or parsed_args.db == 'all':
+            conn, db, collection = InputDBInterface.get_db_connection(parsed_args.hostname)
+            result = self.take_action_wrapped(conn, db, collection)
+            results.append(['Input: Requested operation result',result])
+            results.append(['Input: DB status', self.get_status(db)])
+
+        if parsed_args.db =='output' or parsed_args.db == 'all':
+            conn, db, collection = OutputDBInterface.get_db_connection(parsed_args.hostname)
+            result = self.take_action_wrapped(conn, db, collection)
+            results.append(['Output: Requested operation result', result])
+            results.append(['Output: DB status', self.get_status(db)])
+
+        return zip(*results)
 
 
-class DBReset(CitoShowOne):
+    def take_action_wrapped(self, conn, db, collection):
+        raise NotImplementedError()
+
+
+class DBReset(CitoDBShowOne):
     """Reset the database by dropping the default collection.
 
     Warning: this cannot be used during a run as it will kill the DAQ writer.
     """
 
-    def take_action(self, parsed_args):
-        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname,
-                                                        selection='input')
+    def take_action_wrapped(self, conn, db, collection):
+        self.log.info("Resetting DB.")
         db.drop_collection(collection.name)
-
-        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname,
-                                                        selection='output')
-        db.drop_collection(collection.name)
-
-        return self.get_status(db)
+        return 'Reset'
 
 
-class DBPurge(CitoShowOne):
+class DBPurge(CitoDBShowOne):
     """Delete/purge all DAQ documents without deleting collection.
 
     This can be used during a run.
     TODO: specify input or output
     """
 
-    def take_action(self, parsed_args):
-        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname,
-                                                        selection='output')
-        self.log.debug("Purging all documents")
+    def take_action_wrapped(self, conn, db, collection):
+        self.log.info("Purging all documents.")
         collection.remove({})
-        return self.get_status(db)
+        return 'Purged'
 
 
-class DBRepair(CitoShowOne):
+class DBRepair(CitoDBShowOne):
     """Repair DB to regain unused space.
 
     MongoDB can't know how what to do with space after a document is deleted,
@@ -52,9 +98,10 @@ class DBRepair(CitoShowOne):
     operation of the database.
     """
 
-    def take_action(self, parsed_args):
-        conn, db, collection = DBBase.get_db_connection(parsed_args.hostname)
+    def take_action_wrapped(self, conn, db, collection):
+        self.log.info("Repairing DB.")
         db.command('repairDatabase')
-        return self.get_status(db)
+        return 'Repaired'
+
 
 
