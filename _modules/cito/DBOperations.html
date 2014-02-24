@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.DBOperations &mdash; Code for Intelligent Triggering Online 1.4.0 documentation</title>
+  <title>cito.DBOperations &mdash; Code for Intelligent Triggering Online 1.5.0 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../',
-        VERSION:'1.4.0',
+        VERSION:'1.5.0',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.4.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -166,10 +166,10 @@
 <div class="viewcode-block" id="CitoDBShowOne.get_parser"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ShowOne</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
 
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--hostname&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;MongoDB database address&quot;</span><span class="p">,</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--hostname&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;MongoDB database address. Can be IP or DNS address.&quot;</span><span class="p">,</span>
                             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                             <span class="n">default</span><span class="o">=</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">)</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--db&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Input or output DB (or all)&quot;</span><span class="p">,</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--db&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;Input or output DB (or all) on which to perform operation.&quot;</span><span class="p">,</span>
                             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                             <span class="n">default</span><span class="o">=</span><span class="s">&#39;input&#39;</span><span class="p">,</span>
                             <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;input&#39;</span><span class="p">,</span> <span class="s">&#39;output&#39;</span><span class="p">,</span> <span class="s">&#39;all&#39;</span><span class="p">])</span>
@@ -208,8 +208,9 @@
 
 </div></div>
 <div class="viewcode-block" id="DBReset"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBReset">[docs]</a><span class="k">class</span> <span class="nc">DBReset</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Reset the database by dropping the default collection.</span>
+    <span class="sd">&quot;&quot;&quot;Reset the database by deleting (i.e., dropping) the default collection.</span>
 
+<span class="sd">    All indicies will be lost.</span>
 <span class="sd">    Warning: this cannot be used during a run as it will kill the DAQ writer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

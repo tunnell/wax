@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito package &mdash; Code for Intelligent Triggering Online 1.4.0 documentation</title>
+  <title>cito package &mdash; Code for Intelligent Triggering Online 1.5.0 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'1.4.0',
+        VERSION:'1.5.0',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.4.0 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.0 documentation" href="index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
@@ -216,7 +216,7 @@ much on XeDB.  Maybe these commands should be moved there though?</p>
 
 <dl class="attribute">
 <dt id="cito.DBOperations.CitoDBShowOne.log">
-<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x10d53cd50&gt;</em><a class="headerlink" href="#cito.DBOperations.CitoDBShowOne.log" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x1103ba490&gt;</em><a class="headerlink" href="#cito.DBOperations.CitoDBShowOne.log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -267,8 +267,9 @@ operation of the database.</p>
 <dt id="cito.DBOperations.DBReset">
 <em class="property">class </em><tt class="descclassname">cito.DBOperations.</tt><tt class="descname">DBReset</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBReset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBReset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#cito.DBOperations.CitoDBShowOne" title="cito.DBOperations.CitoDBShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.DBOperations.CitoDBShowOne</span></tt></a></p>
-<p>Reset the database by dropping the default collection.</p>
-<p>Warning: this cannot be used during a run as it will kill the DAQ writer.</p>
+<p>Reset the database by deleting (i.e., dropping) the default collection.</p>
+<p>All indicies will be lost.
+Warning: this cannot be used during a run as it will kill the DAQ writer.</p>
 <dl class="method">
 <dt id="cito.DBOperations.DBReset.take_action_wrapped">
 <tt class="descname">take_action_wrapped</tt><big>(</big><em>conn</em>, <em>db</em>, <em>collection</em><big>)</big><a class="reference internal" href="_modules/cito/DBOperations.html#DBReset.take_action_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.DBOperations.DBReset.take_action_wrapped" title="Permalink to this definition">¶</a></dt>
@@ -283,7 +284,7 @@ operation of the database.</p>
 <dt id="cito.FileBuilder.FileBuilderCommand">
 <em class="property">class </em><tt class="descclassname">cito.FileBuilder.</tt><tt class="descname">FileBuilderCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/FileBuilder.html#FileBuilderCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.FileBuilder.FileBuilderCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
-<p>Continously build files</p>
+<p>Build files from processed trigger events in output database.</p>
 <p>the output format is Pickled.
 TODO: merge with other commands</p>
 <dl class="method">
@@ -304,8 +305,74 @@ TODO: merge with other commands</p>
 </dd></dl>
 
 </div>
-<div class="section" id="cito-inspector-module">
-<h2>cito.Inspector module<a class="headerlink" href="#cito-inspector-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-cito.Inspector">
+<span id="cito-inspector-module"></span><h2>cito.Inspector module<a class="headerlink" href="#module-cito.Inspector" title="Permalink to this headline">¶</a></h2>
+<p>For analyzing single documents</p>
+<dl class="class">
+<dt id="cito.Inspector.InputDBInspector">
+<em class="property">class </em><tt class="descclassname">cito.Inspector.</tt><tt class="descname">InputDBInspector</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Show statistics on DB collection</p>
+<dl class="staticmethod">
+<dt id="cito.Inspector.InputDBInspector.formatter2">
+<em class="property">static </em><tt class="descname">formatter2</tt><big>(</big><em>start</em>, <em>end</em>, <em>step</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.formatter2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.formatter2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDBInspector.helper">
+<tt class="descname">helper</tt><big>(</big><em>lst</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.helper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.helper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDBInspector.re_range">
+<tt class="descname">re_range</tt><big>(</big><em>lst</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.re_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.re_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDBInspector.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDBInspector.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDBInspector.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.Inspector.InputDocInspector">
+<em class="property">class </em><tt class="descclassname">cito.Inspector.</tt><tt class="descname">InputDocInspector</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDocInspector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDocInspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Grab DAQ document from MongoDB and print it.</p>
+<p>A DAQ document contains the V1724 flash ADC data.  If data in the document is
+compressed, it will decompress it.</p>
+<dl class="method">
+<dt id="cito.Inspector.InputDocInspector.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDocInspector.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDocInspector.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define what command line arguments we want this to be able to do</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.InputDocInspector.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#InputDocInspector.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.InputDocInspector.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cito.Inspector.OutputDocInspector">
+<em class="property">class </em><tt class="descclassname">cito.Inspector.</tt><tt class="descname">OutputDocInspector</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#OutputDocInspector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.OutputDocInspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoShowOne" title="cito.core.main.CitoShowOne"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoShowOne</span></tt></a></p>
+<p>Inspect information about trigger event.</p>
+<dl class="method">
+<dt id="cito.Inspector.OutputDocInspector.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#OutputDocInspector.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.OutputDocInspector.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Be able to specify trigger index</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cito.Inspector.OutputDocInspector.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/Inspector.html#OutputDocInspector.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Inspector.OutputDocInspector.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-cito">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cito" title="Permalink to this headline">¶</a></h2>

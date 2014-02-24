@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.EventBuilder package &mdash; Code for Intelligent Triggering Online 1.4.0 documentation</title>
+  <title>cito.EventBuilder package &mdash; Code for Intelligent Triggering Online 1.5.0 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'1.4.0',
+        VERSION:'1.5.0',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.4.0 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.0 documentation" href="index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
@@ -267,7 +267,7 @@ an input) is saved for that specific event.</p>
 <dt id="cito.EventBuilder.ProcessToMongoCommand">
 <em class="property">class </em><tt class="descclassname">cito.EventBuilder.</tt><tt class="descname">ProcessToMongoCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder.html#ProcessToMongoCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.ProcessToMongoCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoContinousCommand" title="cito.core.main.CitoContinousCommand"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoContinousCommand</span></tt></a></p>
-<p>Process time blocks and save to MongoDB</p>
+<p>Process data from input database, identify triggers, then write to output database.</p>
 <dl class="method">
 <dt id="cito.EventBuilder.ProcessToMongoCommand.get_tasks">
 <tt class="descname">get_tasks</tt><big>(</big><em>parsed_args=None</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder.html#ProcessToMongoCommand.get_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.ProcessToMongoCommand.get_tasks" title="Permalink to this definition">¶</a></dt>
