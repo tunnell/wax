@@ -150,7 +150,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">cito.core</span> <span class="kn">import</span> <span class="n">XeDB</span>
+<span class="kn">from</span> <span class="nn">cito.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span>
 
 <span class="c"># Samples are actually 14 bit unsigned, so 16 bit signed fine</span>
 <span class="n">SAMPLE_TYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
@@ -209,7 +209,7 @@
 
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Processing doc </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]))</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_data_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_data_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="n">num_channel</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span>
 
         <span class="n">size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -252,14 +252,15 @@
     <span class="n">new_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
     <span class="n">new_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">new_samples</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 
-    <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-           <span class="n">new_indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-           <span class="s">&#39;sum&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_indices</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+               <span class="n">new_indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+               <span class="s">&#39;sum&#39;</span><span class="p">)</span>
 
-    <span class="c">#  Here, we store indices as well as the range (in the key) because</span>
-    <span class="c"># the samples of the sum waveform need not be contigous</span>
-    <span class="n">interpreted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">new_indices</span><span class="p">,</span>
-                             <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">new_samples</span><span class="p">}</span>
+        <span class="c">#  Here, we store indices as well as the range (in the key) because</span>
+        <span class="c"># the samples of the sum waveform need not be contigous</span>
+        <span class="n">interpreted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">new_indices</span><span class="p">,</span>
+                                 <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">new_samples</span><span class="p">}</span>
 
     <span class="k">return</span> <span class="n">interpreted_data</span><span class="p">,</span> <span class="n">size</span></div>
 </pre></div>

@@ -146,11 +146,130 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="cito-database-dbbase-module">
-<h2>cito.Database.DBBase module<a class="headerlink" href="#cito-database-dbbase-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-cito.Database.DBBase">
+<span id="cito-database-dbbase-module"></span><h2>cito.Database.DBBase module<a class="headerlink" href="#module-cito.Database.DBBase" title="Permalink to this headline">¶</a></h2>
+<p>Base class for all DB interfaces.</p>
+<p>This class provides various functions for creating connections to MongoDB and
+also locating the MongoDB server.</p>
 </div>
-<div class="section" id="cito-database-inputdbinterface-module">
-<h2>cito.Database.InputDBInterface module<a class="headerlink" href="#cito-database-inputdbinterface-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-cito.Database.InputDBInterface">
+<span id="cito-database-inputdbinterface-module"></span><h2>cito.Database.InputDBInterface module<a class="headerlink" href="#module-cito.Database.InputDBInterface" title="Permalink to this headline">¶</a></h2>
+<p>Interface code to the input data in MongoDB</p>
+<dl class="function">
+<dt id="cito.Database.InputDBInterface.get_data_docs">
+<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_data_docs</tt><big>(</big><em>time0</em>, <em>time1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_data_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_data_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch from DB the documents within time range.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>time0</strong> (<em>int.</em>) &#8211; Initial time to query.</li>
+<li><strong>time1</strong> (<em>int.</em>) &#8211; Final time.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list &#8211; Input documents see docs <em class="xref std std-ref">data_format#input</em></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">AssertionError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.Database.InputDBInterface.get_data_from_doc">
+<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_data_from_doc</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_data_from_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_data_from_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a mongo document, fetch the data payload and decompress if
+necessary</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>doc (dictionary):  Document from mongodb to analyze</dd>
+<dt>Returns:</dt>
+<dd>bytes: decompressed data</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.Database.InputDBInterface.get_db_connection">
+<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_db_connection</tt><big>(</big><em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_db_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_db_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get database connection objects for the input or output databases.</p>
+<p>This function creates MongoDB connections to either the input or output
+databases.  It also maintains a cache of connections that have already been
+created to speed things up.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hostname</strong> (<em>str.</em>) &#8211; The IP or DNS name where MongoDB is hosted on port 27017</li>
+<li><strong>selection</strong> (<em>str.</em>) &#8211; &#8216;input&#8217; for EventBuilder input,  blocks, otherwise
+&#8216;output&#8217; for output</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list &#8211; [pymongo.Connection,
+pymongo.Database,
+pymongo.Collection]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">pymongo.errors.PyMongoError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.Database.InputDBInterface.get_max_time">
+<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_max_time</tt><big>(</big><em>collection</em>, <em>min_time=0</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_max_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_max_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get maximum time that has been seen by all boards.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>collection (Collection):  A pymongo Collection that will be queried
+min_time (int): Time that the max must be larger than</dd>
+<dt>Returns:</dt>
+<dd>int:  A time in units of 10 ns</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.Database.InputDBInterface.get_min_time">
+<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_min_time</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_min_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_min_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get minimum trigger time in a collection.</p>
+<p>This function is used by the Event Builder to know where to begin building
+events.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collection</strong> (<em>pymongo.Collection.</em>) &#8211; A pymongo Collection that will be queried.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">int &#8211; A time in units of 10 ns.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.Database.InputDBInterface.get_sort_key">
+<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_sort_key</tt><big>(</big><em>order=-1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_sort_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_sort_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort key used for MongoDB sorting and indexing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>order</strong> (<em>int</em>) &#8211; Ascending or descending order.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list &#8211; Returns, per pymongo format, a list of (variable, order)
+pairs.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-cito.Database.OutputDBInterface">
 <span id="cito-database-outputdbinterface-module"></span><h2>cito.Database.OutputDBInterface module<a class="headerlink" href="#module-cito.Database.OutputDBInterface" title="Permalink to this headline">¶</a></h2>
@@ -190,6 +309,36 @@ may still be being processed.</p>
 <tt class="descname">write_event</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#OutputCommon.write_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.OutputCommon.write_event" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="cito.Database.OutputDBInterface.get_db_connection">
+<tt class="descclassname">cito.Database.OutputDBInterface.</tt><tt class="descname">get_db_connection</tt><big>(</big><em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#get_db_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.get_db_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get database connection objects for the input or output databases.</p>
+<p>This function creates MongoDB connections to either the input or output
+databases.  It also maintains a cache of connections that have already been
+created to speed things up.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hostname</strong> (<em>str.</em>) &#8211; The IP or DNS name where MongoDB is hosted on port 27017</li>
+<li><strong>selection</strong> (<em>str.</em>) &#8211; &#8216;input&#8217; for EventBuilder input,  blocks, otherwise
+&#8216;output&#8217; for output</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list &#8211; [pymongo.Connection,
+pymongo.Database,
+pymongo.Collection]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">pymongo.errors.PyMongoError</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

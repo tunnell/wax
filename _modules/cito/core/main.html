@@ -153,7 +153,7 @@
 <span class="kn">from</span> <span class="nn">cliff.command</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">from</span> <span class="nn">cliff.commandmanager</span> <span class="kn">import</span> <span class="n">CommandManager</span>
 <span class="kn">from</span> <span class="nn">cliff.show</span> <span class="kn">import</span> <span class="n">ShowOne</span>
-<span class="kn">from</span> <span class="nn">cito.core</span> <span class="kn">import</span> <span class="n">XeDB</span>
+<span class="kn">from</span> <span class="nn">cito.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span>
 <span class="kn">import</span> <span class="nn">cito</span>
 
 
@@ -234,10 +234,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Args: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Getting mongo objects&quot;</span><span class="p">)</span>
-        <span class="n">conn</span><span class="p">,</span> <span class="n">my_db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_mongo_db_objects</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="s">&#39;input&#39;</span><span class="p">,</span>
-                                                            <span class="n">server</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+        <span class="n">conn</span><span class="p">,</span> <span class="n">my_db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_db_connection</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
-        <span class="n">min_time</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+        <span class="n">min_time</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;take_action_wrapped&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">take_action_wrapped</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span> <span class="n">min_time</span><span class="p">,</span>
@@ -298,7 +297,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Entering while loop; use Ctrl-C to exit&quot;</span><span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">max_time</span> <span class="o">=</span> <span class="n">XeDB</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+                <span class="n">max_time</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
                 <span class="n">time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_time</span> <span class="o">/</span> <span class="n">chunk_size</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Current max time: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">max_time</span><span class="p">)</span>
@@ -361,6 +360,7 @@
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--hostname&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;MongoDB database address&quot;</span><span class="p">,</span>
                             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                             <span class="n">default</span><span class="o">=</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">)</span>
+
 
         <span class="k">return</span> <span class="n">parser</span>
 </div>

@@ -149,11 +149,58 @@
 
 <span class="kn">from</span> <span class="nn">cito.core.main</span> <span class="kn">import</span> <span class="n">CitoContinousCommand</span>
 
-<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;tunnell&#39;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">cito.EventBuilder</span> <span class="kn">import</span> <span class="n">Tasks</span>
+<span class="kn">from</span> <span class="nn">cito.core</span> <span class="kn">import</span> <span class="n">Waveform</span>
+<span class="kn">from</span> <span class="nn">cito.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span>
+<span class="kn">from</span> <span class="nn">cito.EventBuilder</span> <span class="kn">import</span> <span class="n">Logic</span>
 
 
+<div class="viewcode-block" id="ProcessTimeBlockTask"><a class="viewcode-back" href="../../cito.EventBuilder.html#cito.EventBuilder.ProcessTimeBlockTask">[docs]</a><span class="k">class</span> <span class="nc">ProcessTimeBlockTask</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Process a time block</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_builder</span> <span class="o">=</span> <span class="n">Logic</span><span class="o">.</span><span class="n">EventBuilder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="ProcessTimeBlockTask.process"><a class="viewcode-back" href="../../cito.EventBuilder.html#cito.EventBuilder.ProcessTimeBlockTask.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process a time chunk</span>
+
+<span class="sd">        .. todo:: Must this know padding?  Maybe just hand cursor so can mock?</span>
+
+<span class="sd">        :param t0: Initial time to query.</span>
+<span class="sd">        :type t0: int.</span>
+<span class="sd">        :param t1: Final time.</span>
+<span class="sd">        :type t1: int.</span>
+<span class="sd">        :returns:  int -- number of bytes processed</span>
+<span class="sd">        :raises: AssertionError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_docs</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_data_docs</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="n">Waveform</span><span class="o">.</span><span class="n">get_data_and_sum_waveform</span><span class="p">(</span><span class="n">data_docs</span><span class="p">)</span>
+
+        <span class="c"># If no data analyzed, return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Size of data analyzed: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;No data found in [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c"># Build events (t0 and t1 used only for sanity checks)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">events</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_builder</span><span class="o">.</span><span class="n">build_event</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write_events</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No events found between </span><span class="si">%d</span><span class="s"> and </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s">&#39;Event building failed.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">size</span>
+
+</div></div>
 <div class="viewcode-block" id="ProcessToMongoCommand"><a class="viewcode-back" href="../../cito.EventBuilder.html#cito.EventBuilder.ProcessToMongoCommand">[docs]</a><span class="k">class</span> <span class="nc">ProcessToMongoCommand</span><span class="p">(</span><span class="n">CitoContinousCommand</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Process time blocks and save to MongoDB</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -162,7 +209,7 @@
         <span class="n">hostname</span> <span class="o">=</span> <span class="s">&#39;127.0.0.1&#39;</span>
         <span class="k">if</span> <span class="n">parsed_args</span><span class="p">:</span>
             <span class="n">hostname</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span>
-        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">Tasks</span><span class="o">.</span><span class="n">ProcessTimeBlockTask</span><span class="p">(</span><span class="n">OutputDBInterface</span><span class="o">.</span><span class="n">MongoDBOutput</span><span class="p">(</span><span class="n">hostname</span><span class="p">))]</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">ProcessTimeBlockTask</span><span class="p">(</span><span class="n">OutputDBInterface</span><span class="o">.</span><span class="n">MongoDBOutput</span><span class="p">(</span><span class="n">hostname</span><span class="p">))]</span>
 
         <span class="k">return</span> <span class="n">tasks</span></div></div>
 </pre></div>
