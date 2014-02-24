@@ -11,7 +11,7 @@ from cito.Database import OutputDBInterface
 
 
 class FileBuilderCommand(Command):
-    """Continously build files
+    """Build files from processed trigger events in output database.
 
 
     the output format is Pickled.

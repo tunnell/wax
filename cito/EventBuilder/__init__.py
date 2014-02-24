@@ -57,7 +57,7 @@ class ProcessTimeBlockTask():
 
 
 class ProcessToMongoCommand(CitoContinousCommand):
-    """Process time blocks and save to MongoDB
+    """Process data from input database, identify triggers, then write to output database.
     """
 
     def get_tasks(self, parsed_args=None):

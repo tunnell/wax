@@ -21,10 +21,10 @@ class CitoDBShowOne(ShowOne):
     def get_parser(self, prog_name):
         parser = super(ShowOne, self).get_parser(prog_name)
 
-        parser.add_argument("--hostname", help="MongoDB database address",
+        parser.add_argument("--hostname", help="MongoDB database address. Can be IP or DNS address.",
                             type=str,
                             default='127.0.0.1')
-        parser.add_argument("--db", help="Input or output DB (or all)",
+        parser.add_argument("--db", help="Input or output DB (or all) on which to perform operation.",
                             type=str,
                             default='input',
                             choices=['input', 'output', 'all'])
@@ -63,8 +63,9 @@ class CitoDBShowOne(ShowOne):
 
 
 class DBReset(CitoDBShowOne):
-    """Reset the database by dropping the default collection.
+    """Reset the database by deleting (i.e., dropping) the default collection.
 
+    All indicies will be lost.
     Warning: this cannot be used during a run as it will kill the DAQ writer.
     """
 

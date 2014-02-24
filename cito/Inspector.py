@@ -5,7 +5,7 @@ import itertools
 import matplotlib.pyplot as plt
 
 import bson
-from cito.core import XeDB
+from cito.Database import OutputDBInterface, InputDBInterface
 from cito.core.main import CitoShowOne
 
 
@@ -21,10 +21,8 @@ class OutputDocInspector(CitoShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        conn, my_db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
+        conn, my_db, collection = OutputDBInterface.get_db_connection(parsed_args.hostname)
 
-        # TODO: move into XeDB
-        collection = conn['output']['somerun']
         index = parsed_args.index
         self.log.info('Searching for trigger event %d' % index)
 
@@ -101,12 +99,11 @@ class InputDocInspector(CitoShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        conn, my_db, collection = XeDB.get_mongo_db_objects(
-            parsed_args.hostname)
+        conn, my_db, collection = InputDBInterface.get_db_connection(hostname=parsed_args.hostname)
 
         if parsed_args.newest:
             try:
-                time = XeDB.get_max_time(collection)
+                time = InputDBInterface.get_max_time(collection)
                 doc = collection.find_one({'triggertime': time})
             except RuntimeError as e:
                 self.log.fatal('Runtime error: %s' % e)
@@ -134,7 +131,7 @@ class InputDocInspector(CitoShowOne):
                     continue
 
                 # Get data from doc (and decompress if necessary)
-                data = XeDB.get_data_from_doc(doc)
+                data = InputDBInterface.get_data_from_doc(doc)
                 self.log.debug("Data: %s", str(data))
 
                 # A try/except block to see if the InterfaceV1724 class throwns
@@ -226,7 +223,7 @@ class InputDBInspector(CitoShowOne):
         return ','.join(result)
 
     def take_action(self, parsed_args):
-        conn, db, collection = XeDB.get_mongo_db_objects(parsed_args.hostname)
+        conn, db, collection = InputDBInterface.get_db_connection(parsed_args.hostname)
         columns = ['Number of documents']
         data = [collection.count()]
 
