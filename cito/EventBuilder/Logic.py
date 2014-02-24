@@ -134,7 +134,7 @@ class EventBuilder():
                 # d0 is start time for this channel data, d1 therefore end time
                 num_pmt = key[2]
 
-                mask = speed_in1d_continous(value['indices'][0], value['indices'][0],
+                mask = speed_in1d_continous(value['indices'][0], value['indices'][-1],
                                             e0, e1)
 
                 to_save['data'][num_pmt] = {'indices': indices[mask],

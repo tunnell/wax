@@ -38,7 +38,7 @@ class CitoDBShowOne(ShowOne):
             self.log.error(error)
             data = error
         else:
-            data = 'success'
+            data = 'ok'
         return data
 
     def take_action(self, parsed_args):
@@ -79,13 +79,14 @@ class DBPurge(CitoDBShowOne):
     """Delete/purge all DAQ documents without deleting collection.
 
     This can be used during a run.
-    TODO: specify input or output
+
     """
 
     def take_action_wrapped(self, conn, db, collection):
         self.log.info("Purging all documents.")
+        N = collection.count()
         collection.remove({})
-        return 'Purged'
+        return ('Purged %d docs' % N)
 
 
 class DBRepair(CitoDBShowOne):
