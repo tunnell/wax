@@ -3,6 +3,13 @@
 History
 -------
 
+1.4 (2014-02-24)
+++++++++++++++++
+
+* Reactor DB interfaces now that there are two (output, input)
+* Improve DB access commands within cito
+* Improve help
+
 1.4 (2014-02-19)
 ++++++++++++++++
 
