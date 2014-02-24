@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.DBOperations &mdash; Code for Intelligent Triggering Online 1.5.0 documentation</title>
+  <title>cito.DBOperations &mdash; Code for Intelligent Triggering Online 1.5.1 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../',
-        VERSION:'1.5.0',
+        VERSION:'1.5.1',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -109,10 +109,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id2">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id3">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id4">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">1.4 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id2">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id3">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id4">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id5">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -183,7 +184,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">error</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="s">&#39;success&#39;</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="s">&#39;ok&#39;</span>
         <span class="k">return</span> <span class="n">data</span>
 </div>
 <div class="viewcode-block" id="CitoDBShowOne.take_action"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
@@ -224,13 +225,14 @@
     <span class="sd">&quot;&quot;&quot;Delete/purge all DAQ documents without deleting collection.</span>
 
 <span class="sd">    This can be used during a run.</span>
-<span class="sd">    TODO: specify input or output</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DBPurge.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBPurge.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Purging all documents.&quot;</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
         <span class="n">collection</span><span class="o">.</span><span class="n">remove</span><span class="p">({})</span>
-        <span class="k">return</span> <span class="s">&#39;Purged&#39;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;Purged </span><span class="si">%d</span><span class="s"> docs&#39;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
 
 </div></div>
 <div class="viewcode-block" id="DBRepair"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBRepair">[docs]</a><span class="k">class</span> <span class="nc">DBRepair</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
