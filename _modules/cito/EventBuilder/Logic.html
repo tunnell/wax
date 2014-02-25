@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.5.1 documentation</title>
+  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.5.2 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.5.1',
+        VERSION:'1.5.2',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.2 documentation" href="../../../index.html"/>
         <link rel="up" title="cito.EventBuilder" href="../EventBuilder.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -169,6 +169,7 @@
 
 <span class="kn">from</span> <span class="nn">cito.Trigger</span> <span class="kn">import</span> <span class="n">PeakFinder</span>
 <span class="kn">from</span> <span class="nn">cito.core.math</span> <span class="kn">import</span> <span class="n">compute_subranges</span><span class="p">,</span> <span class="n">speed_in1d_continous</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 
 <div class="viewcode-block" id="find_sum_in_data"><a class="viewcode-back" href="../../../cito.EventBuilder.html#cito.EventBuilder.Logic.find_sum_in_data">[docs]</a><span class="k">def</span> <span class="nf">find_sum_in_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -235,16 +236,15 @@
         <span class="c">##</span>
         <span class="n">peak_indices</span><span class="p">,</span> <span class="n">smooth_waveform</span> <span class="o">=</span> <span class="n">PeakFinder</span><span class="o">.</span><span class="n">identify_nonoverlapping_trigger_windows</span><span class="p">(</span><span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">],</span>
                                                                                            <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">])</span>
-        <span class="n">peaks</span> <span class="o">=</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="n">peak_indices</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>  <span class="c"># Check peak in sum waveform</span>
-            <span class="k">assert</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">peak</span> <span class="o">&lt;</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Peak indices: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Peak local indices: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c"># If no peaks found, return</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No peak found; returning&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Peaks found: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="n">peak_indices</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>  <span class="c"># Check peak in sum waveform</span>
+            <span class="k">assert</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">peak</span> <span class="o">&lt;=</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Peak indices: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Peak local indices: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Peaks found: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">peaks</span><span class="p">))</span>
 
         <span class="c">##</span>
         <span class="c"># Step 3: Flag ranges around peaks to save, then break into events</span>
@@ -270,21 +270,31 @@
 
             <span class="c"># If there data within our search range [e0, e1]?</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="c">#if key[2] == &#39;sum&#39;:</span>
-                <span class="c">#    continue</span>
+                <span class="n">num_pmt</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="n">num_pmt</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">continue</span>
 
                 <span class="n">samples</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">]</span>
                 <span class="n">indices</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">]</span>
                 <span class="k">assert</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span>
 
-                <span class="c"># d0 is start time for this channel data, d1 therefore end time</span>
-                <span class="n">num_pmt</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
-                <span class="n">mask</span> <span class="o">=</span> <span class="n">speed_in1d_continous</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                                            <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
 
-                <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="n">num_pmt</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">indices</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
-                                            <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">samples</span><span class="p">[</span><span class="n">mask</span><span class="p">]}</span>
+                <span class="k">if</span> <span class="s">&#39;sum&#39;</span> <span class="o">==</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">or</span> <span class="s">&#39;smooth&#39;</span> <span class="o">==</span> <span class="n">key</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span>
+                                   <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+                <span class="k">elif</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                      <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&quot;Gap in data.&quot;</span><span class="p">)</span>
+                <span class="c"># If continous ranges, in1d is simple</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">speed_in1d_continous</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                                <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+
+                <span class="n">pmt_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">indices</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                            <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">samples</span><span class="p">[</span><span class="n">mask</span><span class="p">]}</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pmt_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="n">num_pmt</span><span class="p">]</span> <span class="o">=</span> <span class="n">pmt_data</span>
 
             <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">peak</span> <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span> <span class="k">if</span> <span class="n">e0</span> <span class="o">&lt;</span> <span class="n">peak</span> <span class="o">&lt;</span> <span class="n">e1</span><span class="p">]</span>
 
