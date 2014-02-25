@@ -57,7 +57,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     for s in combined_ranges:
         subsamples = samples[s[0]:s[1]]
 
-        high_extrema, trigger_meta_data = find_peaks(subsamples, 0)
+        high_extrema, trigger_meta_data = find_peaks(subsamples)
         for value in high_extrema:
             peaks.append(s[0] + value)
 
@@ -66,7 +66,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     return np.array(peaks, dtype=np.int32), smoothed_sum
 
 
-def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
+def find_peaks(values, threshold=10000, widths=np.array([CWT_WIDTH])):
     """Find peaks within list of values.
 
     Use the butter filter, then perform a forward-backward filter such that
@@ -91,11 +91,14 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     # Forward backward filter
     smooth_data = filtfilt(b, a, values)
 
+    # Over threshold is an array of all indicies above threshold
     over_threshold = np.where(smooth_data > threshold)[0]
+
+    # We don't want every sample above threshold, just the center of the range
+    # above threshold.
     peaks = []
     for a,b in find_subranges(over_threshold):
-        peaks.append(np.round((b-a)/2))
-
+        peaks.append(np.round(float(over_threshold[b]+over_threshold[a])/2))
 
     trigger_meta_data = {}
     trigger_meta_data['smooth'] = smooth_data

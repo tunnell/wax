@@ -36,7 +36,7 @@ class FileBuilderCommand(Command):
         self.log.debug('Initialized %s', self.__class__.__name__)
         self.log.debug('Args: %s', str(parsed_args))
 
-        self.log.info("Establishing connection")
+        self.log.debug("Establishing connection")
 
         c, db, collection = OutputDBInterface.get_db_connection(hostname=parsed_args.hostname)
 

@@ -150,7 +150,7 @@ class EventBuilder():
                 if len(pmt_data['indices']) != 0:
                     to_save['data'][num_pmt] = pmt_data
 
-            to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
+            to_save['peaks'] = peaks # [peak for peak in peaks if e0 < peak < e1]
 
             to_save['evt_num'] = evt_num
             to_save['range'] = [int(e0), int(e1)]

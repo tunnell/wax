@@ -94,7 +94,7 @@ class MongoDBOutput(OutputCommon):
     def write_events(self, event_data_list):
         """Save data to database
         """
-        self.log.debug(event_data_list)
+        self.log.debug('writing event')
         mongofied_list = [self.mongify_event(x) for x in event_data_list]
 
         self.collection.insert(mongofied_list)
