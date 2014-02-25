@@ -38,7 +38,7 @@ class CitoApp(App):
         self.log.debug('Initialize application')
 
     def prepare_to_run_command(self, cmd):
-        self.log.info('Preparing to run command %s', cmd.__class__.__name__)
+        self.log.debug('Preparing to run command %s', cmd.__class__.__name__)
 
     def clean_up(self, cmd, result, err):
         self.log.debug('Clean up %s', cmd.__class__.__name__)

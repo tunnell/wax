@@ -166,6 +166,6 @@ if __name__ == '__main__':
     myapp = CitoApp()
     import cProfile
 
-    cProfile.run("""myapp.run(['process','--chunksize','1000000','-n', '10'])""", 'profile')
+    cProfile.run("""myapp.run(['process', '-n', '10'])""", 'profile')
     #code = myapp.run(['process'])
     sys.exit(0)

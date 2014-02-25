@@ -41,7 +41,7 @@ def get_db_connection(hostname=DBBase.HOSTNAME):
     # For the input database, we also want to create some indices to speed up
     # queries.
     num_docs_in_collection = collection.count()
-    logging.info("Collection %s.%s has %d events" %
+    logging.debug("Collection %s.%s has %d events" %
                         (DB_NAME, COLLECTION_NAME, num_docs_in_collection))
 
     CONNECTION = (c, db, collection)
