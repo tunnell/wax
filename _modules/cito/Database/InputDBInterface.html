@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Database.InputDBInterface &mdash; Code for Intelligent Triggering Online 1.5.2 documentation</title>
+  <title>cito.Database.InputDBInterface &mdash; Code for Intelligent Triggering Online 1.5.3 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.5.2',
+        VERSION:'1.5.3',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.3 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -263,8 +263,7 @@
 
     <span class="c"># $gte and $lt are special mongo functions for greater than and less than</span>
     <span class="n">subset_query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;triggertime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">time0</span><span class="p">,</span>
-                                    <span class="s">&#39;$lt&#39;</span><span class="p">:</span> <span class="n">time1</span><span class="p">},</span>
-                    <span class="s">&#39;evtnum&#39;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+                                    <span class="s">&#39;$lt&#39;</span><span class="p">:</span> <span class="n">time1</span><span class="p">}}</span>
 
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">subset_query</span><span class="p">))</span>
 
