@@ -49,10 +49,10 @@ def merge_subranges(ranges, indices, distance):
     return combined_ranges
 
 
-def find_subranges(indices):
+def find_subranges(values):
     """Identify continuous ranges in a list and return their location.
 
-    For example, if indices is:
+    For example, if values is:
 
         [2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 20]
 
@@ -63,7 +63,7 @@ def find_subranges(indices):
     See http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list
     """
     ranges = []
-    for k, g in groupby(enumerate(indices), lambda i_x: i_x[0] - i_x[1]):
+    for k, g in groupby(enumerate(values), lambda i_x: i_x[0] - i_x[1]):
         values = list(g)
 
         # values[0] and values[-1] are range boundaries

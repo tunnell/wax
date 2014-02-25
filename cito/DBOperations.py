@@ -25,8 +25,7 @@ class CitoDBShowOne(ShowOne):
                             type=str,
                             default='127.0.0.1')
         parser.add_argument("--db", help="Input or output DB (or all) on which to perform operation.",
-                            type=str,
-                            default='input',
+                            type=str, required=True,
                             choices=['input', 'output', 'all'])
 
         return parser

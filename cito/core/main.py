@@ -3,6 +3,7 @@ import logging.config
 import os
 import sys
 import time
+from tqdm import tqdm
 
 from cliff.app import App
 from cliff.command import Command
@@ -68,7 +69,7 @@ class CitoCommand(Command):
 
         parser.add_argument('--chunksize', type=int,
                             help="Size of data chunks to process [10 ns step]",
-                            default=2 ** 17)
+                            default=2 ** 24)
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
                             default=10 ** 2)
@@ -158,15 +159,13 @@ class CitoContinousCommand(CitoCommand):
                 self.log.debug("Current max time: %d", max_time)
 
                 if time_index > current_time_index:
-                    for i in range(current_time_index, time_index):
+                    for i in tqdm(range(current_time_index, time_index)):
                         t0 = (i * chunk_size)
                         t1 = (i + 1) * chunk_size
 
                         # Break if enough processed, simulate KeyboardInterrupt
                         # for testing
                         if parsed_args.num != -1:
-                            self.log.debug(
-                                '%d %d', i, (int(min_time / chunk_size) + parsed_args.num))
                             if i > (int(min_time / chunk_size) + parsed_args.num):
                                 self.log.info("Reached maximum number of docs, exiting...")
                                 raise KeyboardInterrupt

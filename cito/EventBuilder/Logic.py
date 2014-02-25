@@ -23,6 +23,7 @@ import logging
 
 from cito.Trigger import PeakFinder
 from cito.core.math import compute_subranges, speed_in1d_continous
+import numpy as np
 
 
 def find_sum_in_data(data):
@@ -89,16 +90,15 @@ class EventBuilder():
         ##
         peak_indices, smooth_waveform = PeakFinder.identify_nonoverlapping_trigger_windows(sum_data['indices'],
                                                                                            sum_data['samples'])
-        peaks = sum_data['indices'][peak_indices]
-        for peak in peaks:  # Check peak in sum waveform
-            assert sum_data['indices'][0] < peak < sum_data['indices'][-1]
-        self.log.debug('Peak indices: %s', str(peaks))
-        self.log.debug('Peak local indices: %s', str(peak_indices))
         if len(peak_indices) == 0:  # If no peaks found, return
             self.log.info("No peak found; returning")
             return []
-        else:
-            self.log.info("Peaks found: %s" % str(peaks))
+        peaks = sum_data['indices'][peak_indices]
+        for peak in peaks:  # Check peak in sum waveform
+            assert sum_data['indices'][0] <= peak <= sum_data['indices'][-1]
+        self.log.debug('Peak indices: %s', str(peaks))
+        self.log.debug('Peak local indices: %s', str(peak_indices))
+        self.log.info("Peaks found: %s" % str(peaks))
 
         ##
         # Step 3: Flag ranges around peaks to save, then break into events
@@ -124,21 +124,31 @@ class EventBuilder():
 
             # If there data within our search range [e0, e1]?
             for key, value in data.items():
-                #if key[2] == 'sum':
-                #    continue
+                num_pmt = key[2]
+                to_save['data'][num_pmt] = value
+                continue
 
                 samples = value['samples']
                 indices = value['indices']
                 assert samples.size == indices.size
 
-                # d0 is start time for this channel data, d1 therefore end time
-                num_pmt = key[2]
 
-                mask = speed_in1d_continous(value['indices'][0], value['indices'][-1],
-                                            e0, e1)
 
-                to_save['data'][num_pmt] = {'indices': indices[mask],
-                                            'samples': samples[mask]}
+                if 'sum' == key[2] or 'smooth' == key[2]:
+                    mask = np.in1d(indices,
+                                   np.arange(e0, e1 + 1))
+
+                elif indices.size != (value['indices'][-1] - value['indices'][0] + 1):
+                      raise NotImplementedError("Gap in data.")
+                # If continous ranges, in1d is simple
+                else:
+                    mask = speed_in1d_continous(value['indices'][0], value['indices'][-1],
+                                                e0, e1)
+
+                pmt_data = {'indices': indices[mask],
+                            'samples': samples[mask]}
+                if len(pmt_data['indices']) != 0:
+                    to_save['data'][num_pmt] = pmt_data
 
             to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
 
