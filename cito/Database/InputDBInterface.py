@@ -36,7 +36,7 @@ def get_sort_key(order=pymongo.DESCENDING):
             ('_id', order)]
 
 
-def get_min_time(collection):
+def get_min_time(collection, direction=pymongo.ASCENDING):
     """Get minimum trigger time in a collection.
 
     This function is used by the Event Builder to know where to begin building
@@ -46,7 +46,7 @@ def get_min_time(collection):
     :type collection: pymongo.Collection.
     :returns:  int -- A time in units of 10 ns.
     """
-    sort_key = get_sort_key(pymongo.ASCENDING)
+    sort_key = get_sort_key(direction)
 
     cursor = collection.find({},
                              fields=['triggertime'],
@@ -54,16 +54,15 @@ def get_min_time(collection):
                              sort=sort_key)
 
     doc = next(cursor)
-    logging.error('trig time: %s', str(doc))
     time = doc['triggertime']
     if time is None:
         raise ValueError("No time found when searching for minimal time")
-    logging.debug("Minimum time: %d", time)
+
     return time
 
 
 def get_max_time(collection, min_time=0):
-    """Get maximum time that has been seen by all boards.
+    """Get maximum time that has been seen by any channel.
 
     Args:
        collection (Collection):  A pymongo Collection that will be queried
@@ -73,32 +72,7 @@ def get_max_time(collection, min_time=0):
        int:  A time in units of 10 ns
 
     """
-    sort_key = get_sort_key()
-    modules = collection.distinct('module')
-
-    times = {}
-
-    if not modules:
-        raise RuntimeError("No data for any module found")
-
-    for module in modules:
-        query = {'module': module,
-                 'triggertime': {'$gt': min_time}}
-
-        cursor = collection.find(query,
-                                 fields=['triggertime', 'module'],
-                                 limit=1,
-                                 sort=sort_key)
-
-        # assert(cursor.explain()['indexOnly'])
-
-        times[module] = next(cursor)['triggertime']
-
-    # Want the earliest time (i.e., the min) of all the max times
-    # for the boards.
-    time = min(times.values())
-
-    return time
+    return get_min_time(collection, direction=pymongo.DESCENDING)
 
 
 def get_data_docs(time0, time1):
@@ -117,10 +91,11 @@ def get_data_docs(time0, time1):
 
     # $gte and $lt are special mongo functions for greater than and less than
     subset_query = {"triggertime": {'$gte': time0,
-                                    '$lt': time1},
-                    'evtnum' : 0}
+                                    '$lt': time1}}
 
-    return list(collection.find(subset_query))
+    result = list(collection.find(subset_query))
+    logging.debug("Fetched %d input documents." % len(result))
+    return result
 
 
 def get_data_from_doc(doc):
@@ -181,8 +156,11 @@ def get_db_connection(hostname=DBBase.HOSTNAME):
     # queries.
     num_docs_in_collection = collection.count()
     if num_docs_in_collection == 0:
-        logging.warning("Collection %s.%s has no events" %
+        logging.warning("Input collection %s.%s has no documents" %
                         (DB_NAME, COLLECTION_NAME))
+    else:
+        logging.info("Input collection %s.%s has %d documents" %
+                        (DB_NAME, COLLECTION_NAME, num_docs_in_collection))
 
     collection.ensure_index(get_sort_key(),
                             background=True)

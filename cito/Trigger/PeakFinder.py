@@ -66,7 +66,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     return np.array(peaks, dtype=np.int32), smoothed_sum
 
 
-def find_peaks(values, threshold=10000, widths=np.array([CWT_WIDTH])):
+def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     """Find peaks within list of values.
 
     Use the butter filter, then perform a forward-backward filter such that

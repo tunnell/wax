@@ -38,7 +38,7 @@ class ProcessTimeBlockTask():
         # If no data analyzed, return
         self.log.debug("Size of data analyzed: %d", size)
         if size == 0:
-            self.log.warning('No data found in [%d, %d]' % (t0, t1))
+            self.log.debug('No data found in [%d, %d]' % (t0, t1))
             return 0
 
         # Build events (t0 and t1 used only for sanity checks)
@@ -48,7 +48,7 @@ class ProcessTimeBlockTask():
             if len(events):
                 self.output.write_events(events)
             else:
-                self.log.warning("No events found between %d and %d." % (t0, t1))
+                self.log.debug("No events found between %d and %d." % (t0, t1))
 
         except:
             logging.exception('Event building failed.')

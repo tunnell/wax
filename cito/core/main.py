@@ -2,6 +2,7 @@ import logging
 import logging.config
 import os
 import sys
+import math
 import time
 from tqdm import tqdm
 
@@ -83,18 +84,15 @@ class CitoCommand(Command):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.debug('Initialized %s', self.__class__.__name__)
 
-        self.log.debug("take_action")
         chunk_size = parsed_args.chunksize
         padding = parsed_args.padding
 
         self.log.debug('Args: %s', str(parsed_args))
 
-        self.log.debug("Getting mongo objects")
         conn, my_db, collection = InputDBInterface.get_db_connection(hostname=parsed_args.hostname)
-        self.log.error(collection.count())
+
         min_time = InputDBInterface.get_min_time(collection)
 
-        self.log.debug("take_action_wrapped")
         self.take_action_wrapped(chunk_size, padding, min_time,
                                  collection, parsed_args)
 
@@ -132,70 +130,50 @@ class CitoContinousCommand(CitoCommand):
     def get_parser(self, prog_name):
         parser = super(CitoContinousCommand, self).get_parser(prog_name)
 
-        parser.add_argument('-n', '--num', type=int, default=-1,
-                            help='Number of time chunks to process')
-        parser.add_argument('-w', '--waittime', type=int, default=-1,
-                            help='Time to wait (negative means do not)')
 
         return parser
 
     def take_action_wrapped(self, chunk_size, padding, min_time, collection, parsed_args):
         current_time_index = int(min_time / chunk_size)
-        self.log.debug('Current time index %d', current_time_index)
+        self.log.debug('Current time index [10 ns]: %d', current_time_index)
 
         tasks = self.get_tasks(parsed_args)
 
         start_time = time.time()
         amount_data_processed = 0
 
-        # Loop until Ctrl-C or error
-        while (1):
-            self.log.debug("Entering while loop; use Ctrl-C to exit")
+        max_time = InputDBInterface.get_max_time(collection)
 
-            try:
-                max_time = InputDBInterface.get_max_time(collection)
-                time_index = int(max_time / chunk_size)
+        # For continous streaming, change ceil -> int
+        time_index = math.ceil(max_time / chunk_size)
 
-                self.log.debug("Current max time: %d", max_time)
+        self.log.debug("Current min time [10 ns]: %d", min_time)
+        self.log.debug("Current max time [10 ns]: %d", max_time)
 
-                if time_index > current_time_index:
-                    for i in tqdm(range(current_time_index, time_index)):
-                        t0 = (i * chunk_size)
-                        t1 = (i + 1) * chunk_size
+        self.log.info("Size of data blocks [10 ns]: %d" % chunk_size)
 
-                        # Break if enough processed, simulate KeyboardInterrupt
-                        # for testing
-                        if parsed_args.num != -1:
-                            if i > (int(min_time / chunk_size) + parsed_args.num):
-                                self.log.info("Reached maximum number of docs, exiting...")
-                                raise KeyboardInterrupt
+        for i in tqdm(range(current_time_index, time_index)):
+            t0 = (i * chunk_size)
+            t1 = (i + 1) * chunk_size
 
-                        self.log.info('Processing %d %d' % (t0, t1))
+            self.log.debug('Processing %d %d' % (t0, t1))
 
-                        for task in tasks:
-                            self.log.info('Sending data to task: %s',
-                                          task.__class__.__name__)
-                            amount_data_processed += task.process(t0, t1)
+            for task in tasks:
+                self.log.debug('Sending data to task: %s',
+                              task.__class__.__name__)
+                amount_data_processed += task.process(t0, t1)
 
-                        dt = (time.time() - start_time)
-                        data_rate = amount_data_processed / dt
-                        self.log.info("%d bytes processed in %d seconds" % (amount_data_processed,
-                                                                            dt))
-                        self.log.info("Rate: %f" % (data_rate / dt))
+            dt = (time.time() - start_time)
+            data_rate = amount_data_processed / dt
+            self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
+                                                                dt))
+            self.log.debug("Rate: %f" % (data_rate / dt))
 
-                    current_time_index = time_index
-                else:
-                    if parsed_args.waittime < 0:
-                        break
-                    self.log.debug('Waiting %f seconds' % parsed_args.waittime)
-                    time.sleep(parsed_args.waittime)
-                    # my_db.command('repairDatabase')
-                    # break
-            except StopIteration:
-                raise  # pass
-            except KeyboardInterrupt:
-                self.log.info("Ctrl-C caught so exiting.")
-                break
+        self.log.info("Final stats:")
+        self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,
+                                                                dt))
+        self.log.info("\tRate: %f" % (data_rate / dt))
+
 
 
 class CitoShowOne(ShowOne):

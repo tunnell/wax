@@ -41,7 +41,11 @@ def get_db_connection(hostname=DBBase.HOSTNAME):
     # For the input database, we also want to create some indices to speed up
     # queries.
     num_docs_in_collection = collection.count()
-    logging.debug("Collection %s.%s has %d events" %
+    if num_docs_in_collection == 0:
+        logging.debug("Output collection %s.%s is empty" %
+                      (DB_NAME, COLLECTION_NAME))
+    else:
+        logging.warning("Output collection %s.%s has %d; will append data." %
                         (DB_NAME, COLLECTION_NAME, num_docs_in_collection))
 
     CONNECTION = (c, db, collection)

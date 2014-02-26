@@ -11,6 +11,7 @@ help:
 	@echo "major - tag, push, package and upload a major release"
 	@echo "minor - tag, push, package and upload a minor release"
 	@echo "patch - tag, push, package and upload a patch release"
+	@echo "profile - profile the code and put results in file called profile"
 	@echo "sdist - package"
 
 clean: clean-build clean-pyc
@@ -73,3 +74,6 @@ patch: clean docs
 sdist: clean
 	python setup.py sdist
 	ls -l dist
+
+profile:
+	python cito/EventBuilder/Logic.py 
