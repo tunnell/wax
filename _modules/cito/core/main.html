@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.core.main &mdash; Code for Intelligent Triggering Online 1.5.4 documentation</title>
+  <title>cito.core.main &mdash; Code for Intelligent Triggering Online 1.5.5 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.5.4',
+        VERSION:'1.5.5',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.4 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.5 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -148,6 +148,7 @@
 <span class="kn">import</span> <span class="nn">logging.config</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
@@ -229,18 +230,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Initialized </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;take_action&quot;</span><span class="p">)</span>
         <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">chunksize</span>
         <span class="n">padding</span> <span class="o">=</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">padding</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Args: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Getting mongo objects&quot;</span><span class="p">)</span>
         <span class="n">conn</span><span class="p">,</span> <span class="n">my_db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_db_connection</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
+
         <span class="n">min_time</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;take_action_wrapped&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">take_action_wrapped</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span> <span class="n">min_time</span><span class="p">,</span>
                                  <span class="n">collection</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">)</span>
 </div>
@@ -278,70 +276,50 @@
 <div class="viewcode-block" id="CitoContinousCommand.get_parser"><a class="viewcode-back" href="../../../cito.core.html#cito.core.main.CitoContinousCommand.get_parser">[docs]</a>    <span class="k">def</span> <span class="nf">get_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prog_name</span><span class="p">):</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">CitoContinousCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_parser</span><span class="p">(</span><span class="n">prog_name</span><span class="p">)</span>
 
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="s">&#39;--num&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="s">&#39;Number of time chunks to process&#39;</span><span class="p">)</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&#39;-w&#39;</span><span class="p">,</span> <span class="s">&#39;--waittime&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-                            <span class="n">help</span><span class="o">=</span><span class="s">&#39;Time to wait (negative means do not)&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">parser</span>
 </div>
 <div class="viewcode-block" id="CitoContinousCommand.take_action_wrapped"><a class="viewcode-back" href="../../../cito.core.html#cito.core.main.CitoContinousCommand.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span> <span class="n">min_time</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
         <span class="n">current_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">min_time</span> <span class="o">/</span> <span class="n">chunk_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Current time index </span><span class="si">%d</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">current_time_index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Current time index [10 ns]: </span><span class="si">%d</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">current_time_index</span><span class="p">)</span>
 
         <span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">)</span>
 
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">amount_data_processed</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="c"># Loop until Ctrl-C or error</span>
-        <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Entering while loop; use Ctrl-C to exit&quot;</span><span class="p">)</span>
+        <span class="n">max_time</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
 
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">max_time</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
-                <span class="n">time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_time</span> <span class="o">/</span> <span class="n">chunk_size</span><span class="p">)</span>
+        <span class="c"># For continous streaming, change ceil -&gt; int</span>
+        <span class="n">time_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">max_time</span> <span class="o">/</span> <span class="n">chunk_size</span><span class="p">)</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Current max time: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">max_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Current min time [10 ns]: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">min_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Current max time [10 ns]: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">max_time</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">time_index</span> <span class="o">&gt;</span> <span class="n">current_time_index</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">current_time_index</span><span class="p">,</span> <span class="n">time_index</span><span class="p">)):</span>
-                        <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">)</span>
-                        <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Size of data blocks [10 ns]: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">chunk_size</span><span class="p">)</span>
 
-                        <span class="c"># Break if enough processed, simulate KeyboardInterrupt</span>
-                        <span class="c"># for testing</span>
-                        <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">num</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">min_time</span> <span class="o">/</span> <span class="n">chunk_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">num</span><span class="p">):</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Reached maximum number of docs, exiting...&quot;</span><span class="p">)</span>
-                                <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">current_time_index</span><span class="p">,</span> <span class="n">time_index</span><span class="p">)):</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">)</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size</span>
 
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Processing </span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Processing </span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
 
-                        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Sending data to task: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span>
-                                          <span class="n">task</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
-                            <span class="n">amount_data_processed</span> <span class="o">+=</span> <span class="n">task</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Sending data to task: </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span>
+                              <span class="n">task</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                <span class="n">amount_data_processed</span> <span class="o">+=</span> <span class="n">task</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
 
-                        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
-                        <span class="n">data_rate</span> <span class="o">=</span> <span class="n">amount_data_processed</span> <span class="o">/</span> <span class="n">dt</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s"> bytes processed in </span><span class="si">%d</span><span class="s"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">amount_data_processed</span><span class="p">,</span>
-                                                                            <span class="n">dt</span><span class="p">))</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Rate: </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_rate</span> <span class="o">/</span> <span class="n">dt</span><span class="p">))</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
+            <span class="n">data_rate</span> <span class="o">=</span> <span class="n">amount_data_processed</span> <span class="o">/</span> <span class="n">dt</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s"> bytes processed in </span><span class="si">%d</span><span class="s"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">amount_data_processed</span><span class="p">,</span>
+                                                                <span class="n">dt</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Rate: </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_rate</span> <span class="o">/</span> <span class="n">dt</span><span class="p">))</span>
 
-                    <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">time_index</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">waittime</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="k">break</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting </span><span class="si">%f</span><span class="s"> seconds&#39;</span> <span class="o">%</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
-                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
-                    <span class="c"># my_db.command(&#39;repairDatabase&#39;)</span>
-                    <span class="c"># break</span>
-            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-                <span class="k">raise</span>  <span class="c"># pass</span>
-            <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Ctrl-C caught so exiting.&quot;</span><span class="p">)</span>
-                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Final stats:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="si">%d</span><span class="s"> bytes processed in </span><span class="si">%d</span><span class="s"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">amount_data_processed</span><span class="p">,</span>
+                                                                <span class="n">dt</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">Rate: </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_rate</span> <span class="o">/</span> <span class="n">dt</span><span class="p">))</span>
+
 
 </div></div>
 <div class="viewcode-block" id="CitoShowOne"><a class="viewcode-back" href="../../../cito.core.html#cito.core.main.CitoShowOne">[docs]</a><span class="k">class</span> <span class="nc">CitoShowOne</span><span class="p">(</span><span class="n">ShowOne</span><span class="p">):</span>

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.EventBuilder &mdash; Code for Intelligent Triggering Online 1.5.4 documentation</title>
+  <title>cito.EventBuilder &mdash; Code for Intelligent Triggering Online 1.5.5 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../',
-        VERSION:'1.5.4',
+        VERSION:'1.5.5',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.4 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.5 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -184,7 +184,7 @@
         <span class="c"># If no data analyzed, return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Size of data analyzed: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&#39;No data found in [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;No data found in [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
             <span class="k">return</span> <span class="mi">0</span>
 
         <span class="c"># Build events (t0 and t1 used only for sanity checks)</span>
@@ -194,7 +194,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write_events</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No events found between </span><span class="si">%d</span><span class="s"> and </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No events found between </span><span class="si">%d</span><span class="s"> and </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
 
         <span class="k">except</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s">&#39;Event building failed.&#39;</span><span class="p">)</span>

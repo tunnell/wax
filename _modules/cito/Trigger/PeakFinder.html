@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Trigger.PeakFinder &mdash; Code for Intelligent Triggering Online 1.5.4 documentation</title>
+  <title>cito.Trigger.PeakFinder &mdash; Code for Intelligent Triggering Online 1.5.5 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.5.4',
+        VERSION:'1.5.5',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.4 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.5 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -203,7 +203,7 @@
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">combined_ranges</span><span class="p">:</span>
         <span class="n">subsamples</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
-        <span class="n">high_extrema</span><span class="p">,</span> <span class="n">trigger_meta_data</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">subsamples</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">high_extrema</span><span class="p">,</span> <span class="n">trigger_meta_data</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">subsamples</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">high_extrema</span><span class="p">:</span>
             <span class="n">peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span><span class="p">)</span>
 
@@ -237,11 +237,14 @@
     <span class="c"># Forward backward filter</span>
     <span class="n">smooth_data</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
 
+    <span class="c"># Over threshold is an array of all indicies above threshold</span>
     <span class="n">over_threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">smooth_data</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c"># We don&#39;t want every sample above threshold, just the center of the range</span>
+    <span class="c"># above threshold.</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="n">find_subranges</span><span class="p">(</span><span class="n">over_threshold</span><span class="p">):</span>
-        <span class="n">peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
-
+        <span class="n">peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">over_threshold</span><span class="p">[</span><span class="n">b</span><span class="p">]</span><span class="o">+</span><span class="n">over_threshold</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
 
     <span class="n">trigger_meta_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">trigger_meta_data</span><span class="p">[</span><span class="s">&#39;smooth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">smooth_data</span>

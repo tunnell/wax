@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Database package &mdash; Code for Intelligent Triggering Online 1.5.4 documentation</title>
+  <title>cito.Database package &mdash; Code for Intelligent Triggering Online 1.5.5 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'1.5.4',
+        VERSION:'1.5.5',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.4 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.5 documentation" href="index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
@@ -226,7 +226,7 @@ pymongo.Collection]</p>
 <dl class="function">
 <dt id="cito.Database.InputDBInterface.get_max_time">
 <tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_max_time</tt><big>(</big><em>collection</em>, <em>min_time=0</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_max_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_max_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get maximum time that has been seen by all boards.</p>
+<dd><p>Get maximum time that has been seen by any channel.</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>collection (Collection):  A pymongo Collection that will be queried
@@ -238,7 +238,7 @@ min_time (int): Time that the max must be larger than</dd>
 
 <dl class="function">
 <dt id="cito.Database.InputDBInterface.get_min_time">
-<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_min_time</tt><big>(</big><em>collection</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_min_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_min_time" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_min_time</tt><big>(</big><em>collection</em>, <em>direction=1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_min_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_min_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get minimum trigger time in a collection.</p>
 <p>This function is used by the Event Builder to know where to begin building
 events.</p>

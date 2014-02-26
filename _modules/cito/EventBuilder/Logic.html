@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.5.4 documentation</title>
+  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.5.5 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.5.4',
+        VERSION:'1.5.5',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.4 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.5 documentation" href="../../../index.html"/>
         <link rel="up" title="cito.EventBuilder" href="../EventBuilder.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -296,7 +296,7 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pmt_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="n">num_pmt</span><span class="p">]</span> <span class="o">=</span> <span class="n">pmt_data</span>
 
-            <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">peak</span> <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span> <span class="k">if</span> <span class="n">e0</span> <span class="o">&lt;</span> <span class="n">peak</span> <span class="o">&lt;</span> <span class="n">e1</span><span class="p">]</span>
+            <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">peaks</span> <span class="c"># [peak for peak in peaks if e0 &lt; peak &lt; e1]</span>
 
             <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;evt_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">evt_num</span>
             <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">e0</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e1</span><span class="p">)]</span>
