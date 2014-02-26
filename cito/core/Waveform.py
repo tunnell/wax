@@ -63,7 +63,6 @@ def get_data_and_sum_waveform(cursor):
     sum_data = {}  # index -> sample
 
     for doc in cursor:
-        log.debug('Processing doc %s', str(doc['_id']))
         data = InputDBInterface.get_data_from_doc(doc)
         num_channel = doc['module']
 
@@ -80,15 +79,15 @@ def get_data_and_sum_waveform(cursor):
         # Improve?
         # Compute baseline with first 3 and last 3 samples
         baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()
+        samples -= baseline
 
         for i, sample in enumerate(samples):
-            sample = np.min((samples[i] - baseline), 0)
             sample_index = time_correction + i
 
             if sample_index in sum_data:
                 sum_data[sample_index] += sample
             else:
-                sum_data[sample_index] = sample
+                sum_data[sample_index] = int(sample)
 
         if samples.size != 0:
             key = (time_correction,

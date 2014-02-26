@@ -24,10 +24,6 @@ def compute_subranges(peaks, range_around_peak=(-18000, 18000)):
         time_stop = peak + range_around_peak[1]
 
         if len(ranges) >= 1 and time_start <= ranges[-1][1]:  # ranges[-1] is latest range
-            logging.debug('Combining time ranges:')
-            logging.debug('\t%s' % (str((time_start, time_stop))))
-            logging.debug('\t%s' % str(ranges[-1]))
-
             ranges[-1][1] = time_stop
         else:
             ranges.append([time_start, time_stop])

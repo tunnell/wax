@@ -101,5 +101,8 @@ class MongoDBOutput(OutputCommon):
         self.log.debug('writing event')
         mongofied_list = [self.mongify_event(x) for x in event_data_list]
 
-        self.collection.insert(mongofied_list)
+        self.collection.insert(mongofied_list,
+                               check_keys=False,
+                               manipulate=False,
+                               w=0)
 

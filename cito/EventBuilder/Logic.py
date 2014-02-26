@@ -126,23 +126,25 @@ class EventBuilder():
             for key, value in data.items():
                 num_pmt = key[2]
                 to_save['data'][num_pmt] = value
-                continue
 
                 samples = value['samples']
                 indices = value['indices']
                 assert samples.size == indices.size
 
 
-
+                mask = None
                 if 'sum' == key[2] or 'smooth' == key[2]:
-                    mask = np.in1d(indices,
-                                   np.arange(e0, e1 + 1))
-
-                elif indices.size != (value['indices'][-1] - value['indices'][0] + 1):
+                    # Would a binary search be better?  O(log(n)) and not O(n)
+                    # e.g., numpy.searchsorted
+                    mask = np.zeros_like(indices, dtype=np.bool)
+                    for i, value in enumerate(indices):
+                        if e0 <= value <= e1:
+                            mask[i] = True
+                elif indices.size != (indices[-1] - indices[0] + 1):
                       raise NotImplementedError("Gap in data.")
-                # If continous ranges, in1d is simple
                 else:
-                    mask = speed_in1d_continous(value['indices'][0], value['indices'][-1],
+                    # If continous ranges, in1d is simple
+                    mask = speed_in1d_continous(indices[0], indices[-1],
                                                 e0, e1)
 
                 pmt_data = {'indices': indices[mask],

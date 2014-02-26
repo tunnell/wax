@@ -75,5 +75,6 @@ sdist: clean
 	python setup.py sdist
 	ls -l dist
 
-profile:
+profile: clean
+	rm -f profile
 	python cito/EventBuilder/Logic.py 
