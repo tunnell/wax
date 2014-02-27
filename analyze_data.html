@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Analyzing data &mdash; Code for Intelligent Triggering Online 1.5.6 documentation</title>
+  <title>Analyzing data &mdash; Code for Intelligent Triggering Online 1.5.7 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'1.5.6',
+        VERSION:'1.5.7',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.6 documentation" href="index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.5.7 documentation" href="index.html"/>
         <link rel="next" title="Internal data formats" href="data_format.html"/>
         <link rel="prev" title="Usage" href="usage.html"/> 
 
@@ -183,12 +183,16 @@
 34
 35
 36
-37</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pickle</span>
+37
+38
+39</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
 <span class="c"># Load the cito output file</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;cito_file.pklz&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;cito version:&quot;</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 
 <span class="c">#  You have to read all the events beforehand to get at an event</span>
 <span class="c"># therefore it reads &#39;n&#39; times to get to event &#39;n&#39;</span>
