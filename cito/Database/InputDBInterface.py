@@ -91,7 +91,8 @@ def get_data_docs(time0, time1):
 
     # $gte and $lt are special mongo functions for greater than and less than
     subset_query = {"triggertime": {'$gte': time0,
-                                    '$lt': time1}}
+                                    '$lt': time1},
+                    "evtnum" : 0}
 
     result = list(collection.find(subset_query))
     logging.debug("Fetched %d input documents." % len(result))
