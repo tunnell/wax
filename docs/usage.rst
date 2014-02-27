@@ -35,3 +35,27 @@ Similar to the event building command, there are command line arguments
 where, for example, the hostname can be specified.
 
 
+Clear Database Options
+==============
+
+To keep the database, but delete all the documents run:
+
+    cito purge
+
+To delete the database the reset function can be used:
+
+    cito reset
+
+This can be used for the input and output database individually, command line arguments with:
+
+    cito help reset
+
+To clear the space in the database a repair function is used. The delete command does not free up space.
+
+    cito repair
+
+
+
+
+
+
