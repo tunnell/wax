@@ -6,6 +6,7 @@ import gzip
 
 from tqdm import tqdm
 from cliff.command import Command
+from cito import __version__
 import snappy
 from cito.Database import OutputDBInterface
 
@@ -47,6 +48,8 @@ class FileBuilderCommand(Command):
             return
 
         f = gzip.open(parsed_args.filename, 'wb')
+
+        pickle.dump(__version__, f)
 
         self.log.info("Processing %d trigger events" % N)
 

@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 # Load the cito output file
 f = gzip.open('cito_file.pklz', 'rb')
 
+print("cito version:", pickle.load(f))
+
 #  You have to read all the events beforehand to get at an event
 # therefore it reads 'n' times to get to event 'n'
 for i in range(10):

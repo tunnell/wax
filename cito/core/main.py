@@ -12,6 +12,7 @@ from cliff.commandmanager import CommandManager
 from cliff.show import ShowOne
 from cito.Database import InputDBInterface
 import cito
+from cito.Trigger.PeakFinder import MAX_DRIFT
 
 
 class CitoApp(App):
@@ -70,10 +71,10 @@ class CitoCommand(Command):
 
         parser.add_argument('--chunksize', type=int,
                             help="Size of data chunks to process [10 ns step]",
-                            default=2 ** 24)
+                            default=2 ** 23)
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
-                            default=10 ** 2)
+                            default=MAX_DRIFT)
 
         return parser
 
