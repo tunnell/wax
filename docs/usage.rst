@@ -54,7 +54,7 @@ These commands can be used for the input and output databases individually.  Use
 
     cito help reset
 
-To clear the fragmented space in the database, a repair function is used. (The delete command does not free up space.)::
+To clear the `fragmented <http://en.wikipedia.org/wiki/Fragmentation_(computing)>`_ space in the database, a repair function is used. (The delete command does not free up space.)  However, this cannot be used during operation since it locks the database during the operation..::
 
     cito repair
 
