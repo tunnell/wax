@@ -3,7 +3,14 @@
 History
 -------
 
-1.4 (2014-02-24)
+1.6 (2014-02-27)
+++++++++++++++++
+
+* Add version number to output
+* Fix some issues with how timing was defined in input.
+* Speed up after profiling
+
+1.5 (2014-02-24)
 ++++++++++++++++
 
 * Reactor DB interfaces now that there are two (output, input)
