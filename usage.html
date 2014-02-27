@@ -192,7 +192,7 @@
 <div class="highlight-python"><div class="highlight"><pre>cito help reset
 </pre></div>
 </div>
-<p>To clear the <a class="reference external" href="http://en.wikipedia.org/wiki/Fragmentation_(computing)">fragmented</a> space in the database, a repair function is used. (The delete command does not free up space.):</p>
+<p>To clear the <a class="reference external" href="http://en.wikipedia.org/wiki/Fragmentation_(computing)">fragmented</a> space in the database, a repair function is used. (The delete command does not free up space.)  However, this cannot be used during operation since it locks the database during the operation..:</p>
 <div class="highlight-python"><div class="highlight"><pre>cito repair
 </pre></div>
 </div>
