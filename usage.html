@@ -148,43 +148,54 @@
           
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>Cito presents a command line interface, where you can see the possible commands by running <cite>cito</cite>.</p>
-<blockquote>
-<div>cito -h</div></blockquote>
+<p>Cito presents a command line interface, where you can see the possible commands by running <cite>cito</cite>.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cito</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
 <div class="section" id="event-builder">
 <h2>Event Builder<a class="headerlink" href="#event-builder" title="Permalink to this headline">¶</a></h2>
-<p>Event building can performed by running the command.</p>
-<blockquote>
-<div>cito process</div></blockquote>
+<p>Event building can performed by running the command:</p>
+<div class="highlight-python"><div class="highlight"><pre>cito process
+</pre></div>
+</div>
 <p>To know what the command line arguments are, run:</p>
-<blockquote>
-<div>cito help process</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre>cito help process
+</pre></div>
+</div>
 <p>where, for example, the hostname can be specified.</p>
 </div>
 <div class="section" id="file-builder">
 <h2>File Builder<a class="headerlink" href="#file-builder" title="Permalink to this headline">¶</a></h2>
-<p>File building can performed by running the command.</p>
-<blockquote>
-<div>cito file builder</div></blockquote>
-<p>Similar to the event building command, there are command line arguments</p>
-<blockquote>
-<div>cito help file builder</div></blockquote>
+<p>File building can performed by running the command:</p>
+<div class="highlight-python"><div class="highlight"><pre>cito file builder
+</pre></div>
+</div>
+<p>Similar to the event building command, there are command line arguments:</p>
+<div class="highlight-python"><div class="highlight"><pre>cito help file builder
+</pre></div>
+</div>
 <p>where, for example, the hostname can be specified.</p>
 </div>
 <div class="section" id="clear-database-options">
 <h2>Clear Database Options<a class="headerlink" href="#clear-database-options" title="Permalink to this headline">¶</a></h2>
 <p>To keep the database, but delete all the documents run:</p>
-<blockquote>
-<div>cito purge</div></blockquote>
-<p>To delete the database the reset function can be used:</p>
-<blockquote>
-<div>cito reset</div></blockquote>
-<p>This can be used for the input and output database individually, command line arguments with:</p>
-<blockquote>
-<div>cito help reset</div></blockquote>
-<p>To clear the space in the database a repair function is used. The delete command does not free up space.</p>
-<blockquote>
-<div>cito repair</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre>cito purge
+</pre></div>
+</div>
+<p>which can be run during data taking.</p>
+<p>To delete the database, the reset function can be used:</p>
+<div class="highlight-python"><div class="highlight"><pre>cito reset
+</pre></div>
+</div>
+<p>but this cannot be used during a run and deletes all the database indices that are used to speed up searches.</p>
+<p>These commands can be used for the input and output databases individually.  Use the help command to understand what command line arguments exist:</p>
+<div class="highlight-python"><div class="highlight"><pre>cito help reset
+</pre></div>
+</div>
+<p>To clear the fragmented space in the database, a repair function is used. (The delete command does not free up space.):</p>
+<div class="highlight-python"><div class="highlight"><pre>cito repair
+</pre></div>
+</div>
 </div>
 </div>
 
