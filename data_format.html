@@ -183,7 +183,7 @@ above.</p>
 <ul class="simple">
 <li>The <cite>_id</cite> field is a hex string used for internal bookkeeping within MongoDB.</li>
 <li><cite>evt_num</cite> is an integer event number (if one has been assigned).</li>
-<li><cite>range</cite> is two integers that correspond to the beginning and end of the trigger window.</li>
+<li><cite>range</cite> is two 64-bit integers that correspond to the beginning and end of the trigger window in units of 10 ns.</li>
 <li><cite>compressed_doc</cite> is binary data compressed with snappy and contains all the data that will go to file.  For more
 information, see <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</li>
 </ul>
