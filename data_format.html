@@ -164,51 +164,29 @@ dataset that started collection on January 5th, 2014 at 2:14 pm.</p>
 </ul>
 <p>The control document contains information about the dataset.  The following
 keys are expected:</p>
-<ul>
-<li><p class="first"><cite>run_type</cite></p>
-</li>
-<li><dl class="first docutils">
-<dt><cite>latest_time</cite>: the latest time seen by all the digitizer boards.  This is</dt>
-<dd><p class="first last">used by the event builder to know when all the boards have reported their
-data.  Otherwise, there is a race condition.  This is a 64-bit number in
-units of 10 ns.</p>
-</dd>
-</dl>
-</li>
-<li><p class="first"><cite>start_time</cite>: the 64-bit start time in units of 10 ns.</p>
-</li>
+<ul class="simple">
+<li><cite>run_type</cite></li>
+<li><cite>latesttime</cite>: the latest time seen by all the digitizer boards.  This is used by the event builder to know when all the boards have reported their data.  Otherwise, there is a race condition.  This is a 64-bit number in units of 10 ns.</li>
+<li><cite>start_time</cite>: the 64-bit start time in units of 10 ns.</li>
 </ul>
 <p>Though may also contain:</p>
-<ul>
-<li><p class="first"><cite>errors</cite>: a string that contains any error messages</p>
-</li>
-<li><p class="first"><cite>messages</cite>: any information about the run</p>
-</li>
-<li><dl class="first docutils">
-<dt><cite>daq_config</cite>: the DAQ configuration file for the program that puts data into</dt>
-<dd><p class="first last">the input database.</p>
-</dd>
-</dl>
-</li>
-<li><p class="first"><cite>user</cite>: a string with the name of the user who started the run.</p>
-</li>
-<li><p class="first"><cite>slow_control</cite>: any information from the slow control that should be stored
-in the final output.</p>
-</li>
+<ul class="simple">
+<li><cite>errors</cite>: a string that contains any error messages</li>
+<li><cite>messages</cite>: any information about the run</li>
+<li><cite>daqconfig</cite>: the DAQ configuration file for the program that puts data into the input database.</li>
+<li><cite>user</cite>: a string with the name of the user who started the run.</li>
+<li><cite>slowcontrol</cite>: any information from the slow control that should be stored
+in the final output.</li>
 </ul>
 <p>One data document is created per occurence.  Therefore, there is one document
 per channel when the channel self triggered (remember: there is zero
 suppression).  For every occurence, the data document contains:</p>
 <ul class="simple">
-<li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is
-different for every document.</li>
+<li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.</li>
 <li><cite>module</cite>: identifies the digitizer board.  For fake data, this is set to -1.</li>
-<li><cite>time</cite>: 64-bit number in units of 10 ns.  This time corresponds to the same
-time of the data in this document.</li>
-<li><cite>data</cite>: An array of 16-bit unsigned numbers, corresponding to the actual data
-payload.  It is stored as a binary array.</li>
-<li><cite>compressed</cite>: Binary value that determines if the data is compressed using
-<a class="reference external" href="https://code.google.com/p/snappy/">snappy</a>?</li>
+<li><cite>time</cite>: 64-bit number in units of 10 ns.  This time corresponds to the same time of the data in this document.</li>
+<li><cite>data</cite>: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.</li>
+<li><cite>compressed</cite>: Binary value that determines if the data is compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a>?</li>
 </ul>
 <p>Given that we are using a NoSQL database, variables may be added.  However, the
 schema only requires the five fields above.  Examples of possible extra fields

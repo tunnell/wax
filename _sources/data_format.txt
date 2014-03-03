@@ -23,35 +23,27 @@ The control document contains information about the dataset.  The following
 keys are expected:
 
 * `run_type`
-* `latest_time`: the latest time seen by all the digitizer boards.  This is
-   used by the event builder to know when all the boards have reported their
-   data.  Otherwise, there is a race condition.  This is a 64-bit number in
-   units of 10 ns.
+* `latesttime`: the latest time seen by all the digitizer boards.  This is used by the event builder to know when all the boards have reported their data.  Otherwise, there is a race condition.  This is a 64-bit number in units of 10 ns.
 * `start_time`: the 64-bit start time in units of 10 ns.
 
 Though may also contain:
 
 * `errors`: a string that contains any error messages
 * `messages`: any information about the run
-* `daq_config`: the DAQ configuration file for the program that puts data into
-   the input database.
+* `daqconfig`: the DAQ configuration file for the program that puts data into the input database.
 * `user`: a string with the name of the user who started the run.
-* `slow_control`: any information from the slow control that should be stored
+* `slowcontrol`: any information from the slow control that should be stored
   in the final output.
 
 One data document is created per occurence.  Therefore, there is one document
 per channel when the channel self triggered (remember: there is zero
 suppression).  For every occurence, the data document contains:
 
-* `_id`: a hex string used for internal bookkeeping within MongoDB.  It is
-  different for every document.
+* `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
 * `module`: identifies the digitizer board.  For fake data, this is set to -1.
-* `time`: 64-bit number in units of 10 ns.  This time corresponds to the same
-  time of the data in this document.
-* `data`: An array of 16-bit unsigned numbers, corresponding to the actual data
-  payload.  It is stored as a binary array.
-* `compressed`: Binary value that determines if the data is compressed using
-  `snappy <https://code.google.com/p/snappy/>`_?
+* `time`: 64-bit number in units of 10 ns.  This time corresponds to the same time of the data in this document.
+* `data`: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.
+* `compressed`: Binary value that determines if the data is compressed using `snappy <https://code.google.com/p/snappy/>`_?
 
 Given that we are using a NoSQL database, variables may be added.  However, the
 schema only requires the five fields above.  Examples of possible extra fields
