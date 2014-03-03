@@ -40,4 +40,4 @@ Features
 Overview
 --------
 
-The program `cito` consists of two main components: data processing and data recording.  
+The program `cito` consists of two main components: data processing (cito process) and data recording (cito file builder).  

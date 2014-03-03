@@ -44,7 +44,7 @@ This is output of the event builder and input to the file builder.
 
 * The `_id` field is a hex string used for internal bookkeeping within MongoDB.
 * `evt_num` is an integer event number (if one has been assigned).
-* `range` is two integers that correspond to the beginning and end of the trigger window.
+* `range` is two 64-bit integers that correspond to the beginning and end of the trigger window in units of 10 ns.
 * `compressed_doc` is binary data compressed with snappy and contains all the data that will go to file.  For more
   information, see :doc:`analyze_data`.
 

@@ -7,7 +7,7 @@ import snappy
 import pymongo
 
 DB_NAME = 'output'
-COLLECTION_NAME = 'somerun'
+COLLECTION_NAME = 'dataset00'
 CONNECTION = None
 
 def get_db_connection(hostname=DBBase.HOSTNAME):
