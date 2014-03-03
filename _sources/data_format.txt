@@ -50,8 +50,6 @@ Said differently, expect:
         "start_time": int,
     }
 
-
-
 Data document
 -------------
 
@@ -84,7 +82,6 @@ Said differently, expect:
         "time": int,
         "data": binary,
         "compressed": bool,
-
     }
 
 
