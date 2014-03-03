@@ -22,6 +22,7 @@ Within each collection, there are two types of documents:
 The control document contains information about the dataset.  The following
 keys are expected:
 
+* `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
 * `run_type`
 * `latesttime`: the latest time seen by all the digitizer boards.  This is used by the event builder to know when all the boards have reported their data.  Otherwise, there is a race condition.  This is a 64-bit number in units of 10 ns.
 * `start_time`: the 64-bit start time in units of 10 ns.
@@ -35,12 +36,26 @@ Though may also contain:
 * `slowcontrol`: any information from the slow control that should be stored
   in the final output.
 
+Said differently, expect:
+
+.. code-block:: javascript
+
+    {
+        "_id": hex_string,
+        "run_type": string,
+        "latesttime": int,
+        "start_time": int,
+    }
+
+
+
 One data document is created per occurence.  Therefore, there is one document
 per channel when the channel self triggered (remember: there is zero
 suppression).  For every occurence, the data document contains:
 
 * `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
 * `module`: identifies the digitizer board.  For fake data, this is set to -1.
+* `channel`: Channel number.
 * `time`: 64-bit number in units of 10 ns.  This time corresponds to the same time of the data in this document.
 * `data`: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.
 * `compressed`: Binary value that determines if the data is compressed using `snappy <https://code.google.com/p/snappy/>`_?
@@ -51,6 +66,20 @@ include:
 
 * `evtnum`: event number from either MC or a processed format.  This is used
   for helping study the trigger efficiency.
+
+Said differently, expect:
+
+.. code-block:: javascript
+
+    {
+        "_id": hex_string,
+        "module": int,
+        "channel": int,
+        "time": int,
+        "data": binary,
+        "compressed": bool,
+
+    }
 
 
 Output from Event Builder, input to File Builder format
