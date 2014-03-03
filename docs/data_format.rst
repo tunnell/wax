@@ -4,49 +4,102 @@ Internal data formats
 
 All of the data formats specified refer to how data is stored within MongoDB.
 
-Input to Event Builder format
-=============================
+Input database
+==============
 
-This data is input to the event builder.
+This data is input to the event builder and stored within a database called
+`input`.  There is a collection within this database for each dataset.  The
+dataset name follows the format `dataset_YYMMDD_HHMM`, where the second half is
+the start time: e.g., YY is the 14 if the dataset was created in 2014.
+Therefore, a collection called `data_140105_1414` contains the data for a
+dataset that started collection on January 5th, 2014 at 2:14 pm.
 
-The data input format is a BSON document.  Per digitizer board, a document is created that must contain the keys:
+Within each collection, there are two types of documents:
 
-* Module: identifies the digitizer board
-* Triggertime: This is a 64 bit number where the lower 32 bits are formed from the board time, and the upper 32 bits
-  from the system clock.  Each step is 10 ns.  There is enough range with 64 bits to not overflow the clock for about
-  10000 years, which from now was around when creation was in the Jewish calendar.  
-* Data: The actual payload.  This is the raw Caen format (maybe compressed) and must be converted into a usable
-  format.
-* Zipped: Is the data compressed using `snappy <https://code.google.com/p/snappy/>`_?
+* Control document - information about running conditions
+* Data document - raw data
 
-Given that we are using a NoSQL database, variables may be added.  However, the schema only requires the four fields
-above.
+Control document
+----------------
 
-As of 22/October/2013, an example document is:
+The control document contains information about the dataset.  The following
+keys are expected:
+
+* `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
+* `run_type`
+* `latesttime`: the latest time seen by all the digitizer boards.  This is used by the event builder to know when all the boards have reported their data.  Otherwise, there is a race condition.  This is a 64-bit number in units of 10 ns.
+* `start_time`: the 64-bit start time in units of 10 ns.
+
+Though may also contain:
+
+* `errors`: a string that contains any error messages
+* `messages`: any information about the run
+* `daqconfig`: the DAQ configuration file for the program that puts data into the input database.
+* `user`: a string with the name of the user who started the run.
+* `slowcontrol`: any information from the slow control that should be stored
+  in the final output.
+
+Said differently, expect:
 
 .. code-block:: javascript
 
     {
-        "_id": ObjectId("525186149d7a330faeae9d68"),
-        "insertsize": NumberInt(46154),
-        "module": NumberInt(876),
-        "triggertime": NumberLong(1055247666930),
-        "zipped": true,
-        "datalength": NumberInt(549),
-        "data": "<Mongo Binary Data>"
+        "_id": hex_string,
+        "run_type": string,
+        "latesttime": int,
+        "start_time": int,
+    }
+
+Data document
+-------------
+
+One data document is created per occurence.  Therefore, there is one document
+per channel when the channel self triggered (remember: there is zero
+suppression).  For every occurence, the data document contains:
+
+* `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
+* `module`: identifies the digitizer board.  For fake data, this is set to -1.
+* `channel`: Channel number.
+* `time`: 64-bit number in units of 10 ns.  This time corresponds to the same time of the data in this document.
+* `data`: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.
+* `compressed`: Binary value that determines if the data is compressed using `snappy <https://code.google.com/p/snappy/>`_?
+
+Given that we are using a NoSQL database, variables may be added.  However, the
+schema only requires the five fields above.  Examples of possible extra fields
+include:
+
+* `evtnum`: event number from either MC or a processed format.  This is used
+  for helping study the trigger efficiency.
+
+Said differently, expect:
+
+.. code-block:: javascript
+
+    {
+        "_id": hex_string,
+        "module": int,
+        "channel": int,
+        "time": int,
+        "data": binary,
+        "compressed": bool,
     }
 
 
-Output from Event Builder, input to File Builder format
-=======================================================
+Output database
+===============
 
-This is output of the event builder and input to the file builder.
+The output is stored in a database called, surprisingly, called `output`.
+This is output of the event builder and input to the file builder. Within it
+are collections named after datasets, much like the input database: e.g.,
+`dataset_YYMMDD_HHMM`.  The format is:
 
 * The `_id` field is a hex string used for internal bookkeeping within MongoDB.
+  It is different for every document.
 * `evt_num` is an integer event number (if one has been assigned).
-* `range` is two 64-bit integers that correspond to the beginning and end of the trigger window in units of 10 ns.
-* `compressed_doc` is binary data compressed with snappy and contains all the data that will go to file.  For more
-  information, see :doc:`analyze_data`.
+* `range` is two 64-bit integers that correspond to the beginning and end of
+  the trigger window in units of 10 ns.
+* `compressed_doc` is binary data compressed with snappy and contains all the
+  data that will go to file.  For more information, see :doc:`analyze_data`.
 
 Said differently:
 
