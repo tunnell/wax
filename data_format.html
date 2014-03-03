@@ -93,7 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Internal data formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#input-database">Input database</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#output-from-event-builder-input-to-file-builder-format">Output from Event Builder, input to File Builder format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-database">Output database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#file-from-file-builder-format">File from File Builder  format</a></li>
 </ul>
 </li>
@@ -152,7 +152,7 @@
 <div class="section" id="input-database">
 <h2>Input database<a class="headerlink" href="#input-database" title="Permalink to this headline">¶</a></h2>
 <p>This data is input to the event builder and stored within a database called
-<cite>data</cite>.  There is a collection within this database for each dataset.  The
+<cite>input</cite>.  There is a collection within this database for each dataset.  The
 dataset name follows the format <cite>dataset_YYMMDD_HHMM</cite>, where the second half is
 the start time: e.g., YY is the 14 if the dataset was created in 2014.
 Therefore, a collection called <cite>data_140105_1414</cite> contains the data for a
@@ -162,6 +162,8 @@ dataset that started collection on January 5th, 2014 at 2:14 pm.</p>
 <li>Control document - information about running conditions</li>
 <li>Data document - raw data</li>
 </ul>
+<div class="section" id="control-document">
+<h3>Control document<a class="headerlink" href="#control-document" title="Permalink to this headline">¶</a></h3>
 <p>The control document contains information about the dataset.  The following
 keys are expected:</p>
 <ul class="simple">
@@ -188,6 +190,9 @@ in the final output.</li>
 <span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="data-document">
+<h3>Data document<a class="headerlink" href="#data-document" title="Permalink to this headline">¶</a></h3>
 <p>One data document is created per occurence.  Therefore, there is one document
 per channel when the channel self triggered (remember: there is zero
 suppression).  For every occurence, the data document contains:</p>
@@ -219,9 +224,13 @@ for helping study the trigger efficiency.</li>
 </pre></div>
 </div>
 </div>
-<div class="section" id="output-from-event-builder-input-to-file-builder-format">
-<h2>Output from Event Builder, input to File Builder format<a class="headerlink" href="#output-from-event-builder-input-to-file-builder-format" title="Permalink to this headline">¶</a></h2>
-<p>This is output of the event builder and input to the file builder.</p>
+</div>
+<div class="section" id="output-database">
+<h2>Output database<a class="headerlink" href="#output-database" title="Permalink to this headline">¶</a></h2>
+<p>The output is stored in a database called, surprisingly, called <cite>output</cite>.
+This is output of the event builder and input to the file builder. Within it
+are collections named after datasets, much like the input database: e.g.,
+<cite>dataset_YYMMDD_HHMM</cite>.  The format is:</p>
 <ul class="simple">
 <li>The <cite>_id</cite> field is a hex string used for internal bookkeeping within MongoDB.
 It is different for every document.</li>

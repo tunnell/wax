@@ -8,7 +8,7 @@ Input database
 ==============
 
 This data is input to the event builder and stored within a database called
-`data`.  There is a collection within this database for each dataset.  The
+`input`.  There is a collection within this database for each dataset.  The
 dataset name follows the format `dataset_YYMMDD_HHMM`, where the second half is
 the start time: e.g., YY is the 14 if the dataset was created in 2014.
 Therefore, a collection called `data_140105_1414` contains the data for a
@@ -18,6 +18,9 @@ Within each collection, there are two types of documents:
 
 * Control document - information about running conditions
 * Data document - raw data
+
+Control document
+----------------
 
 The control document contains information about the dataset.  The following
 keys are expected:
@@ -48,6 +51,9 @@ Said differently, expect:
     }
 
 
+
+Data document
+-------------
 
 One data document is created per occurence.  Therefore, there is one document
 per channel when the channel self triggered (remember: there is zero
@@ -82,10 +88,13 @@ Said differently, expect:
     }
 
 
-Output from Event Builder, input to File Builder format
-=======================================================
+Output database
+===============
 
-This is output of the event builder and input to the file builder.
+The output is stored in a database called, surprisingly, called `output`.
+This is output of the event builder and input to the file builder. Within it
+are collections named after datasets, much like the input database: e.g.,
+`dataset_YYMMDD_HHMM`.  The format is:
 
 * The `_id` field is a hex string used for internal bookkeeping within MongoDB.
   It is different for every document.
