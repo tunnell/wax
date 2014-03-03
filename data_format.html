@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Internal data formats &mdash; Code for Intelligent Triggering Online 1.5.7 documentation</title>
+  <title>Internal data formats &mdash; Code for Intelligent Triggering Online 1.6.0 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'1.5.7',
+        VERSION:'1.6.0',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.5.7 documentation" href="index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.6.0 documentation" href="index.html"/>
         <link rel="next" title="Jargon" href="jargon.html"/>
         <link rel="prev" title="Analyzing data" href="analyze_data.html"/> 
 
@@ -92,7 +92,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Internal data formats</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#input-to-event-builder-format">Input to Event Builder format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-database">Input database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#output-from-event-builder-input-to-file-builder-format">Output from Event Builder, input to File Builder format</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#file-from-file-builder-format">File from File Builder  format</a></li>
 </ul>
@@ -149,43 +149,86 @@
   <div class="section" id="internal-data-formats">
 <h1>Internal data formats<a class="headerlink" href="#internal-data-formats" title="Permalink to this headline">¶</a></h1>
 <p>All of the data formats specified refer to how data is stored within MongoDB.</p>
-<div class="section" id="input-to-event-builder-format">
-<h2>Input to Event Builder format<a class="headerlink" href="#input-to-event-builder-format" title="Permalink to this headline">¶</a></h2>
-<p>This data is input to the event builder.</p>
-<p>The data input format is a BSON document.  Per digitizer board, a document is created that must contain the keys:</p>
+<div class="section" id="input-database">
+<h2>Input database<a class="headerlink" href="#input-database" title="Permalink to this headline">¶</a></h2>
+<p>This data is input to the event builder and stored within a database called
+<cite>data</cite>.  There is a collection within this database for each dataset.  The
+dataset name follows the format <cite>dataset_YYMMDD_HHMM</cite>, where the second half is
+the start time: e.g., YY is the 14 if the dataset was created in 2014.
+Therefore, a collection called <cite>data_140105_1414</cite> contains the data for a
+dataset that started collection on January 5th, 2014 at 2:14 pm.</p>
+<p>Within each collection, there are two types of documents:</p>
 <ul class="simple">
-<li>Module: identifies the digitizer board</li>
-<li>Triggertime: This is a 64 bit number where the lower 32 bits are formed from the board time, and the upper 32 bits
-from the system clock.  Each step is 10 ns.  There is enough range with 64 bits to not overflow the clock for about
-10000 years, which from now was around when creation was in the Jewish calendar.</li>
-<li>Data: The actual payload.  This is the raw Caen format (maybe compressed) and must be converted into a usable
-format.</li>
-<li>Zipped: Is the data compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a>?</li>
+<li>Control document - information about running conditions</li>
+<li>Data document - raw data</li>
 </ul>
-<p>Given that we are using a NoSQL database, variables may be added.  However, the schema only requires the four fields
-above.</p>
-<p>As of 22/October/2013, an example document is:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
-    <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">&quot;525186149d7a330faeae9d68&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;insertsize&quot;</span><span class="o">:</span> <span class="nx">NumberInt</span><span class="p">(</span><span class="mi">46154</span><span class="p">),</span>
-    <span class="s2">&quot;module&quot;</span><span class="o">:</span> <span class="nx">NumberInt</span><span class="p">(</span><span class="mi">876</span><span class="p">),</span>
-    <span class="s2">&quot;triggertime&quot;</span><span class="o">:</span> <span class="nx">NumberLong</span><span class="p">(</span><span class="mi">1055247666930</span><span class="p">),</span>
-    <span class="s2">&quot;zipped&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-    <span class="s2">&quot;datalength&quot;</span><span class="o">:</span> <span class="nx">NumberInt</span><span class="p">(</span><span class="mi">549</span><span class="p">),</span>
-    <span class="s2">&quot;data&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;Mongo Binary Data&gt;&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<p>The control document contains information about the dataset.  The following
+keys are expected:</p>
+<ul>
+<li><p class="first"><cite>run_type</cite></p>
+</li>
+<li><dl class="first docutils">
+<dt><cite>latest_time</cite>: the latest time seen by all the digitizer boards.  This is</dt>
+<dd><p class="first last">used by the event builder to know when all the boards have reported their
+data.  Otherwise, there is a race condition.  This is a 64-bit number in
+units of 10 ns.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><cite>start_time</cite>: the 64-bit start time in units of 10 ns.</p>
+</li>
+</ul>
+<p>Though may also contain:</p>
+<ul>
+<li><p class="first"><cite>errors</cite>: a string that contains any error messages</p>
+</li>
+<li><p class="first"><cite>messages</cite>: any information about the run</p>
+</li>
+<li><dl class="first docutils">
+<dt><cite>daq_config</cite>: the DAQ configuration file for the program that puts data into</dt>
+<dd><p class="first last">the input database.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><cite>user</cite>: a string with the name of the user who started the run.</p>
+</li>
+<li><p class="first"><cite>slow_control</cite>: any information from the slow control that should be stored
+in the final output.</p>
+</li>
+</ul>
+<p>One data document is created per occurence.  Therefore, there is one document
+per channel when the channel self triggered (remember: there is zero
+suppression).  For every occurence, the data document contains:</p>
+<ul class="simple">
+<li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is
+different for every document.</li>
+<li><cite>module</cite>: identifies the digitizer board.  For fake data, this is set to -1.</li>
+<li><cite>time</cite>: 64-bit number in units of 10 ns.  This time corresponds to the same
+time of the data in this document.</li>
+<li><cite>data</cite>: An array of 16-bit unsigned numbers, corresponding to the actual data
+payload.  It is stored as a binary array.</li>
+<li><cite>compressed</cite>: Binary value that determines if the data is compressed using
+<a class="reference external" href="https://code.google.com/p/snappy/">snappy</a>?</li>
+</ul>
+<p>Given that we are using a NoSQL database, variables may be added.  However, the
+schema only requires the five fields above.  Examples of possible extra fields
+include:</p>
+<ul class="simple">
+<li><cite>evtnum</cite>: event number from either MC or a processed format.  This is used
+for helping study the trigger efficiency.</li>
+</ul>
 </div>
 <div class="section" id="output-from-event-builder-input-to-file-builder-format">
 <h2>Output from Event Builder, input to File Builder format<a class="headerlink" href="#output-from-event-builder-input-to-file-builder-format" title="Permalink to this headline">¶</a></h2>
 <p>This is output of the event builder and input to the file builder.</p>
 <ul class="simple">
-<li>The <cite>_id</cite> field is a hex string used for internal bookkeeping within MongoDB.</li>
+<li>The <cite>_id</cite> field is a hex string used for internal bookkeeping within MongoDB.
+It is different for every document.</li>
 <li><cite>evt_num</cite> is an integer event number (if one has been assigned).</li>
-<li><cite>range</cite> is two 64-bit integers that correspond to the beginning and end of the trigger window in units of 10 ns.</li>
-<li><cite>compressed_doc</cite> is binary data compressed with snappy and contains all the data that will go to file.  For more
-information, see <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</li>
+<li><cite>range</cite> is two 64-bit integers that correspond to the beginning and end of
+the trigger window in units of 10 ns.</li>
+<li><cite>compressed_doc</cite> is binary data compressed with snappy and contains all the
+data that will go to file.  For more information, see <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</li>
 </ul>
 <p>Said differently:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
