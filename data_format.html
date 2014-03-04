@@ -148,15 +148,10 @@
           
   <div class="section" id="internal-data-formats">
 <h1>Internal data formats<a class="headerlink" href="#internal-data-formats" title="Permalink to this headline">¶</a></h1>
-<p>All of the data formats specified refer to how data is stored within MongoDB.</p>
+<p>All of the data formats specified refer to how data is stored within MongoDB for the event builder and trigger.</p>
 <div class="section" id="input-database">
 <h2>Input database<a class="headerlink" href="#input-database" title="Permalink to this headline">¶</a></h2>
-<p>This data is input to the event builder and stored within a database called
-<cite>input</cite>.  There is a collection within this database for each dataset.  The
-dataset name follows the format <cite>dataset_YYMMDD_HHMM</cite>, where the second half is
-the start time: e.g., YY is the 14 if the dataset was created in 2014.
-Therefore, a collection called <cite>data_140105_1414</cite> contains the data for a
-dataset that started collection on January 5th, 2014 at 2:14 pm.</p>
+<p>This data is input to the event builder and stored within a database called <cite>input</cite>.  There is a collection within this database for each dataset.  The dataset name follows the format <cite>dataset_YYMMDD_HHMM</cite>, where the second half is the start time: e.g., YY is the 14 if the dataset was created in 2014. Therefore, a collection called <cite>data_140105_1414</cite> contains the data for a dataset that started collection on January 5th, 2014 at 2:14 pm.</p>
 <p>Within each collection, there are two types of documents:</p>
 <ul class="simple">
 <li>Control document - information about running conditions</li>
@@ -171,6 +166,7 @@ keys are expected:</p>
 <li><cite>run_type</cite></li>
 <li><cite>latesttime</cite>: the latest time seen by all the digitizer boards.  This is used by the event builder to know when all the boards have reported their data.  Otherwise, there is a race condition.  This is a 64-bit number in units of 10 ns.</li>
 <li><cite>start_time</cite>: the 64-bit start time in units of 10 ns.</li>
+<li><cite>compressed</cite>: Binary value that determines if the data is compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a></li>
 </ul>
 <p>Said differently, expect:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
@@ -183,6 +179,7 @@ keys are expected:</p>
 </div>
 <p>Though may also contain:</p>
 <ul class="simple">
+<li><cite>channelmap</cite>: If present, this tells us which modules and channels correspond to the channels that should always be digitized: e.g., sum waveform, GPS signals, muon-veto trigger, etc..  It can also be used to determine the radial position of the PMTs hooked up to the channel therefore allowing more complicated triggering algorithms.</li>
 <li><cite>errors</cite>: a string that contains any error messages</li>
 <li><cite>messages</cite>: any information about the run</li>
 <li><cite>daqconfig</cite>: the DAQ configuration file for the program that puts data into the input database.</li>
@@ -193,16 +190,13 @@ in the final output.</li>
 </div>
 <div class="section" id="data-document">
 <h3>Data document<a class="headerlink" href="#data-document" title="Permalink to this headline">¶</a></h3>
-<p>One data document is created per occurence.  Therefore, there is one document
-per channel when the channel self triggered (remember: there is zero
-suppression).  For every occurence, the data document contains:</p>
+<p>One data document is created per occurence.  Therefore, there is one document per channel when the channel self triggered (remember: there is zero suppression).  For every occurence, the data document contains:</p>
 <ul class="simple">
 <li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.</li>
 <li><cite>module</cite>: identifies the digitizer board.  For fake data, this is set to -1.</li>
 <li><cite>channel</cite>: Channel number.</li>
 <li><cite>time</cite>: 64-bit number in units of 10 ns.  This time corresponds to the same time of the data in this document.</li>
 <li><cite>data</cite>: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.</li>
-<li><cite>compressed</cite>: Binary value that determines if the data is compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a>?</li>
 </ul>
 <p>Said differently, expect:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
@@ -215,9 +209,7 @@ suppression).  For every occurence, the data document contains:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Given that we are using a NoSQL database, variables may be added.  However, the
-schema only requires the five fields above.  Examples of possible extra fields
-include:</p>
+<p>Given that we are using a NoSQL database, variables may be added.  However, the schema only requires the five fields above.  Examples of possible extra fields include:</p>
 <ul class="simple">
 <li><cite>evtnum</cite>: event number from either MC or a processed format.  This is used
 for helping study the trigger efficiency.</li>
@@ -226,10 +218,7 @@ for helping study the trigger efficiency.</li>
 </div>
 <div class="section" id="output-database">
 <h2>Output database<a class="headerlink" href="#output-database" title="Permalink to this headline">¶</a></h2>
-<p>The output is stored in a database called, surprisingly, called <cite>output</cite>.
-This is output of the event builder and input to the file builder. Within it
-are collections named after datasets, much like the input database: e.g.,
-<cite>dataset_YYMMDD_HHMM</cite>.  The format is:</p>
+<p>The output is stored in a database called, surprisingly, called <cite>output</cite>. This is output of the event builder and input to the file builder. Within it are collections named after datasets, much like the input database: e.g., <cite>dataset_YYMMDD_HHMM</cite>.  The format is:</p>
 <ul class="simple">
 <li>The <cite>_id</cite> field is a hex string used for internal bookkeeping within MongoDB.
 It is different for every document.</li>

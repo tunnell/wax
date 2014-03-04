@@ -149,83 +149,8 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-cito.EventBuilder.Logic">
-<span id="cito-eventbuilder-logic-module"></span><h2>cito.EventBuilder.Logic module<a class="headerlink" href="#module-cito.EventBuilder.Logic" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="cito-core-eventbuilding">
-<h3>cito.core.EventBuilding<a class="headerlink" href="#cito-core-eventbuilding" title="Permalink to this headline">¶</a></h3>
-<p>Event building converts time blocks of data (from different digitizer boards) into DAQ events.</p>
-<p>Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,
-using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
-that performs the following sequential operations:</p>
-<ul class="simple">
-<li>Build sum waveform</li>
-<li>Using trigger algorithm, identify peaks in time.</li>
-<li>If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before
-and after each peak.</li>
-</ul>
-<p>More technically about pileup, if two particles interact in the detector within a typical &#8216;event window&#8217;, then
-these two interactions are saved as one event.  Identifying how to break up the event is thus left for
-postprocessing.  For example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</p>
-<dl class="class">
-<dt id="cito.EventBuilder.Logic.EventBuilder">
-<em class="property">class </em><tt class="descclassname">cito.EventBuilder.Logic.</tt><tt class="descname">EventBuilder</tt><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#EventBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.EventBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
-<p>From data, construct events</p>
-<p>This is a separate class since it has to keep track of event number</p>
-<dl class="method">
-<dt id="cito.EventBuilder.Logic.EventBuilder.build_event">
-<tt class="descname">build_event</tt><big>(</big><em>data</em>, <em>t0=None</em>, <em>t1=None</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#EventBuilder.build_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.EventBuilder.build_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build events out of raw data.</p>
-<p>Using the sum waveform provided as an input, distinct events are identified.
-Subsequently, all of the relevant individual channel PMT information (also
-an input) is saved for that specific event.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict.</em>) &#8211; Data to query, including sum waveform and individual channels</li>
-<li><strong>t0</strong> (<em>int.</em>) &#8211; Earliest possible time for sanity checks.  If None, skip check.</li>
-<li><strong>t1</strong> (<em>int.</em>) &#8211; Latest possible time for sanity checks.  If None, skip check.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dict &#8211; Sum waveform indices and samples.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="cito.EventBuilder.Logic.EventBuilder.get_event_number">
-<tt class="descname">get_event_number</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#EventBuilder.get_event_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.EventBuilder.get_event_number" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.EventBuilder.Logic.find_sum_in_data">
-<tt class="descclassname">cito.EventBuilder.Logic.</tt><tt class="descname">find_sum_in_data</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#find_sum_in_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.find_sum_in_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find sum waveform in channel data</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>dict.</em>) &#8211; Initial time to query.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict &#8211; Sum waveform indices and samples.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">ValueError</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</div>
+<div class="section" id="cito-eventbuilder-logic-module">
+<h2>cito.EventBuilder.Logic module<a class="headerlink" href="#cito-eventbuilder-logic-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="cito-eventbuilder-output-module">
 <h2>cito.EventBuilder.Output module<a class="headerlink" href="#cito-eventbuilder-output-module" title="Permalink to this headline">¶</a></h2>
@@ -233,51 +158,8 @@ an input) is saved for that specific event.</p>
 <div class="section" id="cito-eventbuilder-tasks-module">
 <h2>cito.EventBuilder.Tasks module<a class="headerlink" href="#cito-eventbuilder-tasks-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-cito.EventBuilder">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cito.EventBuilder" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="cito.EventBuilder.ProcessTimeBlockTask">
-<em class="property">class </em><tt class="descclassname">cito.EventBuilder.</tt><tt class="descname">ProcessTimeBlockTask</tt><big>(</big><em>output</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder.html#ProcessTimeBlockTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.ProcessTimeBlockTask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
-<p>Process a time block</p>
-<dl class="method">
-<dt id="cito.EventBuilder.ProcessTimeBlockTask.process">
-<tt class="descname">process</tt><big>(</big><em>t0</em>, <em>t1</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder.html#ProcessTimeBlockTask.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.ProcessTimeBlockTask.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process a time chunk</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>t0</strong> (<em>int.</em>) &#8211; Initial time to query.</li>
-<li><strong>t1</strong> (<em>int.</em>) &#8211; Final time.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">int &#8211; number of bytes processed</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">AssertionError</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cito.EventBuilder.ProcessToMongoCommand">
-<em class="property">class </em><tt class="descclassname">cito.EventBuilder.</tt><tt class="descname">ProcessToMongoCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder.html#ProcessToMongoCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.ProcessToMongoCommand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cito.core.html#cito.core.main.CitoContinousCommand" title="cito.core.main.CitoContinousCommand"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoContinousCommand</span></tt></a></p>
-<p>Process data from input database, identify triggers, then write to output database.</p>
-<dl class="method">
-<dt id="cito.EventBuilder.ProcessToMongoCommand.get_tasks">
-<tt class="descname">get_tasks</tt><big>(</big><em>parsed_args=None</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder.html#ProcessToMongoCommand.get_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.ProcessToMongoCommand.get_tasks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

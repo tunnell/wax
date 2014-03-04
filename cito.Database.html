@@ -274,76 +274,8 @@ pairs.</td>
 </dd></dl>
 
 </div>
-<div class="section" id="module-cito.Database.OutputDBInterface">
-<span id="cito-database-outputdbinterface-module"></span><h2>cito.Database.OutputDBInterface module<a class="headerlink" href="#module-cito.Database.OutputDBInterface" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="cito.Database.OutputDBInterface.MongoDBOutput">
-<em class="property">class </em><tt class="descclassname">cito.Database.OutputDBInterface.</tt><tt class="descname">MongoDBOutput</tt><big>(</big><em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#MongoDBOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.MongoDBOutput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#cito.Database.OutputDBInterface.OutputCommon" title="cito.Database.OutputDBInterface.OutputCommon"><tt class="xref py py-class docutils literal"><span class="pre">cito.Database.OutputDBInterface.OutputCommon</span></tt></a></p>
-<p>Write to MongoDB</p>
-<p>This class, I don&#8217;t think, can know the event number since it events before it
-may still be being processed.</p>
-<dl class="method">
-<dt id="cito.Database.OutputDBInterface.MongoDBOutput.mongify_event">
-<tt class="descname">mongify_event</tt><big>(</big><em>event_data</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#MongoDBOutput.mongify_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.MongoDBOutput.mongify_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert Python data to pickled and compressed data.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="cito.Database.OutputDBInterface.MongoDBOutput.write_events">
-<tt class="descname">write_events</tt><big>(</big><em>event_data_list</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#MongoDBOutput.write_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.MongoDBOutput.write_events" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save data to database</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cito.Database.OutputDBInterface.OutputCommon">
-<em class="property">class </em><tt class="descclassname">cito.Database.OutputDBInterface.</tt><tt class="descname">OutputCommon</tt><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#OutputCommon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.OutputCommon" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
-<p>Base class for all output</p>
-<dl class="attribute">
-<dt id="cito.Database.OutputDBInterface.OutputCommon.event_number">
-<tt class="descname">event_number</tt><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#OutputCommon.event_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.OutputCommon.event_number" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.Database.OutputDBInterface.OutputCommon.write_event">
-<tt class="descname">write_event</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#OutputCommon.write_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.OutputCommon.write_event" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.Database.OutputDBInterface.get_db_connection">
-<tt class="descclassname">cito.Database.OutputDBInterface.</tt><tt class="descname">get_db_connection</tt><big>(</big><em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#get_db_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.get_db_connection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get database connection objects for the input or output databases.</p>
-<p>This function creates MongoDB connections to either the input or output
-databases.  It also maintains a cache of connections that have already been
-created to speed things up.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hostname</strong> (<em>str.</em>) &#8211; The IP or DNS name where MongoDB is hosted on port 27017</li>
-<li><strong>selection</strong> (<em>str.</em>) &#8211; &#8216;input&#8217; for EventBuilder input,  blocks, otherwise
-&#8216;output&#8217; for output</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list &#8211; [pymongo.Connection,
-pymongo.Database,
-pymongo.Collection]</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">pymongo.errors.PyMongoError</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<div class="section" id="cito-database-outputdbinterface-module">
+<h2>cito.Database.OutputDBInterface module<a class="headerlink" href="#cito-database-outputdbinterface-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-cito.Database">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cito.Database" title="Permalink to this headline">¶</a></h2>
