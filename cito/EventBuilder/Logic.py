@@ -98,7 +98,7 @@ class EventBuilder():
             assert sum_data['indices'][0] <= peak <= sum_data['indices'][-1]
         self.log.debug('Peak indices: %s', str(peaks))
         self.log.debug('Peak local indices: %s', str(peak_indices))
-        self.log.info("Peaks found: %s" % str(peaks))
+        self.log.debug("Peaks found: %s" % str(peaks))
 
         ##
         # Step 3: Flag ranges around peaks to save, then break into events
@@ -125,30 +125,22 @@ class EventBuilder():
             # If there data within our search range [e0, e1]?
             for key, value in data.items():
                 num_pmt = key[2]
-                to_save['data'][num_pmt] = value
+                #to_save['data'][num_pmt] = value
 
                 samples = value['samples']
                 indices = value['indices']
                 assert samples.size == indices.size
 
+                mask = np.ma.masked_inside(indices, e0, e1).mask
 
-                mask = None
-                if 'sum' == key[2] or 'smooth' == key[2]:
-                    # Would a binary search be better?  O(log(n)) and not O(n)
-                    # e.g., numpy.searchsorted
-                    mask = np.zeros_like(indices, dtype=np.bool)
-                    for i, value in enumerate(indices):
-                        if e0 <= value <= e1:
-                            mask[i] = True
-                elif indices.size != (indices[-1] - indices[0] + 1):
-                      raise NotImplementedError("Gap in data.")
-                else:
-                    # If continous ranges, in1d is simple
-                    mask = speed_in1d_continous(indices[0], indices[-1],
-                                                e0, e1)
+                if not isinstance(mask, np.ndarray) and mask == False:
+                    continue
+                # take only values in the mask (i.e., within event range)
+                samples = samples.compress(mask)
+                indices = indices.compress(mask)
 
-                pmt_data = {'indices': indices[mask],
-                            'samples': samples[mask]}
+                pmt_data = {'indices': indices,
+                            'samples': samples}
                 if len(pmt_data['indices']) != 0:
                     to_save['data'][num_pmt] = pmt_data
 
@@ -168,6 +160,6 @@ if __name__ == '__main__':
     myapp = CitoApp()
     import cProfile
 
-    cProfile.run("""myapp.run(['process', '-q'])""", 'profile')
-    #code = myapp.run(['process'])
+    cProfile.run("""myapp.run(['process', '-q', '--hostname', '130.92.139.92', '--chunks', '10'])""", 'profile')
+
     sys.exit(0)

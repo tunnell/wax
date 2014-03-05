@@ -20,8 +20,9 @@ class ProcessTimeBlockTask():
 
     def __init__(self, input, output):
         self.log = logging.getLogger(__name__)
-        self.event_builder = Logic.EventBuilder()
+
         self.input = input
+        self.event_builder = Logic.EventBuilder()
         self.output = output
 
     def process(self, t0, t1):
@@ -76,10 +77,13 @@ class ProcessCommand(Command):
 
         parser.add_argument('--chunksize', type=int,
                             help="Size of data chunks to process [10 ns step]",
-                            default=2 ** 23)
+                            default=2 ** 26)
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
                             default=MAX_DRIFT)
+        parser.add_argument('--chunks', type=int,
+                            help='Numbers of chunks to analyze',
+                            default=-1)
 
         return parser
 
@@ -104,7 +108,6 @@ class ProcessCommand(Command):
         min_time = input.get_min_time()
         max_time = input.get_max_time()
 
-
         min_time_index = int(min_time / chunk_size)
         max_time_index = math.ceil(max_time / chunk_size) # For continous streaming, change ceil -> int
 
@@ -125,7 +128,10 @@ class ProcessCommand(Command):
             data_rate = amount_data_processed / dt / 1000
             self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
                                                                  dt))
-            self.log.debug("Rate [kBps]: %f" % (data_rate / dt))
+            self.log.info("Rate [kBps]: %f" % (data_rate / dt))
+
+            if parsed_args.chunks > 0 and i > parsed_args.chunks:
+                break
 
         self.log.info("Final stats:")
         self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,

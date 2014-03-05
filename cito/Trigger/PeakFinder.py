@@ -52,7 +52,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     # samples are.
     combined_ranges = merge_subranges(ranges, indices, MAX_DRIFT/2)
 
-    logging.info("Combined ranges: %s" % str(combined_ranges))
+    logging.debug("Combined ranges: %s" % str(combined_ranges))
 
     for s in combined_ranges:
         subsamples = samples[s[0]:s[1]]
@@ -83,7 +83,7 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     """
 
     # 20 is the wavelet width
-    logging.info('Filtering with n=%d' % values.size)
+    logging.debug('Filtering with n=%d' % values.size)
     t0 = time.time()
 
     b, a = butter(3, 0.05, 'low')
@@ -104,7 +104,7 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     trigger_meta_data['smooth'] = smooth_data
     t1 = time.time()
 
-    logging.info('Filtering duration: %f s' % (t1 - t0))
+    logging.debug('Filtering duration: %f s' % (t1 - t0))
     return np.array(peaks, dtype=np.int64), trigger_meta_data
 
 
