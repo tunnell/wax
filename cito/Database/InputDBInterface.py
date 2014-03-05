@@ -1,168 +1,138 @@
 """Interface code to the input data in MongoDB
 """
 
-
 import logging
 
 import numpy as np
-
 import pymongo
 import snappy
+
 from cito.Database import DBBase
 
 __author__ = 'tunnell'
 
 
-DB_NAME = 'data'
-COLLECTION_NAME = 'XENON100'
-CONNECTION = None
-
-
-def get_sort_key(order=pymongo.DESCENDING):
-    """Sort key used for MongoDB sorting and indexing.
-
-    :param order: Ascending or descending order.
-    :type order: int
-    :returns:  list -- Returns, per pymongo format, a list of (variable, order)
-                       pairs.
-
-
+class MongoDBInput(DBBase.MongoDBBase):
+    """Read from MongoDB
     """
-    if order != pymongo.DESCENDING and order != pymongo.ASCENDING:
-        raise ValueError()
 
-    return [('triggertime', order),
-            ('module', order),
-            ('_id', order)]
+    def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
+        DBBase.MongoDBBase.__init__(self, collection_name, hostname)
 
+        self.control_doc_id = None
+        self.is_compressed = None
+        self.find_control_doc()
 
-def get_min_time(collection, direction=pymongo.ASCENDING):
-    """Get minimum trigger time in a collection.
-
-    This function is used by the Event Builder to know where to begin building
-    events.
-
-    :param collection: A pymongo Collection that will be queried.
-    :type collection: pymongo.Collection.
-    :returns:  int -- A time in units of 10 ns.
-    """
-    sort_key = get_sort_key(direction)
-
-    cursor = collection.find({},
-                             fields=['triggertime'],
-                             limit=1,
-                             sort=sort_key)
-
-    doc = next(cursor)
-    time = doc['triggertime']
-    if time is None:
-        raise ValueError("No time found when searching for minimal time")
-
-    return time
+        self.collection.ensure_index(self.get_sort_key(),
+                                     background=True)
 
 
-def get_max_time(collection, min_time=0):
-    """Get maximum time that has been seen by any channel.
+    @staticmethod
+    def get_db_name():
+        return 'input'
 
-    Args:
-       collection (Collection):  A pymongo Collection that will be queried
-       min_time (int): Time that the max must be larger than
+    def find_control_doc(self):
+        control_docs = list(self.collection.find({"runtype": {'$exists': True},
+                                                  "latesttime": {'$exists': True},
+                                                  "starttime": {'$exists': True},
+                                                  "compressed": {'$exists': True},
+                                                  "data": {'$exists': False}}))
 
-    Returns:
-       int:  A time in units of 10 ns
+        if len(control_docs) > 1:
+            raise RuntimeError("More than one control document found")
+        if len(control_docs) == 0:
+            raise RuntimeError("No control document found")
+        if self.control_doc_id is not None:
+            raise RuntimeError("Control document already set")
+        self.control_doc_id = control_docs[0]['_id']
+        logging.info("Control document:")
+        for key, value in control_docs[0].items():
+            logging.info('\t%s: %s' % (key, value))
 
-    """
-    return get_min_time(collection, direction=pymongo.DESCENDING)
-
-
-def get_data_docs(time0, time1):
-    """Fetch from DB the documents within time range.
-
-    .. todo:: Must this know padding?  Maybe just hand cursor so can mock?
-
-    :param time0: Initial time to query.
-    :type time0: int.
-    :param time1: Final time.
-    :type time1: int.
-    :returns:  list -- Input documents see docs :ref:`data_format#input`
-    :raises: AssertionError
-    """
-    collection = get_db_connection()[2]
-
-    # $gte and $lt are special mongo functions for greater than and less than
-    subset_query = {"triggertime": {'$gte': time0,
-                                    '$lt': time1}}
-
-    result = list(collection.find(subset_query))
-    logging.debug("Fetched %d input documents." % len(result))
-    return result
+        self.is_compressed = control_docs[0]['compressed']
 
 
-def get_data_from_doc(doc):
-    """From a mongo document, fetch the data payload and decompress if
-    necessary
+    def get_max_time(self):
+        """Get maximum time that has been seen by any channel.
 
-    Args:
-       doc (dictionary):  Document from mongodb to analyze
+        Returns:
+           int:  A time in units of 10 ns
 
-    Returns:
-       bytes: decompressed data
+        """
+        return self.collection.find_one({'_id': self.control_doc_id})['latesttime']
 
-    """
-    data = doc['data']
-    assert len(data) != 0
+    def get_min_time(self):
+        """Get minumum time
 
-    if doc['zipped']:
-        data = snappy.uncompress(data)
+        Returns:
+           int:  A time in units of 10 ns
 
-    data = np.fromstring(data,
-                         dtype=np.uint32)
-
-    if len(data) == 0:
-        raise IndexError("Data has zero length")
-
-    return data
+        """
+        return self.collection.find_one({'_id': self.control_doc_id})['starttime']
 
 
-def get_db_connection(hostname=DBBase.HOSTNAME):
-    """Get database connection objects for the input or output databases.
+    def get_data_docs(self, time0, time1):
+        """Fetch from DB the documents within time range.
 
-    This function creates MongoDB connections to either the input or output
-    databases.  It also maintains a cache of connections that have already been
-    created to speed things up.
+        .. todo:: Must this know padding?  Maybe just hand cursor so can mock?
 
-    :param hostname: The IP or DNS name where MongoDB is hosted on port 27017
-    :type hostname: str.
-    :param selection: 'input' for EventBuilder input,  blocks, otherwise
-                      'output' for output
-    :type selection: str.
-    :returns:  list -- [pymongo.Connection,
-                        pymongo.Database,
-                        pymongo.Collection]
-    :raises: pymongo.errors.PyMongoError
-    """
-    # Check if in cache
-    global CONNECTION
-    if CONNECTION is not None:
-        return CONNECTION
+        :param time0: Initial time to query.
+        :type time0: int.
+        :param time1: Final time.
+        :type time1: int.
+        :returns:  list -- Input documents see docs :ref:`data_format#input`
+        :raises: AssertionError
+        """
+
+        # $gte and $lt are special mongo functions for greater than and less than
+        subset_query = {"time": {'$gte': time0,
+                                 '$lt': time1}}
 
 
-    # If not in cache, make new connection, db, and collection objects
-    c = pymongo.MongoClient(hostname)
-    db = c[DB_NAME]
-    collection = db[COLLECTION_NAME]
+        result = list(self.collection.find(subset_query))
+        logging.debug("Fetched %d input documents." % len(result))
+        return result
 
-    # For the input database, we also want to create some indices to speed up
-    # queries.
-    num_docs_in_collection = collection.count()
-    if num_docs_in_collection == 0:
-        logging.warning("Input collection %s.%s has no documents" %
-                        (DB_NAME, COLLECTION_NAME))
-    else:
-        logging.info("Input collection %s.%s has %d documents" %
-                        (DB_NAME, COLLECTION_NAME, num_docs_in_collection))
 
-    collection.ensure_index(get_sort_key(),
-                            background=True)
-    CONNECTION = (c, db, collection)
-    return CONNECTION
+    @staticmethod
+    def get_sort_key(order=pymongo.DESCENDING):
+        """Sort key used for MongoDB sorting and indexing.
+
+        :param order: Ascending or descending order.
+        :type order: int
+        :returns:  list -- Returns, per pymongo format, a list of (variable, order)
+                           pairs.
+
+
+        """
+        if order != pymongo.DESCENDING and order != pymongo.ASCENDING:
+            raise ValueError()
+
+        return [('time', order),
+                ('module', order),
+                ('_id', order)]
+
+    def get_data_from_doc(self, doc):
+        """From a mongo document, fetch the data payload and decompress if
+        necessary
+
+        Args:
+           doc (dictionary):  Document from mongodb to analyze
+
+        Returns:
+           bytes: decompressed data
+
+        """
+        data = doc['data']
+        assert len(data) != 0
+
+        if self.is_compressed:
+            data = snappy.uncompress(data)
+
+        data = np.fromstring(data,
+                             dtype=np.uint32)
+
+        if len(data) == 0:
+            raise IndexError("Data has zero length")
+
+        return data

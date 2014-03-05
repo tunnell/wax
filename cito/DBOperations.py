@@ -6,6 +6,7 @@ much on XeDB.  Maybe these commands should be moved there though?
 import logging
 from cito.Database import InputDBInterface, OutputDBInterface
 from cliff.show import ShowOne
+import pymongo
 
 
 class CitoDBShowOne(ShowOne):
@@ -42,50 +43,38 @@ class CitoDBShowOne(ShowOne):
 
     def take_action(self, parsed_args):
         results = []
+
+        conn = pymongo.Connection(parsed_args.hostname)
+
         if parsed_args.db =='input' or parsed_args.db == 'all':
-            conn, db, collection = InputDBInterface.get_db_connection(parsed_args.hostname)
-            result = self.take_action_wrapped(conn, db, collection)
+            db = conn[InputDBInterface.MongoDBInput.get_db_name()]
+            result = self.take_action_wrapped(conn, db)
             results.append(['Input: Requested operation result',result])
             results.append(['Input: DB status', self.get_status(db)])
 
         if parsed_args.db =='output' or parsed_args.db == 'all':
-            conn, db, collection = OutputDBInterface.get_db_connection(parsed_args.hostname)
-            result = self.take_action_wrapped(conn, db, collection)
+            db = conn[OutputDBInterface.MongoDBOutput.get_db_name()]
+            result = self.take_action_wrapped(conn, db)
             results.append(['Output: Requested operation result', result])
             results.append(['Output: DB status', self.get_status(db)])
 
         return zip(*results)
 
 
-    def take_action_wrapped(self, conn, db, collection):
+    def take_action_wrapped(self, conn, db):
         raise NotImplementedError()
 
 
-class DBReset(CitoDBShowOne):
-    """Reset the database by deleting (i.e., dropping) the default collection.
+class DBDelete(CitoDBShowOne):
+    """Delete the database by dropping it.
 
-    All indicies will be lost.
     Warning: this cannot be used during a run as it will kill the DAQ writer.
     """
 
-    def take_action_wrapped(self, conn, db, collection):
+    def take_action_wrapped(self, conn, db):
         self.log.info("Resetting DB.")
-        db.drop_collection(collection.name)
+        conn.drop_database(db.name)
         return 'Reset'
-
-
-class DBPurge(CitoDBShowOne):
-    """Delete/purge all DAQ documents without deleting collection.
-
-    This can be used during a run.
-
-    """
-
-    def take_action_wrapped(self, conn, db, collection):
-        self.log.info("Purging all documents.")
-        N = collection.count()
-        collection.remove({})
-        return ('Purged %d docs' % N)
 
 
 class DBRepair(CitoDBShowOne):
@@ -99,7 +88,7 @@ class DBRepair(CitoDBShowOne):
     operation of the database.
     """
 
-    def take_action_wrapped(self, conn, db, collection):
+    def take_action_wrapped(self, conn, db):
         self.log.info("Repairing DB.")
         db.command('repairDatabase')
         return 'Repaired'

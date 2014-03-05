@@ -18,6 +18,7 @@ def get_samples(data):
         raise ValueError('Data from board larger than memory on board')
 
     samples = np.frombuffer(data, dtype=SAMPLE_TYPE)
+    samples = samples.astype(np.int64)
 
     # Todo: make this a flag?
     #if np.max(samples) >= MAX_ADC_VALUE or np.min(samples) < 0:
@@ -35,23 +36,17 @@ def get_samples(data):
     return samples
 
 
-def get_data_and_sum_waveform(cursor):
+def get_data_and_sum_waveform(cursor, input):
     """Get inverted sum waveform from mongo
 
     Args:
         cursor (iterable):  An iterable object of documents containing Caen
                            blocks.  This can be a pymongo Cursor.
-        offset (int): An integer start time
-        n_samples (int): How many samples to store
+        input - class
 
 
     Returns:
        dict: Results dictionary with key 'size' and 'occurences'
-
-    Todo: go through and check all the types
-      - Longer int since summing many, otherwise wrap around.
-      - use 8 bit and divide by num channels?  combine adjacent?
-
     """
     log = logging.getLogger(__name__)
 
@@ -63,12 +58,15 @@ def get_data_and_sum_waveform(cursor):
     sum_data = {}  # index -> sample
 
     for doc in cursor:
-        data = InputDBInterface.get_data_from_doc(doc)
-        num_channel = doc['module']
+        data = input.get_data_from_doc(doc)
+        num_channel = doc['channel']
+        if doc['module'] != -1:
+            num_channel = doc['module'] * 10 + doc['channel']
+
 
         size += len(data)
 
-        time_correction = doc['triggertime']
+        time_correction = np.int64(doc['time'])
 
         try:
             samples = get_samples(data)
@@ -87,14 +85,14 @@ def get_data_and_sum_waveform(cursor):
             if sample_index in sum_data:
                 sum_data[sample_index] += sample
             else:
-                sum_data[sample_index] = int(sample)
+                sum_data[sample_index] = np.int64(sample)
 
         if samples.size != 0:
             key = (time_correction,
                    time_correction + len(samples),
                    num_channel)
 
-            interpreted_data[key] = {'indices': np.arange(time_correction, time_correction + samples.size),
+            interpreted_data[key] = {'indices': np.arange(time_correction, time_correction + samples.size, dtype=np.int64),
                                      'samples': samples}
 
     log.debug("Size of data process in bytes: %d", size)
@@ -104,7 +102,7 @@ def get_data_and_sum_waveform(cursor):
     new_indices.sort()
     new_samples = [sum_data[x] for x in new_indices]
     new_indices = np.array(new_indices, dtype=np.int64)
-    new_samples = np.array(new_samples, dtype=np.int32)
+    new_samples = np.array(new_samples, dtype=np.int64)
 
     if len(new_indices) >= 2:
         key = (new_indices[0],

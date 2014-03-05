@@ -36,11 +36,10 @@ setup(
         ],
         'cito.core.main': [
             'doc inspector = cito.Inspector:InputDocInspector',
-            'reset = cito.DBOperations:DBReset',
+            'delete = cito.DBOperations:DBDelete',
             'db inspector = cito.Inspector:InputDBInspector',
-            'db repair = cito.DBOperations:DBRepair',
-            'purge = cito.DBOperations:DBPurge',
-            'process = cito.EventBuilder:ProcessToMongoCommand',
+            'repair = cito.DBOperations:DBRepair',
+            'process = cito.EventBuilder.Processor:ProcessCommand',
             'inspect trigger = cito.Inspector:OutputDocInspector',
             'file builder = cito.FileBuilder:FileBuilderCommand',
 

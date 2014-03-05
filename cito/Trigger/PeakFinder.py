@@ -63,7 +63,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
 
         smoothed_sum[s[0]:s[1]] = trigger_meta_data['smooth']
 
-    return np.array(peaks, dtype=np.int32), smoothed_sum
+    return np.array(peaks, dtype=np.int64), smoothed_sum
 
 
 def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
@@ -105,7 +105,7 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     t1 = time.time()
 
     logging.info('Filtering duration: %f s' % (t1 - t0))
-    return np.array(peaks, dtype=np.int32), trigger_meta_data
+    return np.array(peaks, dtype=np.int64), trigger_meta_data
 
 
 

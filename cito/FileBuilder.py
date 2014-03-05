@@ -39,7 +39,8 @@ class FileBuilderCommand(Command):
 
         self.log.debug("Establishing connection")
 
-        c, db, collection = OutputDBInterface.get_db_connection(hostname=parsed_args.hostname)
+        output = OutputDBInterface.MongoDBOutput(hostname=parsed_args.hostname)
+        collection = output.get_collection()
 
         cursor = collection.find()
         N = cursor.count()
