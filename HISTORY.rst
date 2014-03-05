@@ -3,6 +3,11 @@
 History
 -------
 
+1.8 (2014-03-05)
+++++++++++++++++
+
+* Fix major bug that included rejected data
+
 1.7 (2014-03-05)
 ++++++++++++++++
 
