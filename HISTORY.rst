@@ -3,6 +3,13 @@
 History
 -------
 
+1.7 (2014-03-05)
+++++++++++++++++
+
+* Major refactoring of DB interface due to interface changes to input DB
+* Include control documents - see docs
+* Allow auto discovery of datasets
+
 1.6 (2014-02-27)
 ++++++++++++++++
 
