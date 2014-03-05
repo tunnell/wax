@@ -154,7 +154,7 @@
 <p>Perform operations on sets of blocks</p>
 <dl class="function">
 <dt id="cito.core.Waveform.get_data_and_sum_waveform">
-<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_data_and_sum_waveform</tt><big>(</big><em>cursor</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_data_and_sum_waveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_data_and_sum_waveform" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_data_and_sum_waveform</tt><big>(</big><em>cursor</em>, <em>input</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_data_and_sum_waveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_data_and_sum_waveform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get inverted sum waveform from mongo</p>
 <dl class="docutils">
 <dt>Args:</dt>
@@ -162,17 +162,10 @@
 <dt>cursor (iterable):  An iterable object of documents containing Caen</dt>
 <dd>blocks.  This can be a pymongo Cursor.</dd>
 </dl>
-<p class="last">offset (int): An integer start time
-n_samples (int): How many samples to store</p>
+<p class="last">input - class</p>
 </dd>
 <dt>Returns:</dt>
 <dd>dict: Results dictionary with key &#8216;size&#8217; and &#8216;occurences&#8217;</dd>
-<dt>Todo: go through and check all the types</dt>
-<dd><ul class="first last simple">
-<li>Longer int since summing many, otherwise wrap around.</li>
-<li>use 8 bit and divide by num channels?  combine adjacent?</li>
-</ul>
-</dd>
 </dl>
 </dd></dl>
 
@@ -211,63 +204,6 @@ n_samples (int): How many samples to store</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cito.core.main.CitoCommand">
-<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
-<p>CitoSingleCommand base class</p>
-<p>This only looks over some range t0 till t1</p>
-<dl class="method">
-<dt id="cito.core.main.CitoCommand.get_description">
-<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.get_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.get_description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoCommand.get_parser">
-<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.get_parser" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoCommand.get_tasks">
-<tt class="descname">get_tasks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.get_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.get_tasks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoCommand.take_action">
-<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.take_action" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoCommand.take_action_wrapped">
-<tt class="descname">take_action_wrapped</tt><big>(</big><em>chunk_size</em>, <em>padding</em>, <em>min_time</em>, <em>collection</em>, <em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoCommand.take_action_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoCommand.take_action_wrapped" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapped version of take action</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cito.core.main.CitoContinousCommand">
-<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoContinousCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#cito.core.main.CitoCommand" title="cito.core.main.CitoCommand"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoCommand</span></tt></a></p>
-<p>CitoSingleCommand base class</p>
-<p>This only looks over some range t0 till t1</p>
-<dl class="method">
-<dt id="cito.core.main.CitoContinousCommand.get_parser">
-<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand.get_parser" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoContinousCommand.get_tasks">
-<tt class="descname">get_tasks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand.get_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand.get_tasks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoContinousCommand.take_action_wrapped">
-<tt class="descname">take_action_wrapped</tt><big>(</big><em>chunk_size</em>, <em>padding</em>, <em>min_time</em>, <em>collection</em>, <em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoContinousCommand.take_action_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoContinousCommand.take_action_wrapped" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="cito.core.main.CitoShowOne">
 <em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoShowOne</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.show.ShowOne</span></tt></p>
@@ -291,20 +227,7 @@ n_samples (int): How many samples to store</p>
 
 <dl class="attribute">
 <dt id="cito.core.main.CitoShowOne.log">
-<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x109861350&gt;</em><a class="headerlink" href="#cito.core.main.CitoShowOne.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cito.core.main.CitoSingleCommand">
-<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoSingleCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoSingleCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoSingleCommand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#cito.core.main.CitoCommand" title="cito.core.main.CitoCommand"><tt class="xref py py-class docutils literal"><span class="pre">cito.core.main.CitoCommand</span></tt></a></p>
-<p>CitoSingleCommand base class</p>
-<p>This only looks over some range t0 till t1</p>
-<dl class="method">
-<dt id="cito.core.main.CitoSingleCommand.take_action_wrapped">
-<tt class="descname">take_action_wrapped</tt><big>(</big><em>chunk_size</em>, <em>padding</em>, <em>min_time</em>, <em>collection</em>, <em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoSingleCommand.take_action_wrapped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoSingleCommand.take_action_wrapped" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x10bf0bd10&gt;</em><a class="headerlink" href="#cito.core.main.CitoShowOne.log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

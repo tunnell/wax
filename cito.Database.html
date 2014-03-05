@@ -154,13 +154,51 @@
 <p>Base class for all DB interfaces.</p>
 <p>This class provides various functions for creating connections to MongoDB and
 also locating the MongoDB server.</p>
+<dl class="class">
+<dt id="cito.Database.DBBase.MongoDBBase">
+<em class="property">class </em><tt class="descclassname">cito.Database.DBBase.</tt><tt class="descname">MongoDBBase</tt><big>(</big><em>collection_name=None</em>, <em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/DBBase.html#MongoDBBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.DBBase.MongoDBBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Read from MongoDB</p>
+<p>The subclass is responsible for setting up the collection</p>
+<dl class="method">
+<dt id="cito.Database.DBBase.MongoDBBase.discover_collection">
+<tt class="descname">discover_collection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/DBBase.html#MongoDBBase.discover_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.DBBase.MongoDBBase.discover_collection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Database.DBBase.MongoDBBase.get_collection">
+<tt class="descname">get_collection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/DBBase.html#MongoDBBase.get_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.DBBase.MongoDBBase.get_collection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Database.DBBase.MongoDBBase.get_collection_name">
+<tt class="descname">get_collection_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/DBBase.html#MongoDBBase.get_collection_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.DBBase.MongoDBBase.get_collection_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="cito.Database.DBBase.MongoDBBase.get_db_name">
+<em class="property">static </em><tt class="descname">get_db_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/DBBase.html#MongoDBBase.get_db_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.DBBase.MongoDBBase.get_db_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-cito.Database.InputDBInterface">
 <span id="cito-database-inputdbinterface-module"></span><h2>cito.Database.InputDBInterface module<a class="headerlink" href="#module-cito.Database.InputDBInterface" title="Permalink to this headline">¶</a></h2>
 <p>Interface code to the input data in MongoDB</p>
-<dl class="function">
-<dt id="cito.Database.InputDBInterface.get_data_docs">
-<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_data_docs</tt><big>(</big><em>time0</em>, <em>time1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_data_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_data_docs" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="cito.Database.InputDBInterface.MongoDBInput">
+<em class="property">class </em><tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">MongoDBInput</tt><big>(</big><em>collection_name=None</em>, <em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cito.Database.DBBase.MongoDBBase" title="cito.Database.DBBase.MongoDBBase"><tt class="xref py py-class docutils literal"><span class="pre">cito.Database.DBBase.MongoDBBase</span></tt></a></p>
+<p>Read from MongoDB</p>
+<dl class="method">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.find_control_doc">
+<tt class="descname">find_control_doc</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.find_control_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.find_control_doc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_data_docs">
+<tt class="descname">get_data_docs</tt><big>(</big><em>time0</em>, <em>time1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_data_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_data_docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch from DB the documents within time range.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -182,9 +220,9 @@ also locating the MongoDB server.</p>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="cito.Database.InputDBInterface.get_data_from_doc">
-<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_data_from_doc</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_data_from_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_data_from_doc" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_data_from_doc">
+<tt class="descname">get_data_from_doc</tt><big>(</big><em>doc</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_data_from_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_data_from_doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>From a mongo document, fetch the data payload and decompress if
 necessary</p>
 <dl class="docutils">
@@ -195,70 +233,34 @@ necessary</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="cito.Database.InputDBInterface.get_db_connection">
-<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_db_connection</tt><big>(</big><em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_db_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_db_connection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get database connection objects for the input or output databases.</p>
-<p>This function creates MongoDB connections to either the input or output
-databases.  It also maintains a cache of connections that have already been
-created to speed things up.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hostname</strong> (<em>str.</em>) &#8211; The IP or DNS name where MongoDB is hosted on port 27017</li>
-<li><strong>selection</strong> (<em>str.</em>) &#8211; &#8216;input&#8217; for EventBuilder input,  blocks, otherwise
-&#8216;output&#8217; for output</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list &#8211; [pymongo.Connection,
-pymongo.Database,
-pymongo.Collection]</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">pymongo.errors.PyMongoError</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+<dl class="staticmethod">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_db_name">
+<em class="property">static </em><tt class="descname">get_db_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_db_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_db_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="function">
-<dt id="cito.Database.InputDBInterface.get_max_time">
-<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_max_time</tt><big>(</big><em>collection</em>, <em>min_time=0</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_max_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_max_time" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_max_time">
+<tt class="descname">get_max_time</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_max_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_max_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get maximum time that has been seen by any channel.</p>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd>collection (Collection):  A pymongo Collection that will be queried
-min_time (int): Time that the max must be larger than</dd>
 <dt>Returns:</dt>
 <dd>int:  A time in units of 10 ns</dd>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="cito.Database.InputDBInterface.get_min_time">
-<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_min_time</tt><big>(</big><em>collection</em>, <em>direction=1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_min_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_min_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get minimum trigger time in a collection.</p>
-<p>This function is used by the Event Builder to know where to begin building
-events.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>collection</strong> (<em>pymongo.Collection.</em>) &#8211; A pymongo Collection that will be queried.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">int &#8211; A time in units of 10 ns.</td>
-</tr>
-</tbody>
-</table>
+<dl class="method">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_min_time">
+<tt class="descname">get_min_time</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_min_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_min_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get minumum time</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>int:  A time in units of 10 ns</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="cito.Database.InputDBInterface.get_sort_key">
-<tt class="descclassname">cito.Database.InputDBInterface.</tt><tt class="descname">get_sort_key</tt><big>(</big><em>order=-1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#get_sort_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.get_sort_key" title="Permalink to this definition">¶</a></dt>
+<dl class="staticmethod">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_sort_key">
+<em class="property">static </em><tt class="descname">get_sort_key</tt><big>(</big><em>order=-1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_sort_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_sort_key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort key used for MongoDB sorting and indexing.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -273,9 +275,37 @@ pairs.</td>
 </table>
 </dd></dl>
 
+</dd></dl>
+
 </div>
-<div class="section" id="cito-database-outputdbinterface-module">
-<h2>cito.Database.OutputDBInterface module<a class="headerlink" href="#cito-database-outputdbinterface-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-cito.Database.OutputDBInterface">
+<span id="cito-database-outputdbinterface-module"></span><h2>cito.Database.OutputDBInterface module<a class="headerlink" href="#module-cito.Database.OutputDBInterface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="cito.Database.OutputDBInterface.MongoDBOutput">
+<em class="property">class </em><tt class="descclassname">cito.Database.OutputDBInterface.</tt><tt class="descname">MongoDBOutput</tt><big>(</big><em>collection_name=None</em>, <em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#MongoDBOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.MongoDBOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cito.Database.DBBase.MongoDBBase" title="cito.Database.DBBase.MongoDBBase"><tt class="xref py py-class docutils literal"><span class="pre">cito.Database.DBBase.MongoDBBase</span></tt></a></p>
+<p>Write to MongoDB</p>
+<p>This class, I don&#8217;t think, can know the event number since it events before it
+may still be being processed.</p>
+<dl class="staticmethod">
+<dt id="cito.Database.OutputDBInterface.MongoDBOutput.get_db_name">
+<em class="property">static </em><tt class="descname">get_db_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#MongoDBOutput.get_db_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.MongoDBOutput.get_db_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cito.Database.OutputDBInterface.MongoDBOutput.mongify_event">
+<tt class="descname">mongify_event</tt><big>(</big><em>event_data</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#MongoDBOutput.mongify_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.MongoDBOutput.mongify_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Python data to pickled and compressed data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cito.Database.OutputDBInterface.MongoDBOutput.write_events">
+<tt class="descname">write_events</tt><big>(</big><em>event_data_list</em><big>)</big><a class="reference internal" href="_modules/cito/Database/OutputDBInterface.html#MongoDBOutput.write_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.OutputDBInterface.MongoDBOutput.write_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save data to database</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-cito.Database">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cito.Database" title="Permalink to this headline">¶</a></h2>

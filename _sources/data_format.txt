@@ -21,10 +21,11 @@ The control document contains information about the dataset.  The following
 keys are expected:
 
 * `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
-* `run_type`
+* `runtype`
 * `latesttime`: the latest time seen by all the digitizer boards.  This is used by the event builder to know when all the boards have reported their data.  Otherwise, there is a race condition.  This is a 64-bit number in units of 10 ns.
 * `start_time`: the 64-bit start time in units of 10 ns.
 * `compressed`: Binary value that determines if the data is compressed using `snappy <https://code.google.com/p/snappy/>`_
+* `modules`: List of modules.
 
 
 Said differently, expect:

@@ -187,7 +187,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Establishing connection&quot;</span><span class="p">)</span>
 
-        <span class="n">c</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">OutputDBInterface</span><span class="o">.</span><span class="n">get_db_connection</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">OutputDBInterface</span><span class="o">.</span><span class="n">MongoDBOutput</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get_collection</span><span class="p">()</span>
 
         <span class="n">cursor</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>

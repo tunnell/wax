@@ -183,23 +183,17 @@
     <span class="k">return</span> <span class="n">samples</span>
 
 </div>
-<div class="viewcode-block" id="get_data_and_sum_waveform"><a class="viewcode-back" href="../../../cito.core.html#cito.core.Waveform.get_data_and_sum_waveform">[docs]</a><span class="k">def</span> <span class="nf">get_data_and_sum_waveform</span><span class="p">(</span><span class="n">cursor</span><span class="p">):</span>
+<div class="viewcode-block" id="get_data_and_sum_waveform"><a class="viewcode-back" href="../../../cito.core.html#cito.core.Waveform.get_data_and_sum_waveform">[docs]</a><span class="k">def</span> <span class="nf">get_data_and_sum_waveform</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get inverted sum waveform from mongo</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        cursor (iterable):  An iterable object of documents containing Caen</span>
 <span class="sd">                           blocks.  This can be a pymongo Cursor.</span>
-<span class="sd">        offset (int): An integer start time</span>
-<span class="sd">        n_samples (int): How many samples to store</span>
+<span class="sd">        input - class</span>
 
 
 <span class="sd">    Returns:</span>
 <span class="sd">       dict: Results dictionary with key &#39;size&#39; and &#39;occurences&#39;</span>
-
-<span class="sd">    Todo: go through and check all the types</span>
-<span class="sd">      - Longer int since summing many, otherwise wrap around.</span>
-<span class="sd">      - use 8 bit and divide by num channels?  combine adjacent?</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
@@ -211,12 +205,15 @@
     <span class="n">sum_data</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># index -&gt; sample</span>
 
     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_data_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-        <span class="n">num_channel</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">get_data_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="n">num_channel</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;channel&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">num_channel</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;channel&#39;</span><span class="p">]</span>
+
 
         <span class="n">size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-        <span class="n">time_correction</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;triggertime&#39;</span><span class="p">]</span>
+        <span class="n">time_correction</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">samples</span> <span class="o">=</span> <span class="n">get_samples</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -242,7 +239,7 @@
                    <span class="n">time_correction</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span>
                    <span class="n">num_channel</span><span class="p">)</span>
 
-            <span class="n">interpreted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_correction</span><span class="p">,</span> <span class="n">time_correction</span> <span class="o">+</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+            <span class="n">interpreted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_correction</span><span class="p">,</span> <span class="n">time_correction</span> <span class="o">+</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
                                      <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">samples</span><span class="p">}</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Size of data process in bytes: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>

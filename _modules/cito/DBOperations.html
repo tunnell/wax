@@ -154,6 +154,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">cito.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span><span class="p">,</span> <span class="n">OutputDBInterface</span>
 <span class="kn">from</span> <span class="nn">cliff.show</span> <span class="kn">import</span> <span class="n">ShowOne</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
 
 
 <div class="viewcode-block" id="CitoDBShowOne"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne">[docs]</a><span class="k">class</span> <span class="nc">CitoDBShowOne</span><span class="p">(</span><span class="n">ShowOne</span><span class="p">):</span>
@@ -190,50 +191,38 @@
 </div>
 <div class="viewcode-block" id="CitoDBShowOne.take_action"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_args</span><span class="p">):</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">conn</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span><span class="s">&#39;input&#39;</span> <span class="ow">or</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
-            <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">get_db_connection</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_action_wrapped</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="n">InputDBInterface</span><span class="o">.</span><span class="n">MongoDBInput</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">()]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_action_wrapped</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s">&#39;Input: Requested operation result&#39;</span><span class="p">,</span><span class="n">result</span><span class="p">])</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s">&#39;Input: DB status&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">db</span><span class="p">)])</span>
 
         <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span><span class="s">&#39;output&#39;</span> <span class="ow">or</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
-            <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span> <span class="o">=</span> <span class="n">OutputDBInterface</span><span class="o">.</span><span class="n">get_db_connection</span><span class="p">(</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">hostname</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_action_wrapped</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="n">OutputDBInterface</span><span class="o">.</span><span class="n">MongoDBOutput</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">()]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take_action_wrapped</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s">&#39;Output: Requested operation result&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">])</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s">&#39;Output: DB status&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">db</span><span class="p">)])</span>
 
         <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="CitoDBShowOne.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="CitoDBShowOne.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
 </div></div>
-<div class="viewcode-block" id="DBReset"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBReset">[docs]</a><span class="k">class</span> <span class="nc">DBReset</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Reset the database by deleting (i.e., dropping) the default collection.</span>
+<div class="viewcode-block" id="DBDelete"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBDelete">[docs]</a><span class="k">class</span> <span class="nc">DBDelete</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Delete the database by dropping it.</span>
 
-<span class="sd">    All indicies will be lost.</span>
 <span class="sd">    Warning: this cannot be used during a run as it will kill the DAQ writer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DBReset.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBReset.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="DBDelete.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBDelete.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Resetting DB.&quot;</span><span class="p">)</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">(</span><span class="n">collection</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">conn</span><span class="o">.</span><span class="n">drop_database</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="s">&#39;Reset&#39;</span>
-
-</div></div>
-<div class="viewcode-block" id="DBPurge"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBPurge">[docs]</a><span class="k">class</span> <span class="nc">DBPurge</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Delete/purge all DAQ documents without deleting collection.</span>
-
-<span class="sd">    This can be used during a run.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="DBPurge.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBPurge.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Purging all documents.&quot;</span><span class="p">)</span>
-        <span class="n">N</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-        <span class="n">collection</span><span class="o">.</span><span class="n">remove</span><span class="p">({})</span>
-        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;Purged </span><span class="si">%d</span><span class="s"> docs&#39;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
 
 </div></div>
 <div class="viewcode-block" id="DBRepair"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBRepair">[docs]</a><span class="k">class</span> <span class="nc">DBRepair</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
@@ -247,7 +236,7 @@
 <span class="sd">    operation of the database.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="DBRepair.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBRepair.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+<div class="viewcode-block" id="DBRepair.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBRepair.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Repairing DB.&quot;</span><span class="p">)</span>
         <span class="n">db</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s">&#39;repairDatabase&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="s">&#39;Repaired&#39;</span>

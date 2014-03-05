@@ -163,10 +163,11 @@
 keys are expected:</p>
 <ul class="simple">
 <li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.</li>
-<li><cite>run_type</cite></li>
+<li><cite>runtype</cite></li>
 <li><cite>latesttime</cite>: the latest time seen by all the digitizer boards.  This is used by the event builder to know when all the boards have reported their data.  Otherwise, there is a race condition.  This is a 64-bit number in units of 10 ns.</li>
 <li><cite>start_time</cite>: the 64-bit start time in units of 10 ns.</li>
 <li><cite>compressed</cite>: Binary value that determines if the data is compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a></li>
+<li><cite>modules</cite>: List of modules.</li>
 </ul>
 <p>Said differently, expect:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
