@@ -33,9 +33,9 @@ class MongoDBInput(DBBase.MongoDBBase):
 
     def find_control_doc(self):
         control_docs = list(self.collection.find({"runtype": {'$exists': True},
-                                                  "latesttime": {'$exists': True},
                                                   "starttime": {'$exists': True},
                                                   "compressed": {'$exists': True},
+                                                  "data_taking_ended": {'$exists': True},
                                                   "data": {'$exists': False}}))
 
         if len(control_docs) > 1:
@@ -52,14 +52,60 @@ class MongoDBInput(DBBase.MongoDBBase):
         self.is_compressed = control_docs[0]['compressed']
 
 
+    def get_control_document(self):
+        """Fetch current control document from collection
+
+        This stores all the information about the dataset
+
+        :returns:  dict -- Control document.
+        """
+        return self.collection.find_one({'_id': self.control_doc_id})
+
+    def get_modules(self):
+        """Get modules
+
+        :returns:  list[int] -- Return list of integers
+
+        """
+        modules = self.collection.distinct('module')
+        if len(modules) == 0:
+            raise RuntimeError("No modules found")
+        return [x for x in modules if x is not None]
+
     def get_max_time(self):
         """Get maximum time that has been seen by any channel.
 
-        Returns:
-           int:  A time in units of 10 ns
+        :returns:  int -- A time in units of 10 ns
 
         """
-        return self.collection.find_one({'_id': self.control_doc_id})['latesttime']
+        sort_key = self.get_sort_key()
+
+        if self.has_run_ended():
+            doc = self.collection.find_one({},
+                                          fields=['time'],
+                                          #limit=1,
+                                          sort=sort_key)
+            return doc['time']
+
+        modules = self.get_modules()
+        times = {}
+
+        for module in modules:
+            query = {'module': module}
+            cursor = self.collection.find(query,
+                                     fields=['time', 'module'],
+                                     limit=1,
+                                     sort=sort_key)
+
+            #See if cursor is fast with cursor.explain()['indexOnly']
+
+            times[module] = next(cursor)['time']
+
+        # Want the earliest time (i.e., the min) of all the max times
+        # for the boards.
+        time = min(times.values())
+
+        return time
 
     def get_min_time(self):
         """Get minumum time
@@ -68,7 +114,16 @@ class MongoDBInput(DBBase.MongoDBBase):
            int:  A time in units of 10 ns
 
         """
-        return self.collection.find_one({'_id': self.control_doc_id})['starttime']
+        return self.get_control_document()['starttime']
+
+    def has_run_ended(self):
+        """Determine if run has ended
+
+        Returns:
+           int:  A time in units of 10 ns
+
+        """
+        return self.get_control_document()['data_taking_ended']
 
 
     def get_data_docs(self, time0, time1):
@@ -87,7 +142,6 @@ class MongoDBInput(DBBase.MongoDBBase):
         # $gte and $lt are special mongo functions for greater than and less than
         subset_query = {"time": {'$gte': time0,
                                  '$lt': time1}}
-
 
         result = list(self.collection.find(subset_query))
         logging.debug("Fetched %d input documents." % len(result))

@@ -4,9 +4,11 @@ All of these commands are simple enough that they don't rely too
 much on XeDB.  Maybe these commands should be moved there though?
 """
 import logging
-from cito.Database import InputDBInterface, OutputDBInterface
+
 from cliff.show import ShowOne
 import pymongo
+
+from cito.Database import InputDBInterface, OutputDBInterface
 
 
 class CitoDBShowOne(ShowOne):
@@ -46,13 +48,13 @@ class CitoDBShowOne(ShowOne):
 
         conn = pymongo.Connection(parsed_args.hostname)
 
-        if parsed_args.db =='input' or parsed_args.db == 'all':
+        if parsed_args.db == 'input' or parsed_args.db == 'all':
             db = conn[InputDBInterface.MongoDBInput.get_db_name()]
             result = self.take_action_wrapped(conn, db)
-            results.append(['Input: Requested operation result',result])
+            results.append(['Input: Requested operation result', result])
             results.append(['Input: DB status', self.get_status(db)])
 
-        if parsed_args.db =='output' or parsed_args.db == 'all':
+        if parsed_args.db == 'output' or parsed_args.db == 'all':
             db = conn[OutputDBInterface.MongoDBOutput.get_db_name()]
             result = self.take_action_wrapped(conn, db)
             results.append(['Output: Requested operation result', result])

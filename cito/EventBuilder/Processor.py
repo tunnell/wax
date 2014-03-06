@@ -8,24 +8,87 @@ from tqdm import tqdm
 from cito.Database import InputDBInterface, OutputDBInterface
 from cito.EventBuilder import Logic
 from cito.core import Waveform
-from cito.Trigger.PeakFinder import MAX_DRIFT
 
 
 __author__ = 'tunnell'
 
-
-class ProcessTimeBlockTask():
+CHUNK_SIZE = 2**26
+class ProcessTask():
     """Process a time block
     """
 
-    def __init__(self, input, output):
+    def __init__(self, dataset, hostname):
+
         self.log = logging.getLogger(__name__)
 
-        self.input = input
-        self.event_builder = Logic.EventBuilder()
-        self.output = output
+        # If dataset == None, finds a collection on its own
+        self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
+                                              hostname=hostname)
+        self.output = OutputDBInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
+                                                 hostname=hostname)
 
-    def process(self, t0, t1):
+        self.event_builder = Logic.EventBuilder()
+
+    def process_dataset(self, chunk_size, chunks):
+        # Used for benchmarking
+        start_time = time.time()
+        amount_data_processed = 0
+
+        waittime = 1 # s
+
+        # int rounds down
+        min_time_index = int(self.input.get_min_time() / chunk_size)
+        current_time_index = min_time_index
+
+        search_for_more_data = True
+
+        # Loop until Ctrl-C or error
+        while (search_for_more_data):
+            self.log.debug("Entering while loop; use Ctrl-C to exit")
+
+            try:
+                if self.input.has_run_ended():
+                    # Round up
+                    self.log.debug("Run has ended")
+                    max_time_index = math.ceil(self.input.get_max_time() / chunk_size)
+                    search_for_more_data = False
+                else:
+                    # Round down
+                    max_time_index = int(self.input.get_max_time() / chunk_size)
+
+                if max_time_index > current_time_index:
+                    for i in tqdm(range(min_time_index, max_time_index)):
+                        t0 = (i * chunk_size)
+                        t1 = (i + 1) * chunk_size
+
+                        self.log.debug('Processing [%f s, %f s]' % (t0/1e8, t1/1e8))
+
+                        amount_data_processed += self.process_time_range(t0, t1)
+
+                        dt = (time.time() - start_time)
+                        data_rate = amount_data_processed / dt / 1000
+                        self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
+                                                                             dt))
+                        self.log.info("Rate [kBps]: %f" % (data_rate / dt))
+
+                        if chunks > 0 and i > chunks:
+                            search_for_more_data = False
+                            break
+                    current_time_index = max_time_index
+                else:
+                    self.log.debug('Waiting %f seconds' % waittime)
+                    time.sleep(waittime)
+            except KeyboardInterrupt:
+                self.log.info("Ctrl-C caught so exiting.")
+                search_for_more_data = False
+
+
+        self.log.info("Stats:")
+        self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,
+                                                              dt))
+        self.log.info("\tRate [kBps]: %f" % (amount_data_processed / dt / 1000))
+
+    def process_time_range(self, t0, t1):
         """Process a time chunk
 
         .. todo:: Must this know padding?  Maybe just hand cursor so can mock?
@@ -77,63 +140,35 @@ class ProcessCommand(Command):
 
         parser.add_argument('--chunksize', type=int,
                             help="Size of data chunks to process [10 ns step]",
-                            default=2 ** 26)
-        parser.add_argument('--padding', type=int,
-                            help='Padding to overlap processing windows [10 ns step]',
-                            default=MAX_DRIFT)
+                            default=CHUNK_SIZE)
+        #parser.add_argument('--padding', type=int,
+        #                    help='Padding to overlap processing windows [10 ns step]',
+        #                    default=MAX_DRIFT)
         parser.add_argument('--chunks', type=int,
-                            help='Numbers of chunks to analyze',
+                            help='Limit the numbers of chunks to analyze (-1 means no limit)',
                             default=-1)
 
+        parser.add_argument('--dataset', type=str,
+                            help='Analyze only a single dataset')
+
         return parser
+
+
 
 
     def take_action(self, parsed_args):
         self.log = logging.getLogger(self.__class__.__name__)
 
         chunk_size = parsed_args.chunksize
+        chunks = parsed_args.chunks
         #padding = parsed_args.padding
 
         self.log.debug('Command line arguments: %s', str(parsed_args))
 
-        input = InputDBInterface.MongoDBInput(hostname=parsed_args.hostname)
-        output = OutputDBInterface.MongoDBOutput(collection_name=input.get_collection_name(),
-                                                 hostname=parsed_args.hostname)
-
-        task = ProcessTimeBlockTask(input, output)
-
-        start_time = time.time()
-        amount_data_processed = 0
-
-        min_time = input.get_min_time()
-        max_time = input.get_max_time()
-
-        min_time_index = int(min_time / chunk_size)
-        max_time_index = math.ceil(max_time / chunk_size) # For continous streaming, change ceil -> int
-
-        self.log.debug("Current max time [10 ns]: %d", max_time)
-        self.log.debug("Current max time [1 s]: %d", (max_time / 1e8))
-        self.log.debug("Size of data blocks [10 ns]: %d" % chunk_size)
-        self.log.debug("Size of data blocks [1 s]: %d" % (chunk_size / 1e8))
-
-        for i in tqdm(range(min_time_index, max_time_index)):
-            t0 = (i * chunk_size)
-            t1 = (i + 1) * chunk_size
-
-            self.log.debug('Processing %d %d' % (t0, t1))
-
-            amount_data_processed += task.process(t0, t1)
-
-            dt = (time.time() - start_time)
-            data_rate = amount_data_processed / dt / 1000
-            self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
-                                                                 dt))
-            self.log.info("Rate [kBps]: %f" % (data_rate / dt))
-
-            if parsed_args.chunks > 0 and i > parsed_args.chunks:
+        while True:
+            p = ProcessTask(parsed_args.dataset, parsed_args.hostname)
+            p.process_dataset(chunk_size = chunk_size,
+                              chunks = parsed_args.chunks)
+            # If only a single dataset was specified, break
+            if parsed_args.dataset is not None:
                 break
-
-        self.log.info("Final stats:")
-        self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,
-                                                              dt))
-        self.log.info("\tRate [kBps]: %f" % (amount_data_processed / dt / 1000))

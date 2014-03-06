@@ -3,8 +3,8 @@
 import itertools
 
 import matplotlib.pyplot as plt
-
 import bson
+
 from cito.Database import OutputDBInterface, InputDBInterface
 from cito.core.main import CitoShowOne
 

@@ -21,9 +21,10 @@
 """
 import logging
 
-from cito.Trigger import PeakFinder
-from cito.core.math import compute_subranges, speed_in1d_continous
 import numpy as np
+
+from cito.Trigger import PeakFinder
+from cito.core.math import compute_subranges
 
 
 def find_sum_in_data(data):
@@ -144,7 +145,7 @@ class EventBuilder():
                 if len(pmt_data['indices']) != 0:
                     to_save['data'][num_pmt] = pmt_data
 
-            to_save['peaks'] = peaks # [peak for peak in peaks if e0 < peak < e1]
+            to_save['peaks'] = peaks  # [peak for peak in peaks if e0 < peak < e1]
 
             to_save['evt_num'] = evt_num
             to_save['range'] = [int(e0), int(e1)]

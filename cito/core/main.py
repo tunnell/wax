@@ -2,17 +2,12 @@ import logging
 import logging.config
 import os
 import sys
-import math
-import time
-from tqdm import tqdm
 
 from cliff.app import App
-
 from cliff.commandmanager import CommandManager
 from cliff.show import ShowOne
-from cito.Database import InputDBInterface
-import cito
 
+import cito
 
 
 class CitoApp(App):
@@ -48,10 +43,6 @@ class CitoApp(App):
             self.log.error('Got an error: %s', err)
 
 
-
-
-
-
 class CitoShowOne(ShowOne):
     """Base class for all DB commands.
 
@@ -68,7 +59,6 @@ class CitoShowOne(ShowOne):
         parser.add_argument("--hostname", help="MongoDB database address",
                             type=str,
                             default='127.0.0.1')
-
 
         return parser
 

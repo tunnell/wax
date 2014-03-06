@@ -5,8 +5,6 @@ import logging
 
 import numpy as np
 
-from cito.Database import InputDBInterface
-
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
 SAMPLE_TYPE = np.int16
 MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
@@ -63,7 +61,6 @@ def get_data_and_sum_waveform(cursor, input):
         if doc['module'] != -1:
             num_channel = doc['module'] * 10 + doc['channel']
 
-
         size += len(data)
 
         time_correction = np.int64(doc['time'])
@@ -92,8 +89,9 @@ def get_data_and_sum_waveform(cursor, input):
                    time_correction + len(samples),
                    num_channel)
 
-            interpreted_data[key] = {'indices': np.arange(time_correction, time_correction + samples.size, dtype=np.int64),
-                                     'samples': samples}
+            interpreted_data[key] = {
+            'indices': np.arange(time_correction, time_correction + samples.size, dtype=np.int64),
+            'samples': samples}
 
     log.debug("Size of data process in bytes: %d", size)
     if size == 0:

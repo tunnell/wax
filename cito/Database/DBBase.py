@@ -33,7 +33,6 @@ class MongoDBBase():
     def get_db_name():
         raise NotImplementedError()
 
-
     def discover_collection(self):
         collections = self.db.collection_names(include_system_collections=False)
         if len(collections) == 0:

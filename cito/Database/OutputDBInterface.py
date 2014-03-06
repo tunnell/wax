@@ -2,8 +2,8 @@ __author__ = 'tunnell'
 
 import logging
 import pickle
+
 import snappy
-import pymongo
 
 from cito.Database import DBBase
 

@@ -18,7 +18,6 @@ __author__ = 'tunnell'
 import logging
 import time
 
-from scipy.signal._peak_finding import _filter_ridge_lines, _identify_ridge_lines
 import numpy as np
 from scipy.signal import butter
 from scipy.signal import filtfilt
@@ -26,8 +25,8 @@ from scipy.signal import filtfilt
 from cito.core.math import merge_subranges, find_subranges
 
 
-CWT_WIDTH = 50 # units of 10 ns
-MAX_DRIFT = 18000 # units of 10 ns
+CWT_WIDTH = 50  # units of 10 ns
+MAX_DRIFT = 18000  # units of 10 ns
 
 
 def identify_nonoverlapping_trigger_windows(indices, samples):
@@ -50,7 +49,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     # so we know what 'ranges' means.  Once again, what is returned
     # is locations within the array.  This is used later so we know where
     # samples are.
-    combined_ranges = merge_subranges(ranges, indices, MAX_DRIFT/2)
+    combined_ranges = merge_subranges(ranges, indices, MAX_DRIFT / 2)
 
     logging.debug("Combined ranges: %s" % str(combined_ranges))
 
@@ -97,8 +96,8 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     # We don't want every sample above threshold, just the center of the range
     # above threshold.
     peaks = []
-    for a,b in find_subranges(over_threshold):
-        peaks.append(np.round(float(over_threshold[b]+over_threshold[a])/2))
+    for a, b in find_subranges(over_threshold):
+        peaks.append(np.round(float(over_threshold[b] + over_threshold[a]) / 2))
 
     trigger_meta_data = {}
     trigger_meta_data['smooth'] = smooth_data
