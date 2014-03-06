@@ -8,7 +8,7 @@ from tqdm import tqdm
 from cito.Database import InputDBInterface, OutputDBInterface
 from cito.EventBuilder import Logic
 from cito.core import Waveform
-
+import time
 
 __author__ = 'tunnell'
 
@@ -166,7 +166,13 @@ class ProcessCommand(Command):
         self.log.debug('Command line arguments: %s', str(parsed_args))
 
         while True:
-            p = ProcessTask(parsed_args.dataset, parsed_args.hostname)
+            try:
+                p = ProcessTask(parsed_args.dataset, parsed_args.hostname)
+            except RuntimeError:
+                self.log.error("No dataset found; waiting")
+                time.sleep(1)
+                continue
+
             p.process_dataset(chunk_size = chunk_size,
                               chunks = parsed_args.chunks)
             # If only a single dataset was specified, break
