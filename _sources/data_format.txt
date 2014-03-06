@@ -22,7 +22,7 @@ keys are expected:
 
 * `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
 * `runtype`
-* `start_time`: the 64-bit start time in units of 10 ns.
+* `starttime`: the 64-bit start time in units of 10 ns.  This must be the smallest time seem in any of the input data documents.
 * `compressed`: Binary value that determines if the data is compressed using `snappy <https://code.google.com/p/snappy/>`_
 * `modules`: List of modules.
 * `endtime`: Set at end of run.  `cito` uses this to know when it should just process the rest of the data and not wait.
@@ -36,7 +36,7 @@ Said differently, expect:
         "_id": hex_string,
         "run_type": string,
         "latesttime": int,
-        "start_time": int,
+        "starttime": int,
     }
 
 Though may also contain:
