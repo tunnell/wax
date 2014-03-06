@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.8.1 documentation</title>
+  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.8.2 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.8.1',
+        VERSION:'1.8.2',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.1 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.2 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -110,15 +110,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.8.1 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.8 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.7 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.6 (2014-02-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.5 (2014-02-24)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id9">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -215,7 +214,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_number</span>
 
 </div>
-<div class="viewcode-block" id="EventBuilder.build_event"><a class="viewcode-back" href="../../../cito.EventBuilder.html#cito.EventBuilder.Logic.EventBuilder.build_event">[docs]</a>    <span class="k">def</span> <span class="nf">build_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="EventBuilder.build_event"><a class="viewcode-back" href="../../../cito.EventBuilder.html#cito.EventBuilder.Logic.EventBuilder.build_event">[docs]</a>    <span class="k">def</span> <span class="nf">build_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">padding</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Build events out of raw data.</span>
 
 <span class="sd">        Using the sum waveform provided as an input, distinct events are identified.</span>
@@ -265,14 +264,26 @@
         <span class="c"># Step 4: For each trigger event, associate channel information</span>
         <span class="c">##</span>
         <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">event_ranges</span><span class="p">:</span>
-            <span class="c"># e0, e1 are the times for this trigger event</span>
+        <span class="k">for</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span> <span class="ow">in</span> <span class="n">event_ranges</span><span class="p">:</span>  <span class="c"># e0, e1 are the times for this trigger event</span>
+            <span class="c">#  This information will be saved about the trigger event</span>
+            <span class="n">to_save</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="p">{}}</span>
+
+            <span class="c"># Logic to deal with overlapping region</span>
+            <span class="k">if</span> <span class="n">e1</span> <span class="o">&gt;</span> <span class="n">t1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e0</span> <span class="o">&lt;</span> <span class="n">t1</span> <span class="o">-</span> <span class="n">padding</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Event bigger than overlap region.  Flagging 1 second of deadtime.&quot;</span><span class="p">)</span>
+                    <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">peak</span> <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">peaks</span> <span class="k">if</span> <span class="n">e0</span> <span class="o">&lt;</span> <span class="n">peak</span> <span class="o">&lt;</span> <span class="n">e1</span><span class="p">]</span>
+                    <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;evt_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;deadtime&quot;</span>
+                    <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Event range [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">] greater than overlap window!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+                    <span class="n">to_save</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">e0</span> <span class="o">-</span> <span class="mf">5e7</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">e1</span> <span class="o">+</span> <span class="mf">5e7</span><span class="p">)]</span>
+                    <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_save</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">e0</span> <span class="o">&lt;</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">padding</span><span class="p">:</span>
+                <span class="k">continue</span>
+
 
             <span class="n">evt_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_number</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">Event </span><span class="si">%d</span><span class="s">: [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span><span class="p">,</span> <span class="n">evt_num</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
-
-            <span class="c">#  This information will be saved about the trigger event</span>
-            <span class="n">to_save</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;data&#39;</span><span class="p">:</span> <span class="p">{}}</span>
 
             <span class="c"># If there data within our search range [e0, e1]?</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
