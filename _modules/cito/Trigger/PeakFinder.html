@@ -168,7 +168,6 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">scipy.signal._peak_finding</span> <span class="kn">import</span> <span class="n">_filter_ridge_lines</span><span class="p">,</span> <span class="n">_identify_ridge_lines</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">butter</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">filtfilt</span>
@@ -176,8 +175,8 @@
 <span class="kn">from</span> <span class="nn">cito.core.math</span> <span class="kn">import</span> <span class="n">merge_subranges</span><span class="p">,</span> <span class="n">find_subranges</span>
 
 
-<span class="n">CWT_WIDTH</span> <span class="o">=</span> <span class="mi">50</span> <span class="c"># units of 10 ns</span>
-<span class="n">MAX_DRIFT</span> <span class="o">=</span> <span class="mi">18000</span> <span class="c"># units of 10 ns</span>
+<span class="n">CWT_WIDTH</span> <span class="o">=</span> <span class="mi">50</span>  <span class="c"># units of 10 ns</span>
+<span class="n">MAX_DRIFT</span> <span class="o">=</span> <span class="mi">18000</span>  <span class="c"># units of 10 ns</span>
 
 
 <div class="viewcode-block" id="identify_nonoverlapping_trigger_windows"><a class="viewcode-back" href="../../../cito.Trigger.html#cito.Trigger.PeakFinder.identify_nonoverlapping_trigger_windows">[docs]</a><span class="k">def</span> <span class="nf">identify_nonoverlapping_trigger_windows</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">samples</span><span class="p">):</span>
@@ -200,7 +199,7 @@
     <span class="c"># so we know what &#39;ranges&#39; means.  Once again, what is returned</span>
     <span class="c"># is locations within the array.  This is used later so we know where</span>
     <span class="c"># samples are.</span>
-    <span class="n">combined_ranges</span> <span class="o">=</span> <span class="n">merge_subranges</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">MAX_DRIFT</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">combined_ranges</span> <span class="o">=</span> <span class="n">merge_subranges</span><span class="p">(</span><span class="n">ranges</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">MAX_DRIFT</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
 
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Combined ranges: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">combined_ranges</span><span class="p">))</span>
 
@@ -247,8 +246,8 @@
     <span class="c"># We don&#39;t want every sample above threshold, just the center of the range</span>
     <span class="c"># above threshold.</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="n">find_subranges</span><span class="p">(</span><span class="n">over_threshold</span><span class="p">):</span>
-        <span class="n">peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">over_threshold</span><span class="p">[</span><span class="n">b</span><span class="p">]</span><span class="o">+</span><span class="n">over_threshold</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">find_subranges</span><span class="p">(</span><span class="n">over_threshold</span><span class="p">):</span>
+        <span class="n">peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">over_threshold</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">+</span> <span class="n">over_threshold</span><span class="p">[</span><span class="n">a</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
 
     <span class="n">trigger_meta_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">trigger_meta_data</span><span class="p">[</span><span class="s">&#39;smooth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">smooth_data</span>

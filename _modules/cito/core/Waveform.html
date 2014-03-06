@@ -155,8 +155,6 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">cito.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span>
-
 <span class="c"># Samples are actually 14 bit unsigned, so 16 bit signed fine</span>
 <span class="n">SAMPLE_TYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
 <span class="n">MAX_ADC_VALUE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">14</span>  <span class="c"># 14 bit ADC samples</span>
@@ -213,7 +211,6 @@
         <span class="k">if</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="n">num_channel</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;module&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;channel&#39;</span><span class="p">]</span>
 
-
         <span class="n">size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
         <span class="n">time_correction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">])</span>
@@ -242,8 +239,9 @@
                    <span class="n">time_correction</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span>
                    <span class="n">num_channel</span><span class="p">)</span>
 
-            <span class="n">interpreted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_correction</span><span class="p">,</span> <span class="n">time_correction</span> <span class="o">+</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
-                                     <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">samples</span><span class="p">}</span>
+            <span class="n">interpreted_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_correction</span><span class="p">,</span> <span class="n">time_correction</span> <span class="o">+</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+            <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">samples</span><span class="p">}</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Size of data process in bytes: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>

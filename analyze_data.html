@@ -189,45 +189,99 @@
 36
 37
 38
-39</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pickle</span>
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66</pre></div></td><td class="code"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;Example of how to use cito to analyze data</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">gca</span><span class="p">,</span> <span class="n">Rectangle</span>
 
 <span class="c"># Load the cito output file</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&#39;cito_file.pklz&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
-
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;cito version:&quot;</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
-
-<span class="c">#  You have to read all the events beforehand to get at an event</span>
-<span class="c"># therefore it reads &#39;n&#39; times to get to event &#39;n&#39;</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;cito version&quot;</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Event </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="c">#  Subtract off beginning of range</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;sum&#39;</span><span class="p">][</span><span class="s">&#39;indices&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span>
+
+    <span class="c"># Plot unsmoothed digital-sum waveform</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;sum&#39;</span><span class="p">][</span><span class="s">&#39;samples&#39;</span><span class="p">],</span>
+             <span class="n">label</span><span class="o">=</span><span class="s">&#39;unsmoothed sum&#39;</span><span class="p">,</span>
+             <span class="n">drawstyle</span><span class="o">=</span><span class="s">&#39;steps-mid&#39;</span><span class="p">)</span>
+
+    <span class="c"># Plot smoothed digital-sum waveform</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;smooth&#39;</span><span class="p">][</span><span class="s">&#39;samples&#39;</span><span class="p">],</span> <span class="s">&#39;--&#39;</span><span class="p">,</span>
+             <span class="n">drawstyle</span><span class="o">=</span><span class="s">&#39;steps-mid&#39;</span><span class="p">,</span>
+             <span class="n">label</span><span class="o">=</span><span class="s">&#39;smooth sum&#39;</span><span class="p">)</span>
+
+    <span class="c"># Add every peak</span>
+    <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]:</span>
+        <span class="c"># Plot peaks</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">peak</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Evt </span><span class="si">%d</span><span class="s">, Range: </span><span class="si">%s</span><span class="s">, Peaks: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">])))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time [10 ns]&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Charge [ADC counts]&#39;</span><span class="p">)</span>
+
+    <span class="c"># Make a figure with all channel data</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">channel</span><span class="p">,</span> <span class="n">data2</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="ow">and</span> <span class="p">(</span><span class="s">&#39;sum&#39;</span> <span class="ow">in</span> <span class="n">channel</span> <span class="ow">or</span> <span class="s">&#39;smooth&#39;</span> <span class="ow">in</span> <span class="n">channel</span><span class="p">):</span>
+            <span class="n">linetype</span> <span class="o">=</span> <span class="s">&#39;--&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">linetype</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data2</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span> <span class="p">,</span> <span class="n">data2</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">],</span> <span class="n">linetype</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Evt </span><span class="si">%d</span><span class="s">, Range: </span><span class="si">%s</span><span class="s">, Peaks: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">])))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time [10 ns]&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Charge [ADC counts]&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span> <span class="o">-</span> <span class="n">offset</span> <span class="p">,</span>
+               <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+               <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span>
+               <span class="n">color</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
+
+    <span class="c"># Show plots</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;sum&#39;</span><span class="p">][</span><span class="s">&#39;indices&#39;</span><span class="p">]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;sum&#39;</span><span class="p">][</span><span class="s">&#39;samples&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;unsmoothed sum&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">][</span><span class="s">&#39;smooth&#39;</span><span class="p">][</span><span class="s">&#39;samples&#39;</span><span class="p">],</span>
-         <span class="s">&#39;--&#39;</span><span class="p">,</span>
-         <span class="n">label</span><span class="o">=</span><span class="s">&#39;smooth sum&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">]:</span>
-    <span class="c"># Plot peaks</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">peak</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Range: </span><span class="si">%s</span><span class="s">, Peaks: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">])))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time [10 ns]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Charge [ADC counts]&#39;</span><span class="p">)</span>
-
-<span class="c"># Make a figure with all channels</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">channel</span><span class="p">,</span> <span class="n">data2</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data2</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">],</span> <span class="n">data2</span><span class="p">[</span><span class="s">&#39;samples&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Range: </span><span class="si">%s</span><span class="s">, Peaks: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;peaks&#39;</span><span class="p">])))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time [10 ns]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Charge [ADC counts]&#39;</span><span class="p">)</span>
-
-<span class="c"># Show plots</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
 </div>

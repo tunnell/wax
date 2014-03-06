@@ -199,6 +199,21 @@ also locating the MongoDB server.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_control_document">
+<tt class="descname">get_control_document</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_control_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_control_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch current control document from collection</p>
+<p>This stores all the information about the dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dict &#8211; Control document.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="cito.Database.InputDBInterface.MongoDBInput.get_data_docs">
 <tt class="descname">get_data_docs</tt><big>(</big><em>time0</em>, <em>time1</em><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_data_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_data_docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch from DB the documents within time range.</p>
@@ -244,10 +259,14 @@ necessary</p>
 <dt id="cito.Database.InputDBInterface.MongoDBInput.get_max_time">
 <tt class="descname">get_max_time</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_max_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_max_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get maximum time that has been seen by any channel.</p>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>int:  A time in units of 10 ns</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">int &#8211; A time in units of 10 ns</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -258,6 +277,20 @@ necessary</p>
 <dt>Returns:</dt>
 <dd>int:  A time in units of 10 ns</dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cito.Database.InputDBInterface.MongoDBInput.get_modules">
+<tt class="descname">get_modules</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/Database/InputDBInterface.html#MongoDBInput.get_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.Database.InputDBInterface.MongoDBInput.get_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get modules</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list[int] &#8211; Return list of integers</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="staticmethod">
