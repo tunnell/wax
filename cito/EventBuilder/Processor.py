@@ -81,9 +81,9 @@ class ProcessTask():
                     time.sleep(waittime)
             except KeyboardInterrupt:
                 self.log.info("Ctrl-C caught so exiting.")
-                search_for_more_data = False
+                return
 
-
+        self.drop_collection()
         self.log.info("Stats:")
         self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,
                                                               dt))
@@ -179,7 +179,6 @@ class ProcessCommand(Command):
                               chunks = parsed_args.chunks,
                               padding = parsed_args.padding)
 
-            p.drop_collection()
             # If only a single dataset was specified, break
             if parsed_args.dataset is not None:
                 break
