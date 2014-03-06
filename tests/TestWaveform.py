@@ -6,8 +6,7 @@ from cito.core import Waveform
 
 class WaveformTestCase(unittest.TestCase):
     def test_empty_value_error(self):
-        with self.assertRaises(ValueError):
-            Waveform.get_samples(b'')
+        Waveform.get_samples(b'FFFFFF')
 
 
 
