@@ -3,15 +3,12 @@
 History
 -------
 
-1.8.1 (2014-03-05)
-++++++++++++++++
-
-* Continuous processing
-
 1.8 (2014-03-05)
 ++++++++++++++++
 
 * Fix major bug that included rejected data
+* Continuous processing
+* Implemented 'padding' to deal with events near search window edges
 
 1.7 (2014-03-05)
 ++++++++++++++++
