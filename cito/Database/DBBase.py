@@ -36,6 +36,7 @@ class MongoDBBase():
     def discover_collection(self):
         collections = self.db.collection_names(include_system_collections=False)
         if len(collections) == 0:
+            logging.debug("No collection found.")
             raise RuntimeError("No dataset in %s database." % self.get_db_name())
 
         if len(collections) > 1:

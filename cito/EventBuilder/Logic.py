@@ -64,7 +64,7 @@ class EventBuilder():
             return self.event_number
 
 
-    def build_event(self, data, t0=None, t1=None):
+    def build_event(self, data, t0, t1, padding):
         """Build events out of raw data.
 
         Using the sum waveform provided as an input, distinct events are identified.
@@ -114,14 +114,26 @@ class EventBuilder():
         # Step 4: For each trigger event, associate channel information
         ##
         events = []
-        for e0, e1 in event_ranges:
-            # e0, e1 are the times for this trigger event
+        for e0, e1 in event_ranges:  # e0, e1 are the times for this trigger event
+            #  This information will be saved about the trigger event
+            to_save = {'data': {}}
+
+            # Logic to deal with overlapping region
+            if e1 > t1:
+                if e0 < t1 - padding:
+                    self.log.error("Event bigger than overlap region.  Flagging 1 second of deadtime.")
+                    to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
+                    to_save['evt_num'] = "deadtime"
+                    to_save['error'] = "Event range [%d, %d] greater than overlap window!" % (e0, e1)
+                    to_save['range'] = [int(e0 - 5e7), int(e1 + 5e7)]
+                    events.append(to_save)
+                continue
+            if e0 < t0 + padding:
+                continue
+
 
             evt_num = self.get_event_number()
             self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
-
-            #  This information will be saved about the trigger event
-            to_save = {'data': {}}
 
             # If there data within our search range [e0, e1]?
             for key, value in data.items():

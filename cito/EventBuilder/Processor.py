@@ -8,7 +8,8 @@ from tqdm import tqdm
 from cito.Database import InputDBInterface, OutputDBInterface
 from cito.EventBuilder import Logic
 from cito.core import Waveform
-import time
+from cito.Trigger.PeakFinder import MAX_DRIFT
+
 
 __author__ = 'tunnell'
 
@@ -29,7 +30,7 @@ class ProcessTask():
 
         self.event_builder = Logic.EventBuilder()
 
-    def process_dataset(self, chunk_size, chunks):
+    def process_dataset(self, chunk_size, chunks, padding):
         # Used for benchmarking
         start_time = time.time()
         amount_data_processed = 0
@@ -63,7 +64,7 @@ class ProcessTask():
 
                         self.log.debug('Processing [%f s, %f s]' % (t0/1e8, t1/1e8))
 
-                        amount_data_processed += self.process_time_range(t0, t1)
+                        amount_data_processed += self.process_time_range(t0, t1 + padding, padding)
 
                         dt = (time.time() - start_time)
                         data_rate = amount_data_processed / dt / 1000
@@ -89,7 +90,7 @@ class ProcessTask():
         self.log.info("\tRate [kBps]: %f" % (amount_data_processed / dt / 1000))
 
 
-    def process_time_range(self, t0, t1):
+    def process_time_range(self, t0, t1, padding):
         """Process a time chunk
 
         .. todo:: Must this know padding?  Maybe just hand cursor so can mock?
@@ -112,7 +113,7 @@ class ProcessTask():
 
         # Build events (t0 and t1 used only for sanity checks)
         try:
-            events = self.event_builder.build_event(data, t0, t1)
+            events = self.event_builder.build_event(data, t0, t1, padding)
 
             if len(events):
                 self.output.write_events(events)
@@ -146,9 +147,9 @@ class ProcessCommand(Command):
         parser.add_argument('--chunksize', type=int,
                             help="Size of data chunks to process [10 ns step]",
                             default=CHUNK_SIZE)
-        #parser.add_argument('--padding', type=int,
-        #                    help='Padding to overlap processing windows [10 ns step]',
-        #                    default=MAX_DRIFT)
+        parser.add_argument('--padding', type=int,
+                            help='Padding to overlap processing windows [10 ns step]',
+                            default=(3*MAX_DRIFT))
         parser.add_argument('--chunks', type=int,
                             help='Limit the numbers of chunks to analyze (-1 means no limit)',
                             default=-1)
@@ -164,10 +165,6 @@ class ProcessCommand(Command):
     def take_action(self, parsed_args):
         self.log = logging.getLogger(self.__class__.__name__)
 
-        chunk_size = parsed_args.chunksize
-        chunks = parsed_args.chunks
-        #padding = parsed_args.padding
-
         self.log.debug('Command line arguments: %s', str(parsed_args))
 
         while True:
@@ -178,8 +175,9 @@ class ProcessCommand(Command):
                 time.sleep(1)
                 continue
 
-            p.process_dataset(chunk_size = chunk_size,
-                              chunks = parsed_args.chunks)
+            p.process_dataset(chunk_size = parsed_args.chunksize,
+                              chunks = parsed_args.chunks,
+                              padding = parsed_args.padding)
 
             p.drop_collection()
             # If only a single dataset was specified, break
