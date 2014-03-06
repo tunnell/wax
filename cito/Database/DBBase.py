@@ -65,6 +65,10 @@ class MongoDBBase():
             raise ValueError
         return self.collection
 
+    def get_db(self):
+        if self.db == None:
+            raise ValueError
+        return self.db
 
     def get_collection_name(self):
         return self.get_collection().name

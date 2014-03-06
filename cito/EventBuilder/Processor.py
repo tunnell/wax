@@ -88,6 +88,7 @@ class ProcessTask():
                                                               dt))
         self.log.info("\tRate [kBps]: %f" % (amount_data_processed / dt / 1000))
 
+
     def process_time_range(self, t0, t1):
         """Process a time chunk
 
@@ -122,6 +123,10 @@ class ProcessTask():
             logging.exception('Event building failed.')
 
         return size
+
+    def drop_collection(self):
+        self.input.get_db().drop_collection(self.input.get_collection_name())
+
 
 
 class ProcessCommand(Command):
@@ -175,6 +180,8 @@ class ProcessCommand(Command):
 
             p.process_dataset(chunk_size = chunk_size,
                               chunks = parsed_args.chunks)
+
+            p.drop_collection()
             # If only a single dataset was specified, break
             if parsed_args.dataset is not None:
                 break
