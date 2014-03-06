@@ -219,6 +219,15 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span><span class="p">})[</span><span class="s">&#39;starttime&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.has_run_ended"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.has_run_ended">[docs]</a>    <span class="k">def</span> <span class="nf">has_run_ended</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determine if run has ended</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           int:  A time in units of 10 ns</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span><span class="p">})[</span><span class="s">&#39;data_taking_ended&#39;</span><span class="p">]</span>
 
 </div>
 <div class="viewcode-block" id="MongoDBInput.get_data_docs"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.get_data_docs">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time0</span><span class="p">,</span> <span class="n">time1</span><span class="p">):</span>

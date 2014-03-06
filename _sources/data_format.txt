@@ -25,7 +25,7 @@ keys are expected:
 * `starttime`: the 64-bit start time in units of 10 ns.  This must be the smallest time seem in any of the input data documents.
 * `compressed`: Binary value that determines if the data is compressed using `snappy <https://code.google.com/p/snappy/>`_
 * `modules`: List of modules.
-* `endtime`: Set at end of run.  `cito` uses this to know when it should just process the rest of the data and not wait.
+* `data_taking_ended`: Tells cito if data is still to be reported.  This is set to false during aquisition, and true at the end of the run. `cito` uses this to know when it should just process the rest of the data and not wait for new data.
 
 
 Said differently, expect:

@@ -169,7 +169,7 @@ keys are expected:</p>
 <li><cite>starttime</cite>: the 64-bit start time in units of 10 ns.  This must be the smallest time seem in any of the input data documents.</li>
 <li><cite>compressed</cite>: Binary value that determines if the data is compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a></li>
 <li><cite>modules</cite>: List of modules.</li>
-<li><cite>endtime</cite>: Set at end of run.  <cite>cito</cite> uses this to know when it should just process the rest of the data and not wait.</li>
+<li><cite>data_taking_ended</cite>: Tells cito if data is still to be reported.  This is set to false during aquisition, and true at the end of the run. <cite>cito</cite> uses this to know when it should just process the rest of the data and not wait for new data.</li>
 </ul>
 <p>Said differently, expect:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
