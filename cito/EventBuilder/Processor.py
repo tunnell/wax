@@ -69,7 +69,7 @@ class ProcessTask():
                         data_rate = amount_data_processed / dt / 1000
                         self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
                                                                              dt))
-                        self.log.info("Rate [kBps]: %f" % (data_rate / dt))
+                        self.log.info("Rate [kBps]: %f" % (data_rate))
 
                         if chunks > 0 and i > chunks:
                             search_for_more_data = False
