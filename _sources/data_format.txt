@@ -34,7 +34,7 @@ Said differently, expect:
 
     {
         "_id": hex_string,
-        "run_type": string,
+        "runtype": string,
         "latesttime": int,
         "starttime": int,
     }
