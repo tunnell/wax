@@ -23,6 +23,12 @@ class ProcessTask():
         self.log = logging.getLogger(__name__)
 
         # If dataset == None, finds a collection on its own
+        self.delete_collection_when_done = True
+        if dataset is not None:
+            # We've chosen a dataset to process, probably for testing so don't
+            # delete
+            self.delete_collection_when_done = False
+
         self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
                                               hostname=hostname)
         self.output = OutputDBInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
@@ -83,7 +89,8 @@ class ProcessTask():
                 self.log.info("Ctrl-C caught so exiting.")
                 return
 
-        self.drop_collection()
+        if self.delete_collection_when_done:
+            self.drop_collection()
         self.log.info("Stats:")
         self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,
                                                               dt))
