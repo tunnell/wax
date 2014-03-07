@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Database.DBBase &mdash; Code for Intelligent Triggering Online 1.8.6 documentation</title>
+  <title>cito.Database.DBBase &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.8.6',
+        VERSION:'1.8.7',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -173,12 +173,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">()]</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="bp">True</span>
+
         <span class="k">if</span> <span class="n">collection_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="n">collection_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discover_collection</span><span class="p">()</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span>
 
+    <span class="nd">@initialized.setter</span>
+<div class="viewcode-block" id="MongoDBBase.initialized"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.initialized">[docs]</a>    <span class="k">def</span> <span class="nf">initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Initialization status must be bool&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="n">x</span>
+</div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="MongoDBBase.get_db_name"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.get_db_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_name</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
@@ -186,8 +197,9 @@
 <div class="viewcode-block" id="MongoDBBase.discover_collection"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.discover_collection">[docs]</a>    <span class="k">def</span> <span class="nf">discover_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">collections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">collection_names</span><span class="p">(</span><span class="n">include_system_collections</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">collections</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No collection found.&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No dataset in </span><span class="si">%s</span><span class="s"> database.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No dataset in </span><span class="si">%s</span><span class="s"> database.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">collections</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Multiple collections found:&quot;</span><span class="p">)</span>
@@ -204,6 +216,7 @@
         <span class="k">if</span> <span class="n">num_docs_in_collection</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;Collection </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s"> is empty&quot;</span> <span class="o">%</span>
                           <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">(),</span> <span class="n">collection_name</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Empty collection.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Collection </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s"> has </span><span class="si">%d</span><span class="s"> documents&quot;</span> <span class="o">%</span>
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">(),</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">num_docs_in_collection</span><span class="p">))</span>
@@ -212,12 +225,14 @@
 
 </div>
 <div class="viewcode-block" id="MongoDBBase.get_collection"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.get_collection">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Not initialized.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;No collection present.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
 </div>
 <div class="viewcode-block" id="MongoDBBase.get_db"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.get_db">[docs]</a>    <span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span>
 </div>

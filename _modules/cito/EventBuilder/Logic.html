@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.8.6 documentation</title>
+  <title>cito.EventBuilder.Logic &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.8.6',
+        VERSION:'1.8.7',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -255,7 +255,7 @@
         <span class="c"># Step 3: Flag ranges around peaks to save, then break into events</span>
         <span class="c">##</span>
         <span class="n">event_ranges</span> <span class="o">=</span> <span class="n">compute_subranges</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%d</span><span class="s"> trigger events from </span><span class="si">%d</span><span class="s"> peaks&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_ranges</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%d</span><span class="s"> trigger events from </span><span class="si">%d</span><span class="s"> peaks&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_ranges</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">peak_indices</span><span class="p">))</span>
 
         <span class="n">data</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&#39;smooth&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;indices&#39;</span><span class="p">:</span> <span class="n">sum_data</span><span class="p">[</span><span class="s">&#39;indices&#39;</span><span class="p">],</span>
                                   <span class="s">&#39;samples&#39;</span><span class="p">:</span> <span class="n">smooth_waveform</span><span class="p">}</span>
@@ -283,7 +283,7 @@
 
 
             <span class="n">evt_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_number</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">Event </span><span class="si">%d</span><span class="s">: [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span><span class="p">,</span> <span class="n">evt_num</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">Event </span><span class="si">%d</span><span class="s">: [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span><span class="p">,</span> <span class="n">evt_num</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
 
             <span class="c"># If there data within our search range [e0, e1]?</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

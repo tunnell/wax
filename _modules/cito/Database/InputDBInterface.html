@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Database.InputDBInterface &mdash; Code for Intelligent Triggering Online 1.8.6 documentation</title>
+  <title>cito.Database.InputDBInterface &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.8.6',
+        VERSION:'1.8.7',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.6 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -167,10 +167,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="n">DBBase</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">):</span>
-        <span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_compressed</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Cannot initialize input.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">find_control_doc</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">ensure_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">(),</span>
@@ -189,11 +194,15 @@
                                                   <span class="s">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}}))</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">control_docs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;More than one control document found&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">control_docs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No control document found&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;More than one control document found in </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Control document already set&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">control_docs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;No control document found.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span>
+
+
         <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="o">=</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;_id&#39;</span><span class="p">]</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Control document:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -235,6 +244,8 @@
                                           <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span>
                                           <span class="c">#limit=1,</span>
                                           <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
 
         <span class="n">modules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modules</span><span class="p">()</span>
@@ -242,17 +253,21 @@
 
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;module&#39;</span><span class="p">:</span> <span class="n">module</span><span class="p">}</span>
-            <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
-                                     <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">],</span>
-                                     <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                                     <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
+                                              <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">],</span>
+                                              <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                               <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
 
+            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
             <span class="c">#See if cursor is fast with cursor.explain()[&#39;indexOnly&#39;]</span>
 
-            <span class="n">times</span><span class="p">[</span><span class="n">module</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">cursor</span><span class="p">)[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
+            <span class="n">times</span><span class="p">[</span><span class="n">module</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
 
         <span class="c"># Want the earliest time (i.e., the min) of all the max times</span>
         <span class="c"># for the boards.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
         <span class="n">time</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">time</span>
@@ -264,7 +279,10 @@
 <span class="sd">           int:  A time in units of 10 ns</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_control_document</span><span class="p">()[</span><span class="s">&#39;starttime&#39;</span><span class="p">]</span>
+        <span class="n">sort_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}},</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
+        <span class="c">#return self.get_control_document()[&#39;starttime&#39;]</span>
 </div>
 <div class="viewcode-block" id="MongoDBInput.has_run_ended"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.has_run_ended">[docs]</a>    <span class="k">def</span> <span class="nf">has_run_ended</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if run has ended</span>

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.FileBuilder &mdash; Code for Intelligent Triggering Online 1.8.6 documentation</title>
+  <title>cito.FileBuilder &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../',
-        VERSION:'1.8.6',
+        VERSION:'1.8.7',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.6 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -148,6 +148,8 @@
 
           
   <h1>Source code for cito.FileBuilder</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">cito.core.math</span> <span class="kn">import</span> <span class="n">sizeof_fmt</span>
+
 <span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;tunnell&#39;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -160,6 +162,7 @@
 
 <span class="kn">from</span> <span class="nn">cito</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">cito.Database</span> <span class="kn">import</span> <span class="n">OutputDBInterface</span>
+
 
 
 <div class="viewcode-block" id="FileBuilderCommand"><a class="viewcode-back" href="../../cito.html#cito.FileBuilder.FileBuilderCommand">[docs]</a><span class="k">class</span> <span class="nc">FileBuilderCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -205,12 +208,16 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processing </span><span class="si">%d</span><span class="s"> trigger events&quot;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
 
+        <span class="n">data_size</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)):</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
             <span class="n">doc2</span> <span class="o">=</span> <span class="n">snappy</span><span class="o">.</span><span class="n">uncompress</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&#39;compressed_doc&#39;</span><span class="p">])</span>
             <span class="n">doc2</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
-
+            <span class="n">data_size</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">doc2</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Size of file: </span><span class="si">%s</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="n">sizeof_fmt</span><span class="p">(</span><span class="n">data_size</span><span class="p">))</span>
 
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 </pre></div>
