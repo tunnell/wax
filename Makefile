@@ -53,23 +53,19 @@ docs:
 
 	echo open docs/_build/html/index.html
 
-changelog:
-	emacs -nw HISTORY.rst
-	git commit -m "Update changelog" HISTORY.rst
-
-major: clean docs changelog
+major: clean docs
 	bumpversion major
 	git push all
 	git push all --tags
 	python setup.py sdist upload
 
-minor: clean docs changelog
+minor: clean docs
 	bumpversion minor
 	git push all
 	git push all --tags
 	python setup.py sdist upload
 
-patch: clean docs changelog
+patch: clean docs
 	bumpversion patch
 	git push all
 	git push all --tags
