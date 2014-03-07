@@ -12,6 +12,7 @@ History
 * General documentation and command-line description cleanup for usage.
 * Remove interactive mode that was confusing users.
 * Fix CTRL-C behavior.
+* Find minimal time rather than relying on control doc.
 
 1.7 (2014-03-05)
 ++++++++++++++++
