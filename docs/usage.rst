@@ -7,26 +7,28 @@ Cito presents a command line interface, where you can see the possible commands 
 	cito -h
 
 
-Event Builder
-=============
+Starting the event builder and software trigger
+===============================================
 
-Event building can performed by running the command::
+By default, the data processing is done continuously.  This means that (unless otherwise specified) the software will wait for new datasets and data.  The default options are good for most situations.  To start the event building (which includes a software trigger), the following command can be run::
 
     cito process
 
-To know what the command line arguments are, run::
+However, to do more complicated things, you can see the help file that will say what command-line arguments there are::
 
     cito help process
 
 where, for example, the hostname can be specified.
 
 
-File Builder
-=============
+Starting the file builder
+=========================
 
 File building can performed by running the command::
 
     cito file builder
+
+This will create a file called `cito_file.pklz`.  To understand how to analyze this, see :doc:`analyze_data`.
 
 Similar to the event building command, there are command line arguments::
 
@@ -35,22 +37,22 @@ Similar to the event building command, there are command line arguments::
 where, for example, the hostname can be specified.
 
 
-Clear Database Options
-======================
+Database commands
+=================
 
-To keep the database, but delete all the documents run::
 
-    cito purge
-
-which can be run during data taking.
-
-To delete the database, the reset function can be used::
+To delete the input and output databases, the reset function can be used::
 
     cito reset
 
 but this cannot be used during a run and deletes all the database indices that are used to speed up searches.
 
-These commands can be used for the input and output databases individually.  Use the help command to understand what command line arguments exist::
+These commands can be used for the input and output databases individually::
+
+    cito reset --db output
+
+
+Use the help command to understand what command line arguments exist::
 
     cito help reset
 

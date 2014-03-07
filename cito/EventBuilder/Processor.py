@@ -138,7 +138,12 @@ class ProcessTask():
 
 
 class ProcessCommand(Command):
-    """ProcessCommand
+    """Start event builder and trigger software for continuous processing..
+
+    Process data through the event builder and software trigger. The default
+    behavior of this command is to take data from the input database, process
+    it, then write events out to the output database.  (This command does not
+    build files.)
     """
 
     def get_description(self):

@@ -17,7 +17,7 @@ class CitoApp(App):
 
     def __init__(self):
         super(CitoApp, self).__init__(
-            description='cito DAQ software.',
+            description='Data acquisition software for event building and software triggering.',
             version=cito.__version__,
             command_manager=CommandManager('cito.core.main'),
         )
