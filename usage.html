@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Usage &mdash; Code for Intelligent Triggering Online 1.8.3 documentation</title>
+  <title>Usage &mdash; Code for Intelligent Triggering Online 1.8.4 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'./',
-        VERSION:'1.8.3',
+        VERSION:'1.8.4',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.3 documentation" href="index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.4 documentation" href="index.html"/>
         <link rel="next" title="Analyzing data" href="analyze_data.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
@@ -85,9 +85,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#event-builder">Event Builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#file-builder">File Builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#clear-database-options">Clear Database Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#starting-the-file-builder">Starting the file builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#database-commands">Database commands</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
@@ -154,43 +154,43 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="n">cito</span> <span class="o">-</span><span class="n">h</span>
 </pre></div>
 </div>
-<div class="section" id="event-builder">
-<h2>Event Builder<a class="headerlink" href="#event-builder" title="Permalink to this headline">¶</a></h2>
-<p>Event building can performed by running the command:</p>
+<div class="section" id="starting-the-event-builder-and-software-trigger">
+<h2>Starting the event builder and software trigger<a class="headerlink" href="#starting-the-event-builder-and-software-trigger" title="Permalink to this headline">¶</a></h2>
+<p>By default, the data processing is done continuously.  This means that (unless otherwise specified) the software will wait for new datasets and data.  The default options are good for most situations.  To start the event building (which includes a software trigger), the following command can be run:</p>
 <div class="highlight-python"><div class="highlight"><pre>cito process
 </pre></div>
 </div>
-<p>To know what the command line arguments are, run:</p>
+<p>However, to do more complicated things, you can see the help file that will say what command-line arguments there are:</p>
 <div class="highlight-python"><div class="highlight"><pre>cito help process
 </pre></div>
 </div>
 <p>where, for example, the hostname can be specified.</p>
 </div>
-<div class="section" id="file-builder">
-<h2>File Builder<a class="headerlink" href="#file-builder" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="starting-the-file-builder">
+<h2>Starting the file builder<a class="headerlink" href="#starting-the-file-builder" title="Permalink to this headline">¶</a></h2>
 <p>File building can performed by running the command:</p>
 <div class="highlight-python"><div class="highlight"><pre>cito file builder
 </pre></div>
 </div>
+<p>This will create a file called <cite>cito_file.pklz</cite>.  To understand how to analyze this, see <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</p>
 <p>Similar to the event building command, there are command line arguments:</p>
 <div class="highlight-python"><div class="highlight"><pre>cito help file builder
 </pre></div>
 </div>
 <p>where, for example, the hostname can be specified.</p>
 </div>
-<div class="section" id="clear-database-options">
-<h2>Clear Database Options<a class="headerlink" href="#clear-database-options" title="Permalink to this headline">¶</a></h2>
-<p>To keep the database, but delete all the documents run:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito purge
-</pre></div>
-</div>
-<p>which can be run during data taking.</p>
-<p>To delete the database, the reset function can be used:</p>
+<div class="section" id="database-commands">
+<h2>Database commands<a class="headerlink" href="#database-commands" title="Permalink to this headline">¶</a></h2>
+<p>To delete the input and output databases, the reset function can be used:</p>
 <div class="highlight-python"><div class="highlight"><pre>cito reset
 </pre></div>
 </div>
 <p>but this cannot be used during a run and deletes all the database indices that are used to speed up searches.</p>
-<p>These commands can be used for the input and output databases individually.  Use the help command to understand what command line arguments exist:</p>
+<p>These commands can be used for the input and output databases individually:</p>
+<div class="highlight-python"><div class="highlight"><pre>cito reset --db output
+</pre></div>
+</div>
+<p>Use the help command to understand what command line arguments exist:</p>
 <div class="highlight-python"><div class="highlight"><pre>cito help reset
 </pre></div>
 </div>

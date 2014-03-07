@@ -111,4 +111,4 @@ Said differently:
 File from File Builder  format
 ==============================
 
-See :doc:`analyze_data`
+See :doc:`analyze_data`.
