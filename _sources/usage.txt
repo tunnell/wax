@@ -36,7 +36,7 @@ where, for example, the hostname can be specified.
 
 
 Clear Database Options
-==============
+======================
 
 To keep the database, but delete all the documents run::
 
