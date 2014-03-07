@@ -18,9 +18,6 @@ class MongoDBOutput(DBBase.MongoDBBase):
     def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
         DBBase.MongoDBBase.__init__(self, collection_name, hostname)
 
-        if self.collection.count() != 0:
-            logging.warning("Collection is not empty")
-
     @staticmethod
     def get_db_name():
         return 'output'

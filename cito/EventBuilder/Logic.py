@@ -105,7 +105,7 @@ class EventBuilder():
         # Step 3: Flag ranges around peaks to save, then break into events
         ##
         event_ranges = compute_subranges(peaks)
-        self.log.info('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
+        self.log.debug('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
 
         data[(0, 0, 'smooth')] = {'indices': sum_data['indices'],
                                   'samples': smooth_waveform}
@@ -133,7 +133,7 @@ class EventBuilder():
 
 
             evt_num = self.get_event_number()
-            self.log.info('\tEvent %d: [%d, %d]', evt_num, e0, e1)
+            self.log.debug('\tEvent %d: [%d, %d]', evt_num, e0, e1)
 
             # If there data within our search range [e0, e1]?
             for key, value in data.items():

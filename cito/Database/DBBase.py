@@ -23,11 +23,22 @@ class MongoDBBase():
         self.connection = pymongo.MongoClient(hostname)
         self.db = self.connection[self.get_db_name()]
 
+        self._initialized = True
+
         if collection_name is not None:
             self.collection = self.db[collection_name]
         else:
             self.collection = self.discover_collection()
 
+    @property
+    def initialized(self):
+        return self._initialized
+
+    @initialized.setter
+    def initialized(self, x):
+        if not isinstance(self.initialized, bool):
+            raise ValueError("Initialization status must be bool")
+        self._initialized = x
 
     @staticmethod
     def get_db_name():
@@ -36,8 +47,9 @@ class MongoDBBase():
     def discover_collection(self):
         collections = self.db.collection_names(include_system_collections=False)
         if len(collections) == 0:
-            logging.debug("No collection found.")
-            raise RuntimeError("No dataset in %s database." % self.get_db_name())
+            self.log.warning("No dataset in %s database." % self.get_db_name())
+            self.initialized = False
+            return
 
         if len(collections) > 1:
             logging.warning("Multiple collections found:")
@@ -54,6 +66,7 @@ class MongoDBBase():
         if num_docs_in_collection == 0:
             logging.fatal("Collection %s.%s is empty" %
                           (self.get_db_name(), collection_name))
+            raise RuntimeError("Empty collection.")
         else:
             logging.info("Collection %s.%s has %d documents" %
                          (self.get_db_name(), collection_name, num_docs_in_collection))
@@ -62,12 +75,14 @@ class MongoDBBase():
 
 
     def get_collection(self):
-        if self.collection == None:
-            raise ValueError
+        if not self.initialized:
+            raise RuntimeError("Not initialized.")
+        elif self.collection == None:
+            raise ValueError("No collection present.")
         return self.collection
 
     def get_db(self):
-        if self.db == None:
+        if not self.initialized or self.db == None:
             raise ValueError
         return self.db
 

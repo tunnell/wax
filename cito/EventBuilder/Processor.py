@@ -7,13 +7,14 @@ from tqdm import tqdm
 
 from cito.Database import InputDBInterface, OutputDBInterface
 from cito.EventBuilder import Logic
+from cito.core.math import sizeof_fmt
 from cito.core import Waveform
 from cito.Trigger.PeakFinder import MAX_DRIFT
 
 
 __author__ = 'tunnell'
 
-CHUNK_SIZE = 2**26
+CHUNK_SIZE = 2**28
 class ProcessTask():
     """Process a time block
     """
@@ -30,15 +31,33 @@ class ProcessTask():
             self.delete_collection_when_done = False
 
         self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
-                                              hostname=hostname)
-        self.output = OutputDBInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
-                                                 hostname=hostname)
+                                                   hostname=hostname)
+        if self.input.initialized:
+            self.output = OutputDBInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
+                                                          hostname=hostname)
+        else:
+            self.log.debug("Cannot setup output DB.")
+            self.output = None
 
         self.event_builder = Logic.EventBuilder()
+
+
+    def print_stats(self, amount_data_processed, dt):
+
+        self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
+                                                             dt))
+        if dt < 1.0:
+            self.log.debug("Rate: N/A")
+        else:
+            data_rate = amount_data_processed / dt
+            rate_string = sizeof_fmt(data_rate) + 'ps'
+            self.log.debug("Rate: %s" % (rate_string))
+
 
     def process_dataset(self, chunk_size, chunks, padding):
         # Used for benchmarking
         start_time = time.time()
+        dt = 0
         amount_data_processed = 0
 
         waittime = 1 # s
@@ -49,53 +68,40 @@ class ProcessTask():
 
         search_for_more_data = True
 
-        # Loop until Ctrl-C or error
         while (search_for_more_data):
-            self.log.debug("Entering while loop; use Ctrl-C to exit")
+            if self.input.has_run_ended():
+                # Round up
+                self.log.debug("Run has ended")
+                max_time_index = math.ceil(self.input.get_max_time() / chunk_size)
+                search_for_more_data = False
+            else:
+                # Round down
+                max_time_index = int(self.input.get_max_time() / chunk_size)
 
-            try:
-                if self.input.has_run_ended():
-                    # Round up
-                    self.log.debug("Run has ended")
-                    max_time_index = math.ceil(self.input.get_max_time() / chunk_size)
-                    search_for_more_data = False
-                else:
-                    # Round down
-                    max_time_index = int(self.input.get_max_time() / chunk_size)
+            if max_time_index > current_time_index:
+                for i in tqdm(range(current_time_index, max_time_index)):
+                    t0 = (i * chunk_size)
+                    t1 = (i + 1) * chunk_size
 
-                if max_time_index > current_time_index:
-                    for i in tqdm(range(min_time_index, max_time_index)):
-                        t0 = (i * chunk_size)
-                        t1 = (i + 1) * chunk_size
+                    self.log.debug('Processing [%f s, %f s]' % (t0/1e8, t1/1e8))
 
-                        self.log.debug('Processing [%f s, %f s]' % (t0/1e8, t1/1e8))
+                    amount_data_processed += self.process_time_range(t0, t1 + padding, padding)
 
-                        amount_data_processed += self.process_time_range(t0, t1 + padding, padding)
+                    self.print_stats(amount_data_processed, time.time() - start_time)
 
-                        dt = (time.time() - start_time)
-                        data_rate = amount_data_processed / dt / 1000
-                        self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
-                                                                             dt))
-                        self.log.info("Rate [kBps]: %f" % (data_rate))
-
-                        if chunks > 0 and i > chunks:
-                            search_for_more_data = False
-                            break
-                    current_time_index = max_time_index
-                else:
-                    self.log.debug('Waiting %f seconds' % waittime)
-                    time.sleep(waittime)
-            except KeyboardInterrupt:
-                self.log.info("Ctrl-C caught so exiting.")
-                return False
+                    if chunks > 0 and i > chunks:
+                        search_for_more_data = False
+                        break # Breaks for loop, but not while.
+                current_time_index = max_time_index
+            else:
+                self.log.debug('Waiting %f seconds' % waittime)
+                time.sleep(waittime)
+                start_time = time.time()
+                amount_data_processed = 0
 
         if self.delete_collection_when_done:
             self.drop_collection()
-        self.log.info("Stats:")
-        self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,
-                                                              dt))
-        self.log.info("\tRate [kBps]: %f" % (amount_data_processed / dt / 1000))
-        return True
+
 
 
     def process_time_range(self, t0, t1, padding):
@@ -179,15 +185,18 @@ class ProcessCommand(Command):
         while True:
             try:
                 p = ProcessTask(parsed_args.dataset, parsed_args.hostname)
-            except RuntimeError:
-                self.log.error("No dataset found; waiting")
-                time.sleep(1)
-                continue
+            except Exception as e:
+                self.log.exception(e)
+                self.log.fatal("Exception resulted in fatal error; quiting.")
+                raise
 
-            if not p.process_dataset(chunk_size = parsed_args.chunksize,
-                                     chunks = parsed_args.chunks,
-                                     padding = parsed_args.padding):
-                break
+            if not p.input.initialized:
+                self.log.warning("No processable dataset found; waiting.")
+                time.sleep(1)
+            else:
+                p.process_dataset(chunk_size = parsed_args.chunksize,
+                                  chunks = parsed_args.chunks,
+                                  padding = parsed_args.padding)
 
             # If only a single dataset was specified, break
             if parsed_args.dataset is not None:

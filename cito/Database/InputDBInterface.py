@@ -17,10 +17,15 @@ class MongoDBInput(DBBase.MongoDBBase):
     """
 
     def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
-        DBBase.MongoDBBase.__init__(self, collection_name, hostname)
-
         self.control_doc_id = None
         self.is_compressed = None
+
+        DBBase.MongoDBBase.__init__(self, collection_name, hostname)
+
+        if self.initialized == False:
+            self.log.debug("Cannot initialize input.")
+            return
+
         self.find_control_doc()
 
         self.collection.ensure_index(self.get_sort_key(),
@@ -39,11 +44,15 @@ class MongoDBInput(DBBase.MongoDBBase):
                                                   "data": {'$exists': False}}))
 
         if len(control_docs) > 1:
-            raise RuntimeError("More than one control document found")
-        if len(control_docs) == 0:
-            raise RuntimeError("No control document found")
-        if self.control_doc_id is not None:
+            raise RuntimeError("More than one control document found in %s." % self.get_collection_name())
+        elif self.control_doc_id is not None:
             raise RuntimeError("Control document already set")
+        elif len(control_docs) == 0:
+            self.log.error("No control document found.")
+            self.initialized = False
+            return
+
+
         self.control_doc_id = control_docs[0]['_id']
         logging.info("Control document:")
         for key, value in control_docs[0].items():
@@ -85,6 +94,8 @@ class MongoDBInput(DBBase.MongoDBBase):
                                           fields=['time'],
                                           #limit=1,
                                           sort=sort_key)
+            if doc == None or doc['time'] == None:
+                return self.get_min_time()
             return doc['time']
 
         modules = self.get_modules()
@@ -92,17 +103,21 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         for module in modules:
             query = {'module': module}
-            cursor = self.collection.find(query,
-                                     fields=['time', 'module'],
-                                     limit=1,
-                                     sort=sort_key)
+            doc = self.collection.find_one(query,
+                                              fields=['time', 'module'],
+                                              limit=1,
+                                               sort=sort_key)
 
+            if doc == None:
+                return self.get_min_time()
             #See if cursor is fast with cursor.explain()['indexOnly']
 
-            times[module] = next(cursor)['time']
+            times[module] = doc['time']
 
         # Want the earliest time (i.e., the min) of all the max times
         # for the boards.
+        if len(times.values()) == 0:
+            return self.get_min_time()
         time = min(times.values())
 
         return time
@@ -114,7 +129,10 @@ class MongoDBInput(DBBase.MongoDBBase):
            int:  A time in units of 10 ns
 
         """
-        return self.get_control_document()['starttime']
+        sort_key = self.get_sort_key(pymongo.ASCENDING)
+        doc = self.collection.find_one({"time": {'$exists': True}}, sort=sort_key)
+        return doc['time']
+        #return self.get_control_document()['starttime']
 
     def has_run_ended(self):
         """Determine if run has ended

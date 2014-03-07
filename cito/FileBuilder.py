@@ -1,3 +1,5 @@
+from cito.core.math import sizeof_fmt
+
 __author__ = 'tunnell'
 
 import logging
@@ -10,6 +12,7 @@ import snappy
 
 from cito import __version__
 from cito.Database import OutputDBInterface
+
 
 
 class FileBuilderCommand(Command):
@@ -55,11 +58,15 @@ class FileBuilderCommand(Command):
 
         self.log.info("Processing %d trigger events" % N)
 
+        data_size = 0
+
         for i in tqdm(range(N)):
             doc = next(cursor)
             doc2 = snappy.uncompress(doc['compressed_doc'])
             doc2 = pickle.loads(doc2)
-
+            data_size += len(doc2)
             pickle.dump(doc2, f)
+
+        self.log.info("Size of file: %s " % sizeof_fmt(data_size))
 
         f.close()
