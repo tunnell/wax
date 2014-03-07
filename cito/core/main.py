@@ -75,5 +75,9 @@ class CitoShowOne(ShowOne):
 
 
 def main(argv=sys.argv[1:]):
+    if len(argv) == 0:
+        print("HINT: Did you mean to run 'cito process' to start building events?\n")
+        argv = ['-h']
     myapp = CitoApp()
+
     return myapp.run(argv)
