@@ -87,7 +87,7 @@ class ProcessTask():
                     time.sleep(waittime)
             except KeyboardInterrupt:
                 self.log.info("Ctrl-C caught so exiting.")
-                return
+                return False
 
         if self.delete_collection_when_done:
             self.drop_collection()
@@ -95,6 +95,7 @@ class ProcessTask():
         self.log.info("\t%d bytes processed in %d seconds" % (amount_data_processed,
                                                               dt))
         self.log.info("\tRate [kBps]: %f" % (amount_data_processed / dt / 1000))
+        return True
 
 
     def process_time_range(self, t0, t1, padding):
@@ -119,16 +120,12 @@ class ProcessTask():
             return 0
 
         # Build events (t0 and t1 used only for sanity checks)
-        try:
-            events = self.event_builder.build_event(data, t0, t1, padding)
+        events = self.event_builder.build_event(data, t0, t1, padding)
 
-            if len(events):
-                self.output.write_events(events)
-            else:
-                self.log.debug("No events found between %d and %d." % (t0, t1))
-
-        except:
-            logging.exception('Event building failed.')
+        if len(events):
+            self.output.write_events(events)
+        else:
+            self.log.debug("No events found between %d and %d." % (t0, t1))
 
         return size
 
@@ -187,9 +184,10 @@ class ProcessCommand(Command):
                 time.sleep(1)
                 continue
 
-            p.process_dataset(chunk_size = parsed_args.chunksize,
-                              chunks = parsed_args.chunks,
-                              padding = parsed_args.padding)
+            if not p.process_dataset(chunk_size = parsed_args.chunksize,
+                                     chunks = parsed_args.chunks,
+                                     padding = parsed_args.padding):
+                break
 
             # If only a single dataset was specified, break
             if parsed_args.dataset is not None:

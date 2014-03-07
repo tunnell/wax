@@ -67,7 +67,7 @@ def get_data_and_sum_waveform(cursor, input):
 
         try:
             samples = get_samples(data)
-        except:
+        except ValueError:
             logging.exception('Failed to parse document: %s' % str(doc['_id']))
             continue
 
