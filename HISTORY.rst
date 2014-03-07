@@ -11,6 +11,7 @@ History
 * Implemented 'padding' to deal with events near search window edges
 * General documentation and command-line description cleanup for usage.
 * Remove interactive mode that was confusing users.
+* Fix CTRL-C behavior.
 
 1.7 (2014-03-05)
 ++++++++++++++++
