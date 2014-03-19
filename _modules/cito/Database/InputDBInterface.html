@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Database.InputDBInterface &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
+  <title>cito.Database.InputDBInterface &mdash; Code for Intelligent Triggering Online 1.8.8 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.8.7',
+        VERSION:'1.8.8',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.8 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -110,14 +110,15 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.8 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.7 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.6 (2014-02-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.5 (2014-02-24)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.9 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id9">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -163,6 +164,7 @@
 
 
 <div class="viewcode-block" id="MongoDBInput"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput">[docs]</a><span class="k">class</span> <span class="nc">MongoDBInput</span><span class="p">(</span><span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;Read from MongoDB</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -172,7 +174,7 @@
 
         <span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Cannot initialize input.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -180,7 +182,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">ensure_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">(),</span>
                                      <span class="n">background</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
 
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="MongoDBInput.get_db_name"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.get_db_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_name</span><span class="p">():</span>
@@ -194,7 +195,8 @@
                                                   <span class="s">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}}))</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">control_docs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;More than one control document found in </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">())</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;More than one control document found in </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">())</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Control document already set&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">control_docs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -202,14 +204,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="k">return</span>
 
-
         <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="o">=</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;_id&#39;</span><span class="p">]</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Control document:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">is_compressed</span> <span class="o">=</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;compressed&#39;</span><span class="p">]</span>
-
 </div>
 <div class="viewcode-block" id="MongoDBInput.get_control_document"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.get_control_document">[docs]</a>    <span class="k">def</span> <span class="nf">get_control_document</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Fetch current control document from collection</span>
@@ -241,10 +241,9 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_run_ended</span><span class="p">():</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({},</span>
-                                          <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span>
-                                          <span class="c">#limit=1,</span>
-                                          <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                                           <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span>
+                                           <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
 
@@ -254,19 +253,19 @@
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;module&#39;</span><span class="p">:</span> <span class="n">module</span><span class="p">}</span>
             <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
-                                              <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">],</span>
-                                              <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                                               <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+                                           <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">],</span>
+                                           <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                           <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
-            <span class="c">#See if cursor is fast with cursor.explain()[&#39;indexOnly&#39;]</span>
+            <span class="c"># See if cursor is fast with cursor.explain()[&#39;indexOnly&#39;]</span>
 
             <span class="n">times</span><span class="p">[</span><span class="n">module</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
 
         <span class="c"># Want the earliest time (i.e., the min) of all the max times</span>
         <span class="c"># for the boards.</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
         <span class="n">time</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
@@ -280,9 +279,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sort_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)</span>
-        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}},</span> <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}},</span>
+                                       <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
-        <span class="c">#return self.get_control_document()[&#39;starttime&#39;]</span>
+        <span class="c"># return self.get_control_document()[&#39;starttime&#39;]</span>
 </div>
 <div class="viewcode-block" id="MongoDBInput.has_run_ended"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.has_run_ended">[docs]</a>    <span class="k">def</span> <span class="nf">has_run_ended</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Determine if run has ended</span>
@@ -292,7 +292,6 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_control_document</span><span class="p">()[</span><span class="s">&#39;data_taking_ended&#39;</span><span class="p">]</span>
-
 </div>
 <div class="viewcode-block" id="MongoDBInput.get_data_docs"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.get_data_docs">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time0</span><span class="p">,</span> <span class="n">time1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Fetch from DB the documents within time range.</span>
@@ -314,7 +313,6 @@
         <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">subset_query</span><span class="p">))</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Fetched </span><span class="si">%d</span><span class="s"> input documents.&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">result</span>
-
 </div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="MongoDBInput.get_sort_key"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.InputDBInterface.MongoDBInput.get_sort_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_sort_key</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">):</span>

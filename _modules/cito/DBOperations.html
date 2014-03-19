@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.DBOperations &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
+  <title>cito.DBOperations &mdash; Code for Intelligent Triggering Online 1.8.8 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../',
-        VERSION:'1.8.7',
+        VERSION:'1.8.8',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.8 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -110,14 +110,15 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">1.8 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id2">1.7 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id3">1.6 (2014-02-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id4">1.5 (2014-02-24)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id5">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id6">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id7">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id8">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">1.9 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id2">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id3">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id4">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id5">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id6">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id7">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id8">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id9">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -162,6 +163,7 @@
 
 
 <div class="viewcode-block" id="CitoDBShowOne"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne">[docs]</a><span class="k">class</span> <span class="nc">CitoDBShowOne</span><span class="p">(</span><span class="n">ShowOne</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;Base class for all DB commands.</span>
 
 <span class="sd">    Handles logging, descriptions, and common fuctions.</span>
@@ -211,13 +213,13 @@
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s">&#39;Output: DB status&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">db</span><span class="p">)])</span>
 
         <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">)</span>
-
 </div>
 <div class="viewcode-block" id="CitoDBShowOne.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.CitoDBShowOne.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
 </div></div>
 <div class="viewcode-block" id="DBDelete"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBDelete">[docs]</a><span class="k">class</span> <span class="nc">DBDelete</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;Delete the database by dropping it.</span>
 
 <span class="sd">    Warning: this cannot be used during a run as it will kill the DAQ writer.</span>
@@ -230,6 +232,7 @@
 
 </div></div>
 <div class="viewcode-block" id="DBRepair"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBRepair">[docs]</a><span class="k">class</span> <span class="nc">DBRepair</span><span class="p">(</span><span class="n">CitoDBShowOne</span><span class="p">):</span>
+
     <span class="sd">&quot;&quot;&quot;Repair DB to regain unused space.</span>
 
 <span class="sd">    MongoDB can&#39;t know how what to do with space after a document is deleted,</span>
@@ -243,8 +246,8 @@
 <div class="viewcode-block" id="DBRepair.take_action_wrapped"><a class="viewcode-back" href="../../cito.html#cito.DBOperations.DBRepair.take_action_wrapped">[docs]</a>    <span class="k">def</span> <span class="nf">take_action_wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Repairing DB.&quot;</span><span class="p">)</span>
         <span class="n">db</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s">&#39;repairDatabase&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s">&#39;Repaired&#39;</span>
-</pre></div></div></div>
+        <span class="k">return</span> <span class="s">&#39;Repaired&#39;</span></div></div>
+</pre></div>
 
           <footer>
   

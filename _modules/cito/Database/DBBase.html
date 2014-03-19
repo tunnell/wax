@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Database.DBBase &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
+  <title>cito.Database.DBBase &mdash; Code for Intelligent Triggering Online 1.8.8 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.8.7',
+        VERSION:'1.8.8',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.8 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -110,14 +110,15 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.8 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.7 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.6 (2014-02-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.5 (2014-02-24)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.9 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id9">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -163,6 +164,7 @@
 
 
 <div class="viewcode-block" id="MongoDBBase"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase">[docs]</a><span class="k">class</span> <span class="nc">MongoDBBase</span><span class="p">():</span>
+
     <span class="sd">&quot;&quot;&quot;Read from MongoDB</span>
 
 <span class="sd">    The subclass is responsible for setting up the collection</span>
@@ -195,9 +197,10 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="MongoDBBase.discover_collection"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.discover_collection">[docs]</a>    <span class="k">def</span> <span class="nf">discover_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">collections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">collection_names</span><span class="p">(</span><span class="n">include_system_collections</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">collections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">collection_names</span><span class="p">(</span>
+            <span class="n">include_system_collections</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">collections</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No dataset in </span><span class="si">%s</span><span class="s"> database.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No dataset in </span><span class="si">%s</span><span class="s"> database.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="k">return</span>
 
@@ -222,17 +225,16 @@
                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">(),</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">num_docs_in_collection</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
-
 </div>
 <div class="viewcode-block" id="MongoDBBase.get_collection"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.get_collection">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Not initialized.&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;No collection present.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span>
 </div>
 <div class="viewcode-block" id="MongoDBBase.get_db"><a class="viewcode-back" href="../../../cito.Database.html#cito.Database.DBBase.MongoDBBase.get_db">[docs]</a>    <span class="k">def</span> <span class="nf">get_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span>
 </div>

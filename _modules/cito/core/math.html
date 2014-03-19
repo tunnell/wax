@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.core.math &mdash; Code for Intelligent Triggering Online 1.8.7 documentation</title>
+  <title>cito.core.math &mdash; Code for Intelligent Triggering Online 1.8.8 documentation</title>
   
 
   
@@ -22,7 +22,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'../../../',
-        VERSION:'1.8.7',
+        VERSION:'1.8.8',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -43,7 +43,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.7 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 1.8.8 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -110,14 +110,15 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.8 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.7 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.6 (2014-02-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.5 (2014-02-24)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">1.9 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id9">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -173,7 +174,8 @@
         <span class="n">time_start</span> <span class="o">=</span> <span class="n">peak</span> <span class="o">+</span> <span class="n">range_around_peak</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">time_stop</span> <span class="o">=</span> <span class="n">peak</span> <span class="o">+</span> <span class="n">range_around_peak</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">time_start</span> <span class="o">&lt;=</span> <span class="n">ranges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>  <span class="c"># ranges[-1] is latest range</span>
+        <span class="c"># ranges[-1] is latest range</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">time_start</span> <span class="o">&lt;=</span> <span class="n">ranges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
             <span class="n">ranges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_stop</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">time_start</span><span class="p">,</span> <span class="n">time_stop</span><span class="p">])</span>
@@ -228,15 +230,16 @@
     <span class="c"># If all of A is before B, or vice versa...</span>
     <span class="k">if</span> <span class="n">a1</span> <span class="o">&lt;</span> <span class="n">b0</span> <span class="ow">or</span> <span class="n">b1</span> <span class="o">&lt;</span> <span class="n">a0</span><span class="p">:</span>  <span class="c"># If true, no overlap</span>
         <span class="k">return</span> <span class="n">range_overlap</span>  <span class="c"># None, None</span>
-    <span class="k">elif</span> <span class="n">a0</span> <span class="o">&lt;=</span> <span class="n">b0</span> <span class="ow">and</span> <span class="n">b1</span> <span class="o">&lt;=</span> <span class="n">a1</span><span class="p">:</span>  <span class="c">#  All of B contained in A</span>
+    <span class="k">elif</span> <span class="n">a0</span> <span class="o">&lt;=</span> <span class="n">b0</span> <span class="ow">and</span> <span class="n">b1</span> <span class="o">&lt;=</span> <span class="n">a1</span><span class="p">:</span>  <span class="c"># All of B contained in A</span>
         <span class="n">range_overlap</span> <span class="o">=</span> <span class="p">(</span><span class="n">b0</span><span class="p">,</span> <span class="n">b1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">b0</span> <span class="o">&lt;=</span> <span class="n">a0</span> <span class="ow">and</span> <span class="n">a1</span> <span class="o">&lt;=</span> <span class="n">b1</span><span class="p">:</span>  <span class="c">#  All of A contained in B</span>
+    <span class="k">elif</span> <span class="n">b0</span> <span class="o">&lt;=</span> <span class="n">a0</span> <span class="ow">and</span> <span class="n">a1</span> <span class="o">&lt;=</span> <span class="n">b1</span><span class="p">:</span>  <span class="c"># All of A contained in B</span>
         <span class="n">range_overlap</span> <span class="o">=</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Partial overlap. slow&quot;</span><span class="p">)</span>
         <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">b0</span><span class="p">,</span> <span class="n">b1</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">overlap</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;No overlap found?... (</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">) (</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">a1</span> <span class="o">&lt;</span> <span class="n">b0</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&#39;No overlap found?... (</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">) (</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a0</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">a1</span> <span class="o">&lt;</span> <span class="n">b0</span><span class="p">)))</span>
         <span class="n">range_overlap</span> <span class="o">=</span> <span class="p">(</span><span class="n">overlap</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overlap</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">range_overlap</span>
@@ -293,7 +296,7 @@
 
 </div>
 <div class="viewcode-block" id="sizeof_fmt"><a class="viewcode-back" href="../../../cito.core.html#cito.core.math.sizeof_fmt">[docs]</a><span class="k">def</span> <span class="nf">sizeof_fmt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;B&#39;</span><span class="p">,</span><span class="s">&#39;KB&#39;</span><span class="p">,</span><span class="s">&#39;MB&#39;</span><span class="p">,</span><span class="s">&#39;GB&#39;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;KB&#39;</span><span class="p">,</span> <span class="s">&#39;MB&#39;</span><span class="p">,</span> <span class="s">&#39;GB&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mf">1024.0</span><span class="p">:</span>
             <span class="k">return</span> <span class="s">&quot;</span><span class="si">%3.1f</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
         <span class="n">num</span> <span class="o">/=</span> <span class="mf">1024.0</span>
