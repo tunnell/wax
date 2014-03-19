@@ -3,11 +3,12 @@
 History
 -------
 
-1.9 (2014-03-05)
+1.9 (2014-03-19)
 ++++++++++++++++
 
 * BUG: Not all PMT data was being written to output file (if PMT had lots of hits)
 * Begining of testing and general cleanup
+* Speed up some math routines
 
 1.8 (2014-03-05)
 ++++++++++++++++

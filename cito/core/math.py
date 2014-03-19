@@ -45,6 +45,19 @@ def merge_subranges(ranges, indices, distance):
             combined_ranges.append(subrange)
     return combined_ranges
 
+def group(L):
+    last = L[0]
+    ifirst = 0
+    ilast = 0
+    for i, n in enumerate(L[1:]):
+        if n - 1 == last: # Part of the group, bump the end
+            last = n
+            ilast = i + 1
+        else: # Not part of the group, yield current group and start a new
+            yield [ifirst, ilast]
+            last = n
+            ifirst = ilast = i + 1
+    yield [ifirst, ilast] # Yield the last group
 
 def find_subranges(values):
     """Identify continuous ranges in a list and return their location.
@@ -59,14 +72,9 @@ def find_subranges(values):
 
     See http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list
     """
-    ranges = []
-    for k, g in groupby(enumerate(values), lambda i_x: i_x[0] - i_x[1]):
-        values = list(g)
 
-        # values[0] and values[-1] are range boundaries
-        ranges.append([values[0][0], values[-1][0]])
 
-    return ranges
+    return list(group(values))
 
 
 def overlap_region(range1, range2):
