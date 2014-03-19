@@ -40,7 +40,6 @@ setup(
             'db inspector = cito.Inspector:InputDBInspector',
             'repair = cito.DBOperations:DBRepair',
             'process = cito.EventBuilder.Processor:ProcessCommand',
-            'inspect trigger = cito.Inspector:OutputDocInspector',
             'file builder = cito.FileBuilder:FileBuilderCommand',
 
         ],

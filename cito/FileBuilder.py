@@ -44,7 +44,11 @@ class FileBuilderCommand(Command):
         self.log.debug("Establishing connection")
 
         output = OutputDBInterface.MongoDBOutput(hostname=parsed_args.hostname)
-        collection = output.get_collection()
+        try:
+            collection = output.get_collection()
+        except RuntimeError:
+            self.log.error("Uninitialized (empty? if so, run 'process'.) output database; no file made.")
+            return
 
         cursor = collection.find()
         N = cursor.count()

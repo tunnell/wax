@@ -16,16 +16,6 @@ def get_samples(data):
         raise ValueError('Data from board larger than memory on board')
 
     samples = np.frombuffer(data, dtype=SAMPLE_TYPE)
-    samples = samples.astype(np.int64)
-
-    # Todo: make this a flag?
-    #if np.max(samples) >= MAX_ADC_VALUE or np.min(samples) < 0:
-    #    raise ValueError('Corrupt data since more than 14 bits used')
-
-    # Sanity check
-    #for i in range(len(data)):
-    #    # the 32nd, 31st, 15th, and 16th bits should be zero
-    #    assert (int(data[i]) & 0x0C000C000) == 0, "Sample format incorrect"
 
     # Invert pulse so larger energy deposit is larger ADC values
     samples *= -1
@@ -63,12 +53,13 @@ def get_data_and_sum_waveform(cursor, input):
 
         size += len(data)
 
-        time_correction = np.int64(doc['time'])
+        time_correction = doc['time']
 
         try:
             samples = get_samples(data)
-        except ValueError:
-            logging.exception('Failed to parse document: %s' % str(doc['_id']))
+        except ValueError as e:
+            logging.error('Failed to parse document: %s' % str(doc['_id']))
+            logging.exception(e)
             continue
 
         # Improve?
@@ -82,15 +73,18 @@ def get_data_and_sum_waveform(cursor, input):
             if sample_index in sum_data:
                 sum_data[sample_index] += sample
             else:
-                sum_data[sample_index] = np.int64(sample)
+                sum_data[sample_index] = np.int32(sample)
 
         if samples.size != 0:
             key = (time_correction,
                    time_correction + len(samples),
                    num_channel)
 
+
             interpreted_data[key] = {
-            'indices': np.arange(time_correction, time_correction + samples.size, dtype=np.int64),
+            'indices': np.arange(time_correction,
+                                 time_correction + samples.size,
+                                 dtype=np.int32),
             'samples': samples}
 
     log.debug("Size of data process in bytes: %d", size)
@@ -99,16 +93,13 @@ def get_data_and_sum_waveform(cursor, input):
     new_indices = [x for x in sum_data.keys()]
     new_indices.sort()
     new_samples = [sum_data[x] for x in new_indices]
-    new_indices = np.array(new_indices, dtype=np.int64)
-    new_samples = np.array(new_samples, dtype=np.int64)
+    new_indices = np.array(new_indices, dtype=np.int32)
+    new_samples = np.array(new_samples, dtype=np.int32)
 
     if len(new_indices) >= 2:
         key = (new_indices[0],
                new_indices[-1],
                'sum')
-
-        #  Here, we store indices as well as the range (in the key) because
-        # the samples of the sum waveform need not be contigous
         interpreted_data[key] = {'indices': new_indices,
                                  'samples': new_samples}
 

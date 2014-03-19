@@ -71,7 +71,7 @@ class ProcessTask():
         while (search_for_more_data):
             if self.input.has_run_ended():
                 # Round up
-                self.log.debug("Run has ended")
+                self.log.info("Data taking has ended; processing remaining data.")
                 max_time_index = math.ceil(self.input.get_max_time() / chunk_size)
                 search_for_more_data = False
             else:
@@ -92,6 +92,10 @@ class ProcessTask():
                     if chunks > 0 and i > chunks:
                         search_for_more_data = False
                         break # Breaks for loop, but not while.
+
+                processed_time = (max_time_index - current_time_index)
+                processed_time *= chunk_size / 1e8
+                self.log.info("Processed %d seconds; searching for more data." % processed_time)
                 current_time_index = max_time_index
             else:
                 self.log.debug('Waiting %f seconds' % waittime)
@@ -191,7 +195,7 @@ class ProcessCommand(Command):
                 raise
 
             if not p.input.initialized:
-                self.log.warning("No processable dataset found; waiting.")
+                self.log.warning("No dataset available to process; waiting one second.")
                 time.sleep(1)
             else:
                 p.process_dataset(chunk_size = parsed_args.chunksize,

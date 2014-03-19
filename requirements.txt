@@ -1,11 +1,13 @@
+# Normal packages
 pymongo
+tqdm
 python-snappy
 numpy
 scipy
-sphinx_rtd_theme
-celery
-cliff
-bumpversion
-matplotlib
-sphinx
-tqdm
+cliff  # If Cliff probles, pbr==0.5.21 required by cliff
+
+# Dev packages
+#bumpversion # for releases
+#sphinx # docs
+#sphinx_rtd_theme # docs
+

@@ -119,17 +119,17 @@ class EventBuilder():
             to_save = {'data': {}}
 
             # Logic to deal with overlapping region
-            if e1 > t1:
-                if e0 < t1 - padding:
-                    self.log.error("Event bigger than overlap region.  Flagging 1 second of deadtime.")
-                    to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
-                    to_save['evt_num'] = "deadtime"
-                    to_save['error'] = "Event range [%d, %d] greater than overlap window!" % (e0, e1)
-                    to_save['range'] = [int(e0 - 5e7), int(e1 + 5e7)]
-                    events.append(to_save)
-                continue
-            if e0 < t0 + padding:
-                continue
+            #if e1 > t1:
+            #    if e0 < t1 - padding:
+            #        self.log.error("Event bigger than overlap region.  Flagging 1 second of deadtime.")
+            #        to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
+            #        to_save['evt_num'] = "deadtime"
+            #        to_save['error'] = "Event range [%d, %d] greater than overlap window!" % (e0, e1)
+            #        to_save['range'] = [int(e0 - 5e7), int(e1 + 5e7)]
+            #        events.append(to_save)
+            #    continue
+            #if e0 < t0 + padding:
+            #    continue
 
 
             evt_num = self.get_event_number()
@@ -137,25 +137,26 @@ class EventBuilder():
 
             # If there data within our search range [e0, e1]?
             for key, value in data.items():
-                num_pmt = key[2]
-                #to_save['data'][num_pmt] = value
+                mask = (e0 < value['indices']) & (value['indices'] < e1)
 
-                samples = value['samples']
-                indices = value['indices']
-                assert samples.size == indices.size
-
-                mask = np.ma.masked_inside(indices, e0, e1).mask
-
-                if not isinstance(mask, np.ndarray) and mask == False:
+                if not mask.any():
                     continue
-                # take only values in the mask (i.e., within event range)
-                samples = samples.compress(mask)
-                indices = indices.compress(mask)
 
-                pmt_data = {'indices': indices,
-                            'samples': samples}
-                if len(pmt_data['indices']) != 0:
-                    to_save['data'][num_pmt] = pmt_data
+                indices_to_save = value['indices'].compress(mask)
+                samples_to_save = value['samples'].compress(mask)
+
+                # Existing data that needs to be added?
+                pmt_num = key[2]
+                if pmt_num in to_save['data']:
+                    indices_already_saved = to_save['data'][pmt_num]['indices']
+                    samples_already_saved = to_save['data'][pmt_num]['samples']
+                    indices_to_save = np.concatenate((indices_to_save,
+                                                      indices_already_saved))
+                    samples_to_save = np.concatenate((samples_to_save,
+                                                            samples_already_saved))
+
+                to_save['data'][pmt_num] = {'indices': indices_to_save,
+                                            'samples' : samples_to_save}
 
             to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
 

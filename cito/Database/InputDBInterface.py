@@ -92,7 +92,6 @@ class MongoDBInput(DBBase.MongoDBBase):
         if self.has_run_ended():
             doc = self.collection.find_one({},
                                           fields=['time'],
-                                          #limit=1,
                                           sort=sort_key)
             if doc == None or doc['time'] == None:
                 return self.get_min_time()
