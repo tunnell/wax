@@ -14,8 +14,11 @@ from cito.Trigger.PeakFinder import MAX_DRIFT
 
 __author__ = 'tunnell'
 
-CHUNK_SIZE = 2**28
+CHUNK_SIZE = 2 ** 28
+
+
 class ProcessTask():
+
     """Process a time block
     """
 
@@ -41,7 +44,6 @@ class ProcessTask():
 
         self.event_builder = Logic.EventBuilder()
 
-
     def print_stats(self, amount_data_processed, dt):
 
         self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
@@ -53,14 +55,13 @@ class ProcessTask():
             rate_string = sizeof_fmt(data_rate) + 'ps'
             self.log.debug("Rate: %s" % (rate_string))
 
-
     def process_dataset(self, chunk_size, chunks, padding):
         # Used for benchmarking
         start_time = time.time()
         dt = 0
         amount_data_processed = 0
 
-        waittime = 1 # s
+        waittime = 1  # s
 
         # int rounds down
         min_time_index = int(self.input.get_min_time() / chunk_size)
@@ -71,8 +72,10 @@ class ProcessTask():
         while (search_for_more_data):
             if self.input.has_run_ended():
                 # Round up
-                self.log.info("Data taking has ended; processing remaining data.")
-                max_time_index = math.ceil(self.input.get_max_time() / chunk_size)
+                self.log.info(
+                    "Data taking has ended; processing remaining data.")
+                max_time_index = math.ceil(
+                    self.input.get_max_time() / chunk_size)
                 search_for_more_data = False
             else:
                 # Round down
@@ -83,15 +86,18 @@ class ProcessTask():
                     t0 = (i * chunk_size)
                     t1 = (i + 1) * chunk_size
 
-                    self.log.debug('Processing [%f s, %f s]' % (t0/1e8, t1/1e8))
+                    self.log.debug(
+                        'Processing [%f s, %f s]' % (t0 / 1e8, t1 / 1e8))
 
-                    amount_data_processed += self.process_time_range(t0, t1 + padding, padding)
+                    amount_data_processed += self.process_time_range(
+                        t0, t1 + padding, padding)
 
-                    self.print_stats(amount_data_processed, time.time() - start_time)
+                    self.print_stats(
+                        amount_data_processed, time.time() - start_time)
 
                     if chunks > 0 and i > chunks:
                         search_for_more_data = False
-                        break # Breaks for loop, but not while.
+                        break  # Breaks for loop, but not while.
 
                 processed_time = (max_time_index - current_time_index)
                 processed_time *= chunk_size / 1e8
@@ -105,8 +111,6 @@ class ProcessTask():
 
         if self.delete_collection_when_done:
             self.drop_collection()
-
-
 
     def process_time_range(self, t0, t1, padding):
         """Process a time chunk
@@ -143,8 +147,8 @@ class ProcessTask():
         self.input.get_db().drop_collection(self.input.get_collection_name())
 
 
-
 class ProcessCommand(Command):
+
     """Start event builder and trigger software for continuous processing..
 
     Process data through the event builder and software trigger. The default
@@ -168,7 +172,7 @@ class ProcessCommand(Command):
                             default=CHUNK_SIZE)
         parser.add_argument('--padding', type=int,
                             help='Padding to overlap processing windows [10 ns step]',
-                            default=(3*MAX_DRIFT))
+                            default=(3 * MAX_DRIFT))
         parser.add_argument('--chunks', type=int,
                             help='Limit the numbers of chunks to analyze (-1 means no limit)',
                             default=-1)
@@ -177,9 +181,6 @@ class ProcessCommand(Command):
                             help='Analyze only a single dataset')
 
         return parser
-
-
-
 
     def take_action(self, parsed_args):
         self.log = logging.getLogger(self.__class__.__name__)
@@ -198,9 +199,9 @@ class ProcessCommand(Command):
                 self.log.warning("No dataset available to process; waiting one second.")
                 time.sleep(1)
             else:
-                p.process_dataset(chunk_size = parsed_args.chunksize,
-                                  chunks = parsed_args.chunks,
-                                  padding = parsed_args.padding)
+                p.process_dataset(chunk_size=parsed_args.chunksize,
+                                  chunks=parsed_args.chunks,
+                                  padding=parsed_args.padding)
 
             # If only a single dataset was specified, break
             if parsed_args.dataset is not None:

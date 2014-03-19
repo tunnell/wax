@@ -47,6 +47,7 @@ def find_sum_in_data(data):
 
 
 class EventBuilder():
+
     """From data, construct events
 
     This is a separate class since it has to keep track of event number"""
@@ -62,7 +63,6 @@ class EventBuilder():
         else:
             self.event_number += 1
             return self.event_number
-
 
     def build_event(self, data, t0, t1, padding):
         """Build events out of raw data.
@@ -105,7 +105,9 @@ class EventBuilder():
         # Step 3: Flag ranges around peaks to save, then break into events
         ##
         event_ranges = compute_subranges(peaks)
-        self.log.debug('%d trigger events from %d peaks', len(event_ranges), len(peak_indices))
+        self.log.debug('%d trigger events from %d peaks',
+                       len(event_ranges),
+                       len(peak_indices))
 
         data[(0, 0, 'smooth')] = {'indices': sum_data['indices'],
                                   'samples': smooth_waveform}
@@ -114,23 +116,23 @@ class EventBuilder():
         # Step 4: For each trigger event, associate channel information
         ##
         events = []
-        for e0, e1 in event_ranges:  # e0, e1 are the times for this trigger event
+        # e0, e1 are the times for this trigger event
+        for e0, e1 in event_ranges:
             #  This information will be saved about the trigger event
             to_save = {'data': {}}
 
             # Logic to deal with overlapping region
-            #if e1 > t1:
-            #    if e0 < t1 - padding:
-            #        self.log.error("Event bigger than overlap region.  Flagging 1 second of deadtime.")
-            #        to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
-            #        to_save['evt_num'] = "deadtime"
-            #        to_save['error'] = "Event range [%d, %d] greater than overlap window!" % (e0, e1)
-            #        to_save['range'] = [int(e0 - 5e7), int(e1 + 5e7)]
-            #        events.append(to_save)
-            #    continue
-            #if e0 < t0 + padding:
-            #    continue
-
+            if e1 > t1:
+                if e0 < t1 - padding:
+                    self.log.error("Event bigger than overlap region.  Flagging 1 second of deadtime.")
+                    to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
+                    to_save['evt_num'] = "deadtime"
+                    to_save['error'] = "Event range [%d, %d] greater than overlap window!" % (e0, e1)
+                    to_save['range'] = [int(e0 - 5e7), int(e1 + 5e7)]
+                    events.append(to_save)
+                continue
+             if e0 < t0 + padding:
+                continue
 
             evt_num = self.get_event_number()
             self.log.debug('\tEvent %d: [%d, %d]', evt_num, e0, e1)
@@ -153,10 +155,10 @@ class EventBuilder():
                     indices_to_save = np.concatenate((indices_to_save,
                                                       indices_already_saved))
                     samples_to_save = np.concatenate((samples_to_save,
-                                                            samples_already_saved))
+                                                      samples_already_saved))
 
                 to_save['data'][pmt_num] = {'indices': indices_to_save,
-                                            'samples' : samples_to_save}
+                                            'samples': samples_to_save}
 
             to_save['peaks'] = [peak for peak in peaks if e0 < peak < e1]
 
@@ -174,6 +176,7 @@ if __name__ == '__main__':
     myapp = CitoApp()
     import cProfile
 
-    cProfile.run("""myapp.run(['process', '-q', '--hostname', '130.92.139.92', '--chunks', '10'])""", 'profile')
+    cProfile.run("""myapp.run(['process', '-q', '--hostname', '130.92.139.92', '--chunks', '10'])""",
+                 'profile')
 
     sys.exit(0)

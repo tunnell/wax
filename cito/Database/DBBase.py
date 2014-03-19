@@ -13,6 +13,7 @@ HOSTNAME = "127.0.0.1"
 
 
 class MongoDBBase():
+
     """Read from MongoDB
 
     The subclass is responsible for setting up the collection
@@ -45,7 +46,8 @@ class MongoDBBase():
         raise NotImplementedError()
 
     def discover_collection(self):
-        collections = self.db.collection_names(include_system_collections=False)
+        collections = self.db.collection_names(
+            include_system_collections=False)
         if len(collections) == 0:
             self.log.debug("No dataset in %s database." % self.get_db_name())
             self.initialized = False
@@ -72,7 +74,6 @@ class MongoDBBase():
                          (self.get_db_name(), collection_name, num_docs_in_collection))
 
         return self.collection
-
 
     def get_collection(self):
         if not self.initialized:

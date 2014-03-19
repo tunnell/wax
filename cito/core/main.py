@@ -11,6 +11,7 @@ import cito
 
 
 class CitoApp(App):
+
     """Cito Cliff application
 
     See cliff documentation to understand this."""
@@ -44,6 +45,7 @@ class CitoApp(App):
 
 
 class CitoShowOne(ShowOne):
+
     """Base class for all DB commands.
 
     Handles logging, descriptions, and common fuctions.
@@ -76,7 +78,8 @@ class CitoShowOne(ShowOne):
 
 def main(argv=sys.argv[1:]):
     if len(argv) == 0:
-        print("HINT: Did you mean to run 'cito process' to start building events?\n")
+        print(
+            "HINT: Did you mean to run 'cito process' to start building events?\n")
         argv = ['-h']
     myapp = CitoApp()
 

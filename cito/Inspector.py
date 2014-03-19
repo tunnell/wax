@@ -7,7 +7,9 @@ import bson
 from cito.Database import InputDBInterface
 from cito.core.main import CitoShowOne
 
+
 class InputDocInspector(CitoShowOne):
+
     """Grab DAQ document from MongoDB and print it.
 
     A DAQ document contains the V1724 flash ADC data.  If data in the document is
@@ -34,7 +36,8 @@ class InputDocInspector(CitoShowOne):
         return parser
 
     def take_action(self, parsed_args):
-        conn, my_db, collection = InputDBInterface.get_db_connection(hostname=parsed_args.hostname)
+        conn, my_db, collection = InputDBInterface.get_db_connection(
+            hostname=parsed_args.hostname)
 
         if parsed_args.newest:
             try:
@@ -73,7 +76,8 @@ class InputDocInspector(CitoShowOne):
                 # any assertion exceptions when checking for data consistency.
                 try:
                     try:
-                        output.append(('data(good header?)', InterfaceV1724.check_header(data)))
+                        output.append(
+                            ('data(good header?)', InterfaceV1724.check_header(data)))
                     except AssertionError:
                         output.append(('data(good header?)', False))
 
@@ -88,7 +92,8 @@ class InputDocInspector(CitoShowOne):
                         output.append(('data(size from header in words)',
                                        size))
                     except AssertionError:
-                        output.append(('data(size from header in words)', False))
+                        output.append(
+                            ('data(size from header in words)', False))
 
                     try:
                         result = InterfaceV1724.get_waveform(data, 10000)
@@ -125,6 +130,7 @@ class InputDocInspector(CitoShowOne):
 
 
 class InputDBInspector(CitoShowOne):
+
     """Show statistics on DB collection
     """
 
@@ -158,7 +164,8 @@ class InputDBInspector(CitoShowOne):
         return ','.join(result)
 
     def take_action(self, parsed_args):
-        conn, db, collection = InputDBInterface.get_db_connection(parsed_args.hostname)
+        conn, db, collection = InputDBInterface.get_db_connection(
+            parsed_args.hostname)
         columns = ['Number of documents']
         data = [collection.count()]
 
@@ -172,7 +179,8 @@ class InputDBInspector(CitoShowOne):
 
         columns.append('Missing modules')
         modules = collection.distinct('module')
-        missing_modules = [i for i in range(min(modules), max(modules)) if i not in modules]
+        missing_modules = [
+            i for i in range(min(modules), max(modules)) if i not in modules]
         data.append(self.re_range(missing_modules))
 
         columns.append('Missing modules count')

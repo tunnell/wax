@@ -23,7 +23,8 @@ def compute_subranges(peaks, range_around_peak=(-18000, 18000)):
         time_start = peak + range_around_peak[0]
         time_stop = peak + range_around_peak[1]
 
-        if len(ranges) >= 1 and time_start <= ranges[-1][1]:  # ranges[-1] is latest range
+        # ranges[-1] is latest range
+        if len(ranges) >= 1 and time_start <= ranges[-1][1]:
             ranges[-1][1] = time_stop
         else:
             ranges.append([time_start, time_stop])
@@ -78,15 +79,16 @@ def overlap_region(range1, range2):
     # If all of A is before B, or vice versa...
     if a1 < b0 or b1 < a0:  # If true, no overlap
         return range_overlap  # None, None
-    elif a0 <= b0 and b1 <= a1:  #  All of B contained in A
+    elif a0 <= b0 and b1 <= a1:  # All of B contained in A
         range_overlap = (b0, b1)
-    elif b0 <= a0 and a1 <= b1:  #  All of A contained in B
+    elif b0 <= a0 and a1 <= b1:  # All of A contained in B
         range_overlap = (a0, a1)
     else:
         logging.error("Partial overlap. slow")
         overlap = np.intersect1d(np.arange(a0, a1), np.arange(b0, b1))
         if overlap.size == 0:
-            raise ValueError('No overlap found?... (%d, %d) (%d, %d) %s' % (a0, a1, b0, b1, str(a1 < b0)))
+            raise ValueError(
+                'No overlap found?... (%d, %d) (%d, %d) %s' % (a0, a1, b0, b1, str(a1 < b0)))
         range_overlap = (overlap[0], overlap[1])
 
     return range_overlap
@@ -143,7 +145,7 @@ def speed_in1d_continous(a, b, x, y):
 
 
 def sizeof_fmt(num):
-    for x in ['B','KB','MB','GB']:
+    for x in ['B', 'KB', 'MB', 'GB']:
         if num < 1024.0:
             return "%3.1f %s" % (num, x)
         num /= 1024.0

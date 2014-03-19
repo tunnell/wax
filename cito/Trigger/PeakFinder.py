@@ -97,7 +97,8 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     # above threshold.
     peaks = []
     for a, b in find_subranges(over_threshold):
-        peaks.append(np.round(float(over_threshold[b] + over_threshold[a]) / 2))
+        peaks.append(
+            np.round(float(over_threshold[b] + over_threshold[a]) / 2))
 
     trigger_meta_data = {}
     trigger_meta_data['smooth'] = smooth_data
@@ -105,10 +106,3 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
 
     logging.debug('Filtering duration: %f s' % (t1 - t0))
     return np.array(peaks, dtype=np.int64), trigger_meta_data
-
-
-
-
-
-
-

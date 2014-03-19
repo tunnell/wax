@@ -80,12 +80,11 @@ def get_data_and_sum_waveform(cursor, input):
                    time_correction + len(samples),
                    num_channel)
 
-
             interpreted_data[key] = {
-            'indices': np.arange(time_correction,
-                                 time_correction + samples.size,
-                                 dtype=np.int32),
-            'samples': samples}
+                'indices': np.arange(time_correction,
+                                     time_correction + samples.size,
+                                     dtype=np.int32),
+                'samples': samples}
 
     log.debug("Size of data process in bytes: %d", size)
     if size == 0:

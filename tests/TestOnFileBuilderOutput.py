@@ -20,7 +20,7 @@ class SumDataTestCase(unittest.TestCase):
     def test_type(self):
         """Check indices type"""
         self.f.seek(0)
-        pickle.load(self.f) # version
+        pickle.load(self.f)  # version
 
         while 1:
             try:
@@ -33,9 +33,9 @@ class SumDataTestCase(unittest.TestCase):
 
     def test_indices(self):
         """Test that sum waveform indecies are also seen by PMTs, and vice versa"""
-        
+
         self.f.seek(0)
-        pickle.load(self.f) # version
+        pickle.load(self.f)  # version
         while 1:
             try:
                 doc = pickle.load(self.f)
@@ -48,7 +48,7 @@ class SumDataTestCase(unittest.TestCase):
             for channel, data2 in doc['data'].items():
                 if type(channel) == str and ('sum' in channel or 'smooth' in channel):
                     continue
-                
+
                 channel_indices = np.concatenate((data2['indices'],
                                                   channel_indices))
 
@@ -57,7 +57,5 @@ class SumDataTestCase(unittest.TestCase):
             self.assertTrue((channel_indices == sum_indices).all())
 
 
-
 if __name__ == '__main__':
     unittest.main()
-            

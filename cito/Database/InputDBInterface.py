@@ -13,6 +13,7 @@ __author__ = 'tunnell'
 
 
 class MongoDBInput(DBBase.MongoDBBase):
+
     """Read from MongoDB
     """
 
@@ -31,7 +32,6 @@ class MongoDBInput(DBBase.MongoDBBase):
         self.collection.ensure_index(self.get_sort_key(),
                                      background=True)
 
-
     @staticmethod
     def get_db_name():
         return 'input'
@@ -44,7 +44,8 @@ class MongoDBInput(DBBase.MongoDBBase):
                                                   "data": {'$exists': False}}))
 
         if len(control_docs) > 1:
-            raise RuntimeError("More than one control document found in %s." % self.get_collection_name())
+            raise RuntimeError("More than one control document found in %s." %
+                               self.get_collection_name())
         elif self.control_doc_id is not None:
             raise RuntimeError("Control document already set")
         elif len(control_docs) == 0:
@@ -52,14 +53,12 @@ class MongoDBInput(DBBase.MongoDBBase):
             self.initialized = False
             return
 
-
         self.control_doc_id = control_docs[0]['_id']
         logging.info("Control document:")
         for key, value in control_docs[0].items():
             logging.info('\t%s: %s' % (key, value))
 
         self.is_compressed = control_docs[0]['compressed']
-
 
     def get_control_document(self):
         """Fetch current control document from collection
@@ -91,8 +90,8 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         if self.has_run_ended():
             doc = self.collection.find_one({},
-                                          fields=['time'],
-                                          sort=sort_key)
+                                           fields=['time'],
+                                           sort=sort_key)
             if doc == None or doc['time'] == None:
                 return self.get_min_time()
             return doc['time']
@@ -103,13 +102,13 @@ class MongoDBInput(DBBase.MongoDBBase):
         for module in modules:
             query = {'module': module}
             doc = self.collection.find_one(query,
-                                              fields=['time', 'module'],
-                                              limit=1,
-                                               sort=sort_key)
+                                           fields=['time', 'module'],
+                                           limit=1,
+                                           sort=sort_key)
 
             if doc == None:
                 return self.get_min_time()
-            #See if cursor is fast with cursor.explain()['indexOnly']
+            # See if cursor is fast with cursor.explain()['indexOnly']
 
             times[module] = doc['time']
 
@@ -129,9 +128,10 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         """
         sort_key = self.get_sort_key(pymongo.ASCENDING)
-        doc = self.collection.find_one({"time": {'$exists': True}}, sort=sort_key)
+        doc = self.collection.find_one({"time": {'$exists': True}},
+                                       sort=sort_key)
         return doc['time']
-        #return self.get_control_document()['starttime']
+        # return self.get_control_document()['starttime']
 
     def has_run_ended(self):
         """Determine if run has ended
@@ -141,7 +141,6 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         """
         return self.get_control_document()['data_taking_ended']
-
 
     def get_data_docs(self, time0, time1):
         """Fetch from DB the documents within time range.
@@ -163,7 +162,6 @@ class MongoDBInput(DBBase.MongoDBBase):
         result = list(self.collection.find(subset_query))
         logging.debug("Fetched %d input documents." % len(result))
         return result
-
 
     @staticmethod
     def get_sort_key(order=pymongo.DESCENDING):

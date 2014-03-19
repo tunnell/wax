@@ -14,8 +14,8 @@ from cito import __version__
 from cito.Database import OutputDBInterface
 
 
-
 class FileBuilderCommand(Command):
+
     """Build files from processed trigger events in output database.
 
 
@@ -47,7 +47,8 @@ class FileBuilderCommand(Command):
         try:
             collection = output.get_collection()
         except RuntimeError:
-            self.log.error("Uninitialized (empty? if so, run 'process'.) output database; no file made.")
+            self.log.error(
+                "Uninitialized (empty? if so, run 'process'.) output database; no file made.")
             return
 
         cursor = collection.find()

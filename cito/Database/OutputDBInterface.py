@@ -9,6 +9,7 @@ from cito.Database import DBBase
 
 
 class MongoDBOutput(DBBase.MongoDBBase):
+
     """Write to MongoDB
 
     This class, I don't think, can know the event number since it events before it
@@ -44,4 +45,3 @@ class MongoDBOutput(DBBase.MongoDBBase):
                                check_keys=False,
                                manipulate=False,
                                w=0)
-

@@ -12,6 +12,7 @@ from cito.Database import InputDBInterface, OutputDBInterface
 
 
 class CitoDBShowOne(ShowOne):
+
     """Base class for all DB commands.
 
     Handles logging, descriptions, and common fuctions.
@@ -62,12 +63,12 @@ class CitoDBShowOne(ShowOne):
 
         return zip(*results)
 
-
     def take_action_wrapped(self, conn, db):
         raise NotImplementedError()
 
 
 class DBDelete(CitoDBShowOne):
+
     """Delete the database by dropping it.
 
     Warning: this cannot be used during a run as it will kill the DAQ writer.
@@ -80,6 +81,7 @@ class DBDelete(CitoDBShowOne):
 
 
 class DBRepair(CitoDBShowOne):
+
     """Repair DB to regain unused space.
 
     MongoDB can't know how what to do with space after a document is deleted,
@@ -94,6 +96,3 @@ class DBRepair(CitoDBShowOne):
         self.log.info("Repairing DB.")
         db.command('repairDatabase')
         return 'Repaired'
-
-
-
