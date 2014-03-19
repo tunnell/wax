@@ -35,13 +35,10 @@ setup(
             'cito = cito.core.main:main'
         ],
         'cito.core.main': [
-            'doc inspector = cito.Inspector:InputDocInspector',
             'delete = cito.DBOperations:DBDelete',
-            'db inspector = cito.Inspector:InputDBInspector',
             'repair = cito.DBOperations:DBRepair',
             'process = cito.EventBuilder.Processor:ProcessCommand',
             'file builder = cito.FileBuilder:FileBuilderCommand',
-
         ],
     },
     license="BSD",

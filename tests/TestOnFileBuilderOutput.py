@@ -3,12 +3,9 @@
 import pickle
 import numpy as np
 import gzip
-import matplotlib.pyplot as plt
-from pylab import gca, Rectangle
 
 
 import unittest
-from cito.core import Waveform
 
 
 class SumDataTestCase(unittest.TestCase):

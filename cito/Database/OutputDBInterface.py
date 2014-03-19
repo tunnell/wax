@@ -1,6 +1,5 @@
 __author__ = 'tunnell'
 
-import logging
 import pickle
 
 import snappy

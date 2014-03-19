@@ -78,12 +78,12 @@ class MongoDBBase():
     def get_collection(self):
         if not self.initialized:
             raise RuntimeError("Not initialized.")
-        elif self.collection == None:
+        elif self.collection is None:
             raise ValueError("No collection present.")
         return self.collection
 
     def get_db(self):
-        if not self.initialized or self.db == None:
+        if not self.initialized or self.db is None:
             raise ValueError
         return self.db
 

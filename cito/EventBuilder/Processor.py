@@ -58,7 +58,7 @@ class ProcessTask():
     def process_dataset(self, chunk_size, chunks, padding):
         # Used for benchmarking
         start_time = time.time()
-        dt = 0
+
         amount_data_processed = 0
 
         waittime = 1  # s

@@ -30,14 +30,6 @@ cito.FileBuilder module
     :undoc-members:
     :show-inheritance:
 
-cito.Inspector module
----------------------
-
-.. automodule:: cito.Inspector
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

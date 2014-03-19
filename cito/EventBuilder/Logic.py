@@ -131,7 +131,7 @@ class EventBuilder():
                     to_save['range'] = [int(e0 - 5e7), int(e1 + 5e7)]
                     events.append(to_save)
                 continue
-             if e0 < t0 + padding:
+            if e0 < t0 + padding:
                 continue
 
             evt_num = self.get_event_number()

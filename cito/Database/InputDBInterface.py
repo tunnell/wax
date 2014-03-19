@@ -23,7 +23,7 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         DBBase.MongoDBBase.__init__(self, collection_name, hostname)
 
-        if self.initialized == False:
+        if self.initialized is False:
             self.log.debug("Cannot initialize input.")
             return
 
@@ -92,7 +92,7 @@ class MongoDBInput(DBBase.MongoDBBase):
             doc = self.collection.find_one({},
                                            fields=['time'],
                                            sort=sort_key)
-            if doc == None or doc['time'] == None:
+            if doc is None or doc['time'] is None:
                 return self.get_min_time()
             return doc['time']
 
@@ -106,7 +106,7 @@ class MongoDBInput(DBBase.MongoDBBase):
                                            limit=1,
                                            sort=sort_key)
 
-            if doc == None:
+            if doc is None:
                 return self.get_min_time()
             # See if cursor is fast with cursor.explain()['indexOnly']
 
@@ -114,7 +114,7 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         # Want the earliest time (i.e., the min) of all the max times
         # for the boards.
-        if len(times.values()) == 0:
+        if len(list(times.values())) == 0:
             return self.get_min_time()
         time = min(times.values())
 
