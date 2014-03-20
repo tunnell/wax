@@ -24,13 +24,13 @@ def get_samples(data):
     return samples
 
 
-def get_data_and_sum_waveform(cursor, input):
+def get_data_and_sum_waveform(cursor, inputdb):
     """Get inverted sum waveform from mongo
 
     Args:
         cursor (iterable):  An iterable object of documents containing Caen
                            blocks.  This can be a pymongo Cursor.
-        input - class
+        inputdb - class
 
 
     Returns:
@@ -46,7 +46,7 @@ def get_data_and_sum_waveform(cursor, input):
     sum_data = {}  # index -> sample
 
     for doc in cursor:
-        data = input.get_data_from_doc(doc)
+        data = inputdb.get_data_from_doc(doc)
         num_channel = doc['channel']
         if doc['module'] != -1:
             num_channel = doc['module'] * 10 + doc['channel']
@@ -63,12 +63,14 @@ def get_data_and_sum_waveform(cursor, input):
             continue
 
         # Improve?
-        # Compute baseline with first 3 and last 3 samples
-        baseline = np.concatenate([samples[0:3], samples[-3:-1]]).mean()
+        # Compute baseline with first 3 - numpy function slow
+        baseline = (samples[0] + samples[1] + samples[2])/3
         samples -= baseline
 
+        reduction_factor = 100
+
         for i, sample in enumerate(samples):
-            sample_index = time_correction + i
+            sample_index = int((time_correction + i)/reduction_factor)
 
             if sample_index in sum_data:
                 sum_data[sample_index] += sample
@@ -92,10 +94,10 @@ def get_data_and_sum_waveform(cursor, input):
     new_indices = [x for x in sum_data.keys()]
     new_indices.sort()
     new_samples = [sum_data[x] for x in new_indices]
-    new_indices = np.array(new_indices, dtype=np.int32)
+    new_indices = np.array(new_indices, dtype=np.int32) * reduction_factor
     new_samples = np.array(new_samples, dtype=np.int32)
 
-    if len(new_indices) >= 2:
+    if new_indices.size >= 2:
         key = (new_indices[0],
                new_indices[-1],
                'sum')

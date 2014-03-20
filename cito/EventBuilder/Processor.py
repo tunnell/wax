@@ -44,16 +44,20 @@ class ProcessTask():
 
         self.event_builder = Logic.EventBuilder()
 
-    def print_stats(self, amount_data_processed, dt):
+    def print_stats(self, amount_data_processed, dt, loud=False):
+        logger = self.log.debug
+        if loud:
+            logger = self.log.error
 
-        self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
-                                                             dt))
+        logger("%d bytes processed in %d seconds" % (amount_data_processed,
+                                                     dt))
+
         if dt < 1.0:
-            self.log.debug("Rate: N/A")
+            logger("Rate: N/A")
         else:
             data_rate = amount_data_processed / dt
             rate_string = sizeof_fmt(data_rate) + 'ps'
-            self.log.debug("Rate: %s" % (rate_string))
+            logger("Rate: %s" % rate_string)
 
     def process_dataset(self, chunk_size, chunks, padding):
         # Used for benchmarking
@@ -69,13 +73,11 @@ class ProcessTask():
 
         search_for_more_data = True
 
-        while (search_for_more_data):
+        while search_for_more_data:
             if self.input.has_run_ended():
                 # Round up
-                self.log.info(
-                    "Data taking has ended; processing remaining data.")
-                max_time_index = math.ceil(
-                    self.input.get_max_time() / chunk_size)
+                self.log.info("Data taking has ended; processing remaining data.")
+                max_time_index = int(math.ceil(self.input.get_max_time() / chunk_size))
                 search_for_more_data = False
             else:
                 # Round down
@@ -86,16 +88,20 @@ class ProcessTask():
                     t0 = (i * chunk_size)
                     t1 = (i + 1) * chunk_size
 
-                    self.log.debug(
-                        'Processing [%f s, %f s]' % (t0 / 1e8, t1 / 1e8))
+                    self.log.debug('Processing [%f s, %f s]' % (t0 / 1e8, t1 / 1e8))
 
-                    amount_data_processed += self.process_time_range(
-                        t0, t1 + padding, padding)
+                    amount_data_processed += self.process_time_range(t0,
+                                                                     t1 + padding,
+                                                                     padding)
 
-                    self.print_stats(
-                        amount_data_processed, time.time() - start_time)
+                    self.print_stats(amount_data_processed,
+                                     time.time() - start_time)
 
-                    if chunks > 0 and i > chunks:
+
+                    if i > chunks > 0:
+                        self.print_stats(amount_data_processed,
+                                         time.time() - start_time,
+                                         loud=True)
                         search_for_more_data = False
                         break  # Breaks for loop, but not while.
 
@@ -195,6 +201,9 @@ class ProcessCommand(Command):
                 self.log.fatal("Exception resulted in fatal error; quiting.")
                 raise
 
+            if parsed_args.chunks != -1:
+                p.delete_collection_when_done = False
+
             if not p.input.initialized:
                 self.log.warning("No dataset available to process; waiting one second.")
                 time.sleep(1)
@@ -204,5 +213,5 @@ class ProcessCommand(Command):
                                   padding=parsed_args.padding)
 
             # If only a single dataset was specified, break
-            if parsed_args.dataset is not None:
+            if parsed_args.dataset is not None or parsed_args.chunks != -1:
                 break

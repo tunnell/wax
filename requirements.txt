@@ -1,9 +1,8 @@
 # Normal packages
 pymongo
 tqdm
-python-snappy
-numpy
-scipy
+python-snappy # Macports: CPPFLAGS="-I/opt/local/include -L/opt/local/lib" pip install python-snappy
+numpy # PyPy: pip install git+https://bitbucket.org/pypy/numpy.git
 cliff  # If Cliff probles, pbr==0.5.21 required by cliff
 
 # Dev packages

@@ -22,7 +22,8 @@ class MongoDBOutput(DBBase.MongoDBBase):
     def get_db_name():
         return 'output'
 
-    def mongify_event(self, event_data):
+    @staticmethod
+    def mongify_event(event_data):
         """Convert Python data to pickled and compressed data.
 
         """

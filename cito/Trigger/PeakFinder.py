@@ -19,8 +19,6 @@ import logging
 import time
 
 import numpy as np
-from scipy.signal import butter
-from scipy.signal import filtfilt
 
 from cito.core.math import merge_subranges, find_subranges
 
@@ -84,11 +82,10 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     # 20 is the wavelet width
     logging.debug('Filtering with n=%d' % values.size)
     t0 = time.time()
-
-    b, a = butter(3, 0.05, 'low')
-
-    # Forward backward filter
-    smooth_data = filtfilt(b, a, values)
+    r = 1
+    n = len(values)
+    values.resize((r, np.ceil(n/r)))
+    smooth_data = values.sum(1)
 
     # Over threshold is an array of all indicies above threshold
     over_threshold = np.where(smooth_data > threshold)[0]
@@ -97,11 +94,11 @@ def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
     # above threshold.
     peaks = []
     for a, b in find_subranges(over_threshold):
-        peaks.append(
-            np.round(float(over_threshold[b] + over_threshold[a]) / 2))
+        peaks.append(np.round(float(over_threshold[b] + over_threshold[a]) / 2))
 
     trigger_meta_data = {}
     trigger_meta_data['smooth'] = smooth_data
+    trigger_meta_data['reduction_factor'] = r
     t1 = time.time()
 
     logging.debug('Filtering duration: %f s' % (t1 - t0))

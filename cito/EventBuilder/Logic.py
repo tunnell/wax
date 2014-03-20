@@ -139,16 +139,23 @@ class EventBuilder():
 
             # If there data within our search range [e0, e1]?
             for key, value in data.items():
-                mask = (e0 < value['indices']) & (value['indices'] < e1)
+                pmt_num = key[2]
 
-                if not mask.any():
+                if e1 < value['indices'][0] or value['indices'][-1] < e0:
                     continue
+                elif e0 <= value['indices'][0] and value['indices'][-1] <= e1:
+                    indices_to_save = value['indices']
+                    samples_to_save = value['samples']
+                else:
+                    mask = (e0 < value['indices']) & (value['indices'] < e1)
 
-                indices_to_save = value['indices'].compress(mask)
-                samples_to_save = value['samples'].compress(mask)
+                    if not mask.any():
+                        continue
+
+                    indices_to_save = value['indices'].compress(mask)
+                    samples_to_save = value['samples'].compress(mask)
 
                 # Existing data that needs to be added?
-                pmt_num = key[2]
                 if pmt_num in to_save['data']:
                     indices_already_saved = to_save['data'][pmt_num]['indices']
                     samples_already_saved = to_save['data'][pmt_num]['samples']
@@ -176,7 +183,7 @@ if __name__ == '__main__':
     myapp = CitoApp()
     import cProfile
 
-    cProfile.run("""myapp.run(['process', '-q', '--hostname', '130.92.139.92', '--chunks', '10'])""",
+    cProfile.run("""myapp.run(['process', '-q', '--chunks', '2'])""",
                  'profile')
 
     sys.exit(0)

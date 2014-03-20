@@ -50,7 +50,7 @@ def group(L):
     ifirst = 0
     ilast = 0
     for i, n in enumerate(L[1:]):
-        if n - 1 == last: # Part of the group, bump the end
+        if n - 100 == last: # Part of the group, bump the end
             last = n
             ilast = i + 1
         else: # Not part of the group, yield current group and start a new
@@ -72,7 +72,8 @@ def find_subranges(values):
 
     See http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list
     """
-
+    if values.size == 0:
+        return []
 
     return list(group(values))
 

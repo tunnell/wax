@@ -52,8 +52,8 @@ class FileBuilderCommand(Command):
             return
 
         cursor = collection.find()
-        N = cursor.count()
-        if N == 0:
+        n = cursor.count()
+        if n == 0:
             self.log.error("No events in the output database; no file made.")
             return
 
@@ -65,7 +65,7 @@ class FileBuilderCommand(Command):
 
         data_size = 0
 
-        for i in tqdm(range(N)):
+        for i in tqdm(range(n)):
             doc = next(cursor)
             doc2 = snappy.uncompress(doc['compressed_doc'])
             doc2 = pickle.loads(doc2)
