@@ -26,7 +26,7 @@ from cito.core.math import merge_subranges, find_subranges
 
 
 CWT_WIDTH = 50  # units of 10 ns
-MAX_DRIFT = 18000  # units of 10 ns
+
 
 
 def identify_nonoverlapping_trigger_windows(indices, samples):

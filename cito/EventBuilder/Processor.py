@@ -8,13 +8,19 @@ from tqdm import tqdm
 from cito.Database import InputDBInterface, OutputDBInterface
 from cito.EventBuilder import Logic
 from cito.core.math import sizeof_fmt
-from cito.core import Waveform
-from cito.Trigger.PeakFinder import MAX_DRIFT
+from cito.EventBuilder.Logic import MAX_DRIFT
+import numpy as np
 
+import _cito_compiled_helpers as cch
 
 __author__ = 'tunnell'
 
 CHUNK_SIZE = 2 ** 28
+
+MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
+
+
+
 
 
 class ProcessTask():
@@ -125,7 +131,31 @@ class ProcessTask():
         :raises: AssertionError
         """
         data_docs = self.input.get_data_docs(t0, t1)
-        data, size = Waveform.get_data_and_sum_waveform(data_docs, self.input)
+
+        size = 0
+        reduction_factor = 200
+        n = int(np.ceil((t1-t0)/reduction_factor))
+        cch.setup(n)
+
+        # Every data doc has a start time and end time.  These ranges are used
+        # later to compute overlaps with event ranges.
+        doc_ranges = np.zeros((len(data_docs), 2), dtype=np.int32)
+
+        for i, doc in enumerate(data_docs):
+            time_correction = doc['time'] - t0
+
+            samples = self.input.get_data_from_doc(doc)
+
+            # Record time range of these samples
+            doc_ranges[i] = (time_correction/reduction_factor,
+                             (time_correction + samples.size)/reduction_factor)
+
+            cch.add_samples(samples, time_correction, reduction_factor)
+            size += samples.size * 2
+
+        #sum_data = cch.get_sum()
+
+        self.log.debug("Size of data process in bytes: %d", size)
 
         # If no data analyzed, return
         self.log.debug("Size of data analyzed: %d", size)
@@ -133,14 +163,46 @@ class ProcessTask():
             self.log.debug('No data found in [%d, %d]' % (t0, t1))
             return 0
 
-        # Build events (t0 and t1 used only for sanity checks)
-        events = self.event_builder.build_event(data, t0, t1, padding)
+        ranges = cch.build_events(10000, int(MAX_DRIFT/reduction_factor))
+
+
+        #  One event has many samples, thus to mapping represented as samples -> event
+        mappings = cch.overlaps(doc_ranges.flatten())
+        events = []
+
+        ranges *= reduction_factor
+        ranges.resize((ranges.size/2, 2))
+
+        reduced_data_count = 0
+
+        last = None
+        for i, mapping in enumerate(mappings):
+            # Document has no event, then skip
+            if mapping == -1:
+                reduced_data_count += 1
+                continue
+
+            # If need to start event
+            if last == None or last['cnt'] != mapping:
+                if last != None:
+                    events.append(last)
+                self.log.debug('\tEvent %d', mapping)
+                last = {}
+                last['cnt'] = int(mapping)
+                last['range'] = [int(ranges[mapping][0]),
+                                 int(ranges[mapping][1])]
+                last['docs'] = []
+
+            last['docs'].append(data_docs[i])
 
         if len(events):
             self.output.write_events(events)
         else:
             self.log.debug("No events found between %d and %d." % (t0, t1))
-
+        self.log.debug("Discarded: (%d/%d) = %0.3f%%",
+                       reduced_data_count,
+                       (len(data_docs) - reduced_data_count),
+                       100*float(reduced_data_count)/(len(data_docs) - reduced_data_count))
         return size
 
     def drop_collection(self):
@@ -195,6 +257,9 @@ class ProcessCommand(Command):
                 self.log.fatal("Exception resulted in fatal error; quiting.")
                 raise
 
+            if parsed_args.chunks != -1:
+                p.delete_collection_when_done = False
+
             if not p.input.initialized:
                 self.log.warning("No dataset available to process; waiting one second.")
                 time.sleep(1)
@@ -204,5 +269,7 @@ class ProcessCommand(Command):
                                   padding=parsed_args.padding)
 
             # If only a single dataset was specified, break
-            if parsed_args.dataset is not None:
+            if parsed_args.dataset is not None or parsed_args.chunks != -1:
                 break
+
+        cch.shutdown()

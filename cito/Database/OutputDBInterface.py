@@ -22,25 +22,14 @@ class MongoDBOutput(DBBase.MongoDBBase):
     def get_db_name():
         return 'output'
 
-    def mongify_event(self, event_data):
-        """Convert Python data to pickled and compressed data.
-
-        """
-        new_doc = {}
-        new_doc['evt_num'] = event_data['evt_num']
-        new_doc['range'] = event_data['range']
-        data = pickle.dumps(event_data)
-        new_doc['compressed_doc'] = snappy.compress(data)
-
-        return new_doc
 
     def write_events(self, event_data_list):
         """Save data to database
         """
         self.log.debug('writing event')
-        mongofied_list = [self.mongify_event(x) for x in event_data_list]
+        #mongofied_list = [self.mongify_event(x) for x in event_data_list]
 
-        self.collection.insert(mongofied_list,
+        self.collection.insert(event_data_list,
                                check_keys=False,
                                manipulate=False,
                                w=0)
