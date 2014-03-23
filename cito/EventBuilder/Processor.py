@@ -6,9 +6,7 @@ from cliff.command import Command
 from tqdm import tqdm
 
 from cito.Database import InputDBInterface, OutputDBInterface
-from cito.EventBuilder import Logic
-from cito.core.math import sizeof_fmt
-from cito.EventBuilder.Logic import MAX_DRIFT
+
 import numpy as np
 
 import _cito_compiled_helpers as cch
@@ -16,12 +14,15 @@ import _cito_compiled_helpers as cch
 __author__ = 'tunnell'
 
 CHUNK_SIZE = 2 ** 28
-
 MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
+MAX_DRIFT = 18000  # units of 10 ns
 
-
-
-
+def sizeof_fmt(num):
+    for x in ['B', 'KB', 'MB', 'GB']:
+        if num < 1024.0:
+            return "%3.1f %s" % (num, x)
+        num /= 1024.0
+    return "%3.1f %s" % (num, 'TB')
 
 class ProcessTask():
 
@@ -47,8 +48,6 @@ class ProcessTask():
         else:
             self.log.debug("Cannot setup output DB.")
             self.output = None
-
-        self.event_builder = Logic.EventBuilder()
 
     def print_stats(self, amount_data_processed, dt):
 
@@ -273,3 +272,15 @@ class ProcessCommand(Command):
                 break
 
         cch.shutdown()
+
+if __name__ == '__main__':
+    import sys
+    from cito.core.main import CitoApp
+
+    myapp = CitoApp()
+    import cProfile
+
+    cProfile.run("""myapp.run(['process', '--chunks', '15'])""",
+                 'profile')
+
+    sys.exit(0)

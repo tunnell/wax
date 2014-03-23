@@ -77,4 +77,4 @@ sdist: clean
 
 profile: clean
 	rm -f profile
-	python cito/EventBuilder/Logic.py 
+	python cito/EventBuilder/Processor.py
