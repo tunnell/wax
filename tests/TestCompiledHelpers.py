@@ -24,8 +24,6 @@ class CompiledHelpersTestCase(unittest.TestCase):
         self.assertIsInstance(y2, np.ndarray)
         self.assertTrue(np.array_equal(y, y2),
                         "%s %s" % (str(y), str(y2)))
-
-        print(y2)
         del y2
 
 
