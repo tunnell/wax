@@ -2,20 +2,20 @@ import logging
 import math
 import time
 
-from cliff.command import Command
-from tqdm import tqdm
-
-from cito.Database import InputDBInterface, OutputDBInterface
-
 import numpy as np
 
+from cliff.command import Command
+from tqdm import tqdm
+from cito.Database import InputDBInterface, OutputDBInterface
 import _cito_compiled_helpers as cch
+
 
 __author__ = 'tunnell'
 
 CHUNK_SIZE = 2 ** 28
 MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
 MAX_DRIFT = 18000  # units of 10 ns
+
 
 def sizeof_fmt(num):
     for x in ['B', 'KB', 'MB', 'GB']:
@@ -24,8 +24,8 @@ def sizeof_fmt(num):
         num /= 1024.0
     return "%3.1f %s" % (num, 'TB')
 
-class ProcessTask():
 
+class ProcessTask():
     """Process a time block
     """
 
@@ -133,7 +133,7 @@ class ProcessTask():
 
         size = 0
         reduction_factor = 200
-        n = int(np.ceil((t1-t0)/reduction_factor))
+        n = int(np.ceil((t1 - t0) / reduction_factor))
         cch.setup(n)
 
         # Every data doc has a start time and end time.  These ranges are used
@@ -144,13 +144,13 @@ class ProcessTask():
             time_correction = doc['time'] - t0
 
             samples = self.input.get_data_from_doc(doc)
-
+            doc['size'] = samples.size * 2
             # Record time range of these samples
-            doc_ranges[i] = (time_correction/reduction_factor,
-                             (time_correction + samples.size)/reduction_factor)
+            doc_ranges[i] = (time_correction / reduction_factor,
+                             (time_correction + samples.size) / reduction_factor)
 
             cch.add_samples(samples, time_correction, reduction_factor)
-            size += samples.size * 2
+            size += doc['size']
 
         #sum_data = cch.get_sum()
 
@@ -162,7 +162,7 @@ class ProcessTask():
             self.log.debug('No data found in [%d, %d]' % (t0, t1))
             return 0
 
-        ranges = cch.build_events(10000, int(MAX_DRIFT/reduction_factor))
+        ranges = cch.build_events(10000, int(MAX_DRIFT / reduction_factor))
 
 
         #  One event has many samples, thus to mapping represented as samples -> event
@@ -170,7 +170,7 @@ class ProcessTask():
         events = []
 
         ranges *= reduction_factor
-        ranges.resize((ranges.size/2, 2))
+        ranges.resize((ranges.size / 2, 2))
 
         reduced_data_count = 0
 
@@ -191,8 +191,10 @@ class ProcessTask():
                 last['range'] = [int(ranges[mapping][0]),
                                  int(ranges[mapping][1])]
                 last['docs'] = []
+                last['size'] = 0
 
             last['docs'].append(data_docs[i])
+            last['size'] += data_docs[i]['size']
 
         if len(events):
             self.output.write_events(events)
@@ -201,7 +203,7 @@ class ProcessTask():
         self.log.debug("Discarded: (%d/%d) = %0.3f%%",
                        reduced_data_count,
                        (len(data_docs) - reduced_data_count),
-                       100*float(reduced_data_count)/(len(data_docs) - reduced_data_count))
+                       100 * float(reduced_data_count) / (len(data_docs) - reduced_data_count))
         return size
 
     def drop_collection(self):
@@ -209,7 +211,6 @@ class ProcessTask():
 
 
 class ProcessCommand(Command):
-
     """Start event builder and trigger software for continuous processing..
 
     Process data through the event builder and software trigger. The default
@@ -272,6 +273,7 @@ class ProcessCommand(Command):
                 break
 
         cch.shutdown()
+
 
 if __name__ == '__main__':
     import sys

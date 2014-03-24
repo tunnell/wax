@@ -13,7 +13,6 @@ HOSTNAME = "127.0.0.1"
 
 
 class MongoDBBase():
-
     """Read from MongoDB
 
     The subclass is responsible for setting up the collection
@@ -31,6 +30,9 @@ class MongoDBBase():
         else:
             self.collection = self.discover_collection()
 
+        self.collection.ensure_index(self.get_sort_key(),
+                                     background=True)
+
     @property
     def initialized(self):
         return self._initialized
@@ -43,6 +45,10 @@ class MongoDBBase():
 
     @staticmethod
     def get_db_name():
+        raise NotImplementedError()
+
+    @staticmethod
+    def get_sort_key():
         raise NotImplementedError()
 
     def discover_collection(self):

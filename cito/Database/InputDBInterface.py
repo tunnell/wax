@@ -4,9 +4,9 @@
 import logging
 
 import numpy as np
+
 import pymongo
 import snappy
-
 from cito.Database import DBBase
 
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
@@ -14,7 +14,6 @@ SAMPLE_TYPE = np.int16
 
 
 class MongoDBInput(DBBase.MongoDBBase):
-
     """Read from MongoDB
     """
 
@@ -30,8 +29,6 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         self.find_control_doc()
 
-        self.collection.ensure_index(self.get_sort_key(),
-                                     background=True)
 
     @staticmethod
     def get_db_name():
@@ -91,8 +88,8 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         if self.has_run_ended():
             doc = self.collection.find_one({},
-                                           fields=['time'],
-                                           sort=sort_key)
+                                             fields=['time'],
+                                             sort=sort_key)
             if doc is None or doc['time'] is None:
                 return self.get_min_time()
             return doc['time']

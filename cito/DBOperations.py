@@ -7,12 +7,10 @@ import logging
 
 from cliff.show import ShowOne
 import pymongo
-
 from cito.Database import InputDBInterface, OutputDBInterface
 
 
 class CitoDBShowOne(ShowOne):
-
     """Base class for all DB commands.
 
     Handles logging, descriptions, and common fuctions.
@@ -68,7 +66,6 @@ class CitoDBShowOne(ShowOne):
 
 
 class DBDelete(CitoDBShowOne):
-
     """Delete the database by dropping it.
 
     Warning: this cannot be used during a run as it will kill the DAQ writer.
@@ -81,7 +78,6 @@ class DBDelete(CitoDBShowOne):
 
 
 class DBRepair(CitoDBShowOne):
-
     """Repair DB to regain unused space.
 
     MongoDB can't know how what to do with space after a document is deleted,
