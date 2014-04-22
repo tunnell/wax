@@ -6,21 +6,18 @@ __author__ = 'tunnell'
 the output format is Pickled.
 TODO: merge with other commands"""
 
-from configglue import schema
-from configglue.glue import configglue
-from wax.EventBuilder.Processor import sizeof_fmt
-from wax.core import Configuration
-
 import logging
 import pickle
 import os
-import gzip
 
+from configglue import schema
+from configglue.glue import configglue
+
+from wax.EventBuilder.Processor import sizeof_fmt
 from tqdm import tqdm
-import snappy
-
-from wax import __version__
+from wax import __version__, Configuration
 from wax.Database import OutputDBInterface
+
 
 def main(config):
     values = config.values('__main__')

@@ -3,7 +3,7 @@ __author__ = 'tunnell'
 import snappy
 import numpy as np
 
-from wax.core.Configuration import SAMPLE_TYPE
+from wax.Configuration import SAMPLE_TYPE
 
 
 def get_samples_from_doc(doc, is_compressed):

@@ -8,7 +8,7 @@ from configglue.glue import configglue
 import matplotlib.pyplot as plt
 import numpy as np
 
-from wax.core import Configuration
+from wax import Configuration
 from wax.EventAnalyzer.Samples import get_samples_from_doc
 from tqdm import tqdm
 from wax.Database import OutputDBInterface

@@ -8,7 +8,7 @@ import logging
 
 import pymongo
 
-from wax.core.Configuration import HOSTNAME
+from wax.Configuration import HOSTNAME
 
 
 

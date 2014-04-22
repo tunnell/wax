@@ -14,8 +14,8 @@ import time
 from configglue import schema
 from configglue.glue import configglue
 
+from wax import Configuration
 from wax.EventBuilder.Processor import ProcessTask
-from wax.core import Configuration
 
 
 def main(config):
