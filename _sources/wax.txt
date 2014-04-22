@@ -9,10 +9,17 @@ Subpackages
     wax.Database
     wax.EventAnalyzer
     wax.EventBuilder
-    wax.core
 
 Submodules
 ----------
+
+wax.Configuration module
+------------------------
+
+.. automodule:: wax.Configuration
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 wax.wax_compiled_helpers module
 -------------------------------
