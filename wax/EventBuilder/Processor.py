@@ -169,6 +169,7 @@ class ProcessTask():
         mappings = cch.overlaps(doc_ranges.flatten())
         events = []
 
+        ranges += t0
         ranges *= reduction_factor
         ranges.resize((ranges.size / 2, 2))
 
