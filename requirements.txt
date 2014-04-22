@@ -4,6 +4,7 @@ tqdm
 python-snappy # Macports: CPPFLAGS="-I/opt/local/include -L/opt/local/lib" pip install python-snappy
 numpy # PyPy: pip install git+https://bitbucket.org/pypy/numpy.git
 matplotlib
+configglue
 # Dev packages
 #bumpversion # for releases
 #sphinx # docs
