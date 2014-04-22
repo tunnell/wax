@@ -55,20 +55,20 @@ docs:
 
 major: clean docs
 	bumpversion major
-	git push all
-	git push all --tags
+	git push
+	git push --tags
 	python setup.py sdist upload
 
 minor: clean docs
 	bumpversion minor
-	git push all
-	git push all --tags
+	git push
+	git push --tags
 	python setup.py sdist upload
 
 patch: clean docs
 	bumpversion patch
-	git push all
-	git push all --tags
+	git push
+	git push --tags
 	python setup.py sdist upload
 
 sdist: clean
