@@ -4,10 +4,10 @@ import pickle
 
 import snappy
 
-from wax.Database import DBBase
+from wax.Database import DBMongoBase
 
 
-class MongoDBOutput(DBBase.MongoDBBase):
+class MongoDBOutput(DBMongoBase.MongoDBBase):
 
     """Write to MongoDB
 
@@ -15,8 +15,8 @@ class MongoDBOutput(DBBase.MongoDBBase):
     may still be being processed.
     """
 
-    def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
-        DBBase.MongoDBBase.__init__(self, collection_name, hostname)
+    def __init__(self, collection_name=None, hostname=DBMongoBase.HOSTNAME):
+        DBMongoBase.MongoDBBase.__init__(self, collection_name, hostname)
 
     @staticmethod
     def get_db_name():

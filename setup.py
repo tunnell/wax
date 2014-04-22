@@ -15,35 +15,29 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 required = open('requirements.txt').read().splitlines()
 
 setup(
-    name='cito',
+    name='wax',
     version='1.9.0',
     description='Generic particle-physics software trigger with flash ADCs.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
     author_email='ctunnell@nikhef.nl',
-    url='https://github.com/tunnell/cito',
-    download_url='https://github.com/tunnell/cito/tarball/master',
+    url='https://github.com/tunnell/wax',
+    download_url='https://github.com/tunnell/wax/tarball/master',
+    scripts = ['bin/wax-on',
+               'bin/wax-off',
+               'bin/file-builder',
+               'bin/event-builder',
+               ],
     packages=[
-        'cito', 'cito.core', 'cito.EventBuilder',
-        'cito.Database', 'cito.Trigger',
+        'wax', 'wax.core', 'wax.EventBuilder',
+        'wax.Database', 'wax.Trigger',
     ],
-    package_dir={'cito': 'cito'},
+    package_dir={'wax': 'wax'},
     include_package_data=True,
     install_requires=required,
-    entry_points={
-        'console_scripts': [
-            'cito = cito.core.main:main'
-        ],
-        'cito.core.main': [
-            'delete = cito.DBOperations:DBDelete',
-            'repair = cito.DBOperations:DBRepair',
-            'process = cito.EventBuilder.Processor:ProcessCommand',
-            'file builder = cito.FileBuilder:FileBuilderCommand',
-        ],
-    },
     license="BSD",
     zip_safe=False,
-    keywords='cito',
+    keywords='wax',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

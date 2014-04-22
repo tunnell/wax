@@ -22,9 +22,8 @@ import numpy as np
 
 from wax.core.math import merge_subranges, find_subranges
 
-
-CWT_WIDTH = 50  # units of 10 ns
-MAX_DRIFT = 18000  # units of 10 ns
+from wax.core.Configuration import MAX_DRIFT
+#CWT_WIDTH = 50  # units of 10 ns
 
 
 def identify_nonoverlapping_trigger_windows(indices, samples):
@@ -63,7 +62,7 @@ def identify_nonoverlapping_trigger_windows(indices, samples):
     return np.array(peaks, dtype=np.int64), smoothed_sum
 
 
-def find_peaks(values, threshold=1000, widths=np.array([CWT_WIDTH])):
+def find_peaks(values, threshold=1000):
     """Find peaks within list of values.
 
     Use the butter filter, then perform a forward-backward filter such that

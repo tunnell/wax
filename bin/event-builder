@@ -1,2 +1,61 @@
 #!/bin/env python
+"""Start event builder and trigger software for continuous processing..
+
+Process data through the event builder and software trigger. The default
+behavior of this command is to take data from the input database, process
+it, then write events out to the output database.  (This command does not
+build files.)
+"""
 # __author__ = 'tunnell'
+
+import logging
+import time
+
+from configglue import schema
+from configglue.glue import configglue
+
+from wax.EventBuilder.Processor import ProcessTask
+from wax.core import Configuration
+
+
+def main(config):
+    log = logging.getLogger('EventBuilder')
+
+    # do something
+    values = config.values('__main__')
+
+    while True:
+        try:
+            p = ProcessTask(values.get('dataset'),
+                            values.get('hostname'))
+        except Exception as e:
+            log.exception(e)
+            log.fatal("Exception resulted in fatal error; quiting.")
+            raise
+
+        if values.get('chunks') != -1:
+            p.delete_collection_when_done = False
+
+        if not p.input.initialized:
+            log.warning("No dataset available to process; waiting one second.")
+            time.sleep(1)
+        else:
+            p.process_dataset(chunk_size=values.get('chunksize'),
+                              chunks=values.get('chunks'),
+                              padding=values.get('padding'))
+
+        # If only a single dataset was specified, break
+        if values.get('dataset') is not None or values.get('chunks') != -1:
+            break
+
+
+if __name__ == '__main__':
+    class eb(schema.Schema, Configuration.EventBuilder, Configuration.Mongo):
+        pass
+
+    # glue everything together
+    glue = configglue(eb,
+                      ['config.ini'])
+    print(glue)
+    # run
+    main(glue.schema_parser)

@@ -11,7 +11,7 @@ import unittest
 class SumDataTestCase(unittest.TestCase):
 
     def setUp(self):
-        # Load the cito output file
+        # Load the wax output file
         self.f = gzip.open('tests/cito_file.pklz', 'rb')
 
     def test_type(self):

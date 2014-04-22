@@ -2,19 +2,16 @@ import logging
 import math
 import time
 
-from cliff.command import Command
 from tqdm import tqdm
-
-from wax.Database import InputDBInterface, OutputDBInterface
+from wax.Database import InputDBMongoInterface, OutputDBMongoInterface
 from wax.EventBuilder import Logic
 from wax.core.math import sizeof_fmt
 from wax.core import Waveform
-from wax.Trigger.PeakFinder import MAX_DRIFT
 
 
 __author__ = 'tunnell'
 
-CHUNK_SIZE = 2 ** 28
+
 
 
 class ProcessTask():
@@ -33,10 +30,10 @@ class ProcessTask():
             # delete
             self.delete_collection_when_done = False
 
-        self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
-                                                   hostname=hostname)
+        self.input = InputDBMongoInterface.MongoDBInput(collection_name=dataset,
+                                                        hostname=hostname)
         if self.input.initialized:
-            self.output = OutputDBInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
+            self.output = OutputDBMongoInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
                                                           hostname=hostname)
         else:
             self.log.debug("Cannot setup output DB.")
@@ -153,65 +150,3 @@ class ProcessTask():
         self.input.get_db().drop_collection(self.input.get_collection_name())
 
 
-class ProcessCommand(Command):
-
-    """Start event builder and trigger software for continuous processing..
-
-    Process data through the event builder and software trigger. The default
-    behavior of this command is to take data from the input database, process
-    it, then write events out to the output database.  (This command does not
-    build files.)
-    """
-
-    def get_description(self):
-        return self.__doc__
-
-    def get_parser(self, prog_name):
-        parser = super(ProcessCommand, self).get_parser(prog_name)
-
-        parser.add_argument("--hostname", help="MongoDB database address",
-                            type=str,
-                            default='127.0.0.1')
-
-        parser.add_argument('--chunksize', type=int,
-                            help="Size of data chunks to process [10 ns step]",
-                            default=CHUNK_SIZE)
-        parser.add_argument('--padding', type=int,
-                            help='Padding to overlap processing windows [10 ns step]',
-                            default=(3 * MAX_DRIFT))
-        parser.add_argument('--chunks', type=int,
-                            help='Limit the numbers of chunks to analyze (-1 means no limit)',
-                            default=-1)
-
-        parser.add_argument('--dataset', type=str,
-                            help='Analyze only a single dataset')
-
-        return parser
-
-    def take_action(self, parsed_args):
-        self.log = logging.getLogger(self.__class__.__name__)
-
-        self.log.debug('Command line arguments: %s', str(parsed_args))
-
-        while True:
-            try:
-                p = ProcessTask(parsed_args.dataset, parsed_args.hostname)
-            except Exception as e:
-                self.log.exception(e)
-                self.log.fatal("Exception resulted in fatal error; quiting.")
-                raise
-
-            if parsed_args.chunks != -1:
-                p.delete_collection_when_done = False
-
-            if not p.input.initialized:
-                self.log.warning("No dataset available to process; waiting one second.")
-                time.sleep(1)
-            else:
-                p.process_dataset(chunk_size=parsed_args.chunksize,
-                                  chunks=parsed_args.chunks,
-                                  padding=parsed_args.padding)
-
-            # If only a single dataset was specified, break
-            if parsed_args.dataset is not None or parsed_args.chunks != -1:
-                break

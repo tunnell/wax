@@ -23,7 +23,7 @@ import logging
 
 import numpy as np
 
-from wax.Trigger import PeakFinder
+from wax.EventBuilder import PeakFinder
 from wax.core.math import compute_subranges
 
 
@@ -175,15 +175,3 @@ class EventBuilder():
 
         return events
 
-
-if __name__ == '__main__':
-    import sys
-    from wax.core.main import CitoApp
-
-    myapp = CitoApp()
-    import cProfile
-
-    cProfile.run("""myapp.run(['process', '-q', '--chunks', '2'])""",
-                 'profile')
-
-    sys.exit(0)

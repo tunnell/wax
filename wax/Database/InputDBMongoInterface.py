@@ -7,21 +7,21 @@ import numpy as np
 import pymongo
 import snappy
 
-from wax.Database import DBBase
+from wax.Database import DBMongoBase
 
 __author__ = 'tunnell'
 
 
-class MongoDBInput(DBBase.MongoDBBase):
+class MongoDBInput(DBMongoBase.MongoDBBase):
 
     """Read from MongoDB
     """
 
-    def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
+    def __init__(self, collection_name=None, hostname=DBMongoBase.HOSTNAME):
         self.control_doc_id = None
         self.is_compressed = None
 
-        DBBase.MongoDBBase.__init__(self, collection_name, hostname)
+        DBMongoBase.MongoDBBase.__init__(self, collection_name, hostname)
 
         if self.initialized is False:
             self.log.debug("Cannot initialize input.")
@@ -130,6 +130,8 @@ class MongoDBInput(DBBase.MongoDBBase):
         sort_key = self.get_sort_key(pymongo.ASCENDING)
         doc = self.collection.find_one({"time": {'$exists': True}},
                                        sort=sort_key)
+        if doc == None:
+            raise ValueError("Could not find starting time since no documents with 'time' field exist")
         return doc['time']
         # return self.get_control_document()['starttime']
 

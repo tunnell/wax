@@ -6,9 +6,9 @@ import gzip
 import matplotlib.pyplot as plt
 from pylab import gca, Rectangle
 
-# Load the cito output file
+# Load the wax output file
 f = gzip.open('cito_file.pklz', 'rb')
-print("cito version", pickle.load(f))
+print("wax version", pickle.load(f))
 i = 0
 while 1:
     print("Event %d" % i)

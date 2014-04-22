@@ -8,8 +8,8 @@ import logging
 
 import pymongo
 
+from wax.core.Configuration import HOSTNAME
 
-HOSTNAME = "127.0.0.1"
 
 
 class MongoDBBase():
@@ -27,6 +27,7 @@ class MongoDBBase():
         self._initialized = True
 
         if collection_name is not None:
+            self.log.error("collection_name %s", collection_name)
             self.collection = self.db[collection_name]
         else:
             self.collection = self.discover_collection()

@@ -1,4 +1,4 @@
-from cito.core.math import find_subranges, overlap_region, speed_in1d_continous
+from wax.core.math import find_subranges, overlap_region, speed_in1d_continous
 
 __author__ = 'tunnell'
 
