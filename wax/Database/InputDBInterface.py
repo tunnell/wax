@@ -3,32 +3,28 @@
 
 import logging
 
-import numpy as np
-
 import pymongo
-import snappy
 
-from wax.Database import DBMongoBase
-
-# Samples are actually 14 bit unsigned, so 16 bit signed fine
-SAMPLE_TYPE = np.int16
+from wax.Database import DBBase
 
 
-class MongoDBInput(DBMongoBase.MongoDBBase):
+class MongoDBInput(DBBase.MongoDBBase):
 
     """Read from MongoDB
     """
 
-    def __init__(self, collection_name=None, hostname=DBMongoBase.HOSTNAME):
+    def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
         self.control_doc_id = None
         self.is_compressed = None
 
-        DBMongoBase.MongoDBBase.__init__(self, collection_name, hostname)
+        DBBase.MongoDBBase.__init__(self, collection_name, hostname)
 
         if self.initialized is False:
             self.log.debug("Cannot initialize input.")
             return
 
+        self.collection.ensure_index(self.get_sort_key(),
+                                     background=True)
         self.find_control_doc()
 
 
@@ -185,27 +181,3 @@ class MongoDBInput(DBMongoBase.MongoDBBase):
         return [('time', order),
                 ('module', order),
                 ('_id', order)]
-
-    def get_data_from_doc(self, doc):
-        """From a mongo document, fetch the data payload and decompress if
-        necessary
-
-        Args:
-           doc (dictionary):  Document from mongodb to analyze
-
-        Returns:
-           bytes: decompressed data
-
-        """
-        data = doc['data']
-        assert len(data) != 0
-
-        if self.is_compressed:
-            data = snappy.uncompress(data)
-
-        data = np.fromstring(data,
-                             dtype=SAMPLE_TYPE)
-        if len(data) == 0:
-            raise IndexError("Data has zero length")
-
-        return data

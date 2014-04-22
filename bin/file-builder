@@ -8,18 +8,19 @@ TODO: merge with other commands"""
 
 from configglue import schema
 from configglue.glue import configglue
-from wax.core.math import sizeof_fmt
+from wax.EventBuilder.Processor import sizeof_fmt
 from wax.core import Configuration
 
 import logging
 import pickle
+import os
 import gzip
 
 from tqdm import tqdm
 import snappy
 
 from wax import __version__
-from wax.Database import OutputDBMongoInterface
+from wax.Database import OutputDBInterface
 
 def main(config):
     values = config.values('__main__')
@@ -27,7 +28,7 @@ def main(config):
 
     log.debug("Establishing connection")
 
-    output = OutputDBMongoInterface.MongoDBOutput(hostname=values.get('hostname'))
+    output = OutputDBInterface.MongoDBOutput(hostname=values.get('hostname'))
     try:
         collection = output.get_collection()
     except RuntimeError:
@@ -41,24 +42,17 @@ def main(config):
         log.error("No events in the output database; no file made.")
         return
 
-    f = gzip.open(values.get('filename'), 'wb')
+    f = open(values.get('filename'), 'wb')
 
     pickle.dump(__version__, f)
 
-    log.info("Processing %d trigger events" % n)
-
-    data_size = 0
-
     for i in tqdm(range(n)):
-        doc = next(cursor)
-        doc2 = snappy.uncompress(doc['compressed_doc'])
-        doc2 = pickle.loads(doc2)
-        data_size += len(doc2)
-        pickle.dump(doc2, f)
-
-    log.info("Size of file: %s " % sizeof_fmt(data_size))
+        pickle.dump(next(cursor), f)
 
     f.close()
+    log.info("Size of file: %s " % sizeof_fmt(os.path.getsize(values.get('filename'))))
+
+
 
 
 if __name__ == '__main__':
@@ -68,6 +62,5 @@ if __name__ == '__main__':
     # glue everything together
     glue = configglue(eb,
                       ['config.ini'])
-    print(glue)
     # run
     main(glue.schema_parser)

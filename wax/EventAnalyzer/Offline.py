@@ -1,7 +1,7 @@
 __author__ = 'tunnell'
 
 from cliff.command import Command
-from wax.core.Configuration import DEFAULT_FILENAME
+
 
 class ProcessCommand(Command):
 

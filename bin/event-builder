@@ -56,6 +56,5 @@ if __name__ == '__main__':
     # glue everything together
     glue = configglue(eb,
                       ['config.ini'])
-    print(glue)
-    # run
+
     main(glue.schema_parser)

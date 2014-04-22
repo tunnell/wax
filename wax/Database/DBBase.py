@@ -25,14 +25,13 @@ class MongoDBBase():
 
         self._initialized = True
 
+        self.log.setLevel(logging.DEBUG)
+
         if collection_name is not None:
-            self.log.error("collection_name %s", collection_name)
             self.collection = self.db[collection_name]
         else:
             self.collection = self.discover_collection()
 
-        self.collection.ensure_index(self.get_sort_key(),
-                                     background=True)
 
     @property
     def initialized(self):
@@ -53,10 +52,9 @@ class MongoDBBase():
         raise NotImplementedError()
 
     def discover_collection(self):
-        collections = self.db.collection_names(
-            include_system_collections=False)
+        collections = self.db.collection_names(include_system_collections=False)
         if len(collections) == 0:
-            self.log.debug("No dataset in %s database." % self.get_db_name())
+            self.log.warning("No dataset in %s database." % self.get_db_name())
             self.initialized = False
             return
 

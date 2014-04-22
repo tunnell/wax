@@ -1,2 +1,61 @@
 #!/bin/env python
 # __author__ = 'tunnell'
+
+import logging
+
+from configglue import schema
+from configglue.glue import configglue
+import matplotlib.pyplot as plt
+import numpy as np
+
+from wax.core import Configuration
+from wax.EventAnalyzer.Samples import get_samples_from_doc
+from tqdm import tqdm
+from wax.Database import OutputDBInterface
+
+
+def main(config):
+    values = config.values('__main__')
+    log = logging.getLogger('WaxOn')
+
+    log.debug("Establishing connection")
+
+    output = OutputDBInterface.MongoDBOutput(hostname=values.get('hostname'))
+    try:
+        collection = output.get_collection()
+    except RuntimeError:
+        log.error("Uninitialized (empty? if so, run 'process'.) output database")
+        return
+
+    cursor = collection.find()
+    n = cursor.count()
+    if n == 0:
+        log.error("No events in the output database.")
+        return
+
+    log.info("Processing %d trigger events" % n)
+
+    for i in tqdm(range(n)):
+        plt.figure()
+        event = next(cursor)
+        print(event.keys())
+
+        for doc in event['docs']:
+            samples = get_samples_from_doc(doc, is_compressed=event['compressed'])
+
+            plt.plot(np.arange(doc['time'], doc['time'] + samples.size),
+                     samples,
+                     label='%d_%d' % (doc['module'], doc['channel']))
+
+        plt.show()
+
+if __name__ == '__main__':
+    class eb(schema.Schema, Configuration.Mongo):
+        pass
+
+    # glue everything together
+    glue = configglue(eb,
+                      ['config.ini'])
+    print(glue)
+    # run
+    main(glue.schema_parser)

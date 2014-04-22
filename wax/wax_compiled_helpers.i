@@ -1,8 +1,8 @@
-%module cito_compiled_helpers
+%module wax_compiled_helpers
 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "cito_compiled_helpers.h"
+    #include "wax_compiled_helpers.h"
 %}
 
 %include "numpy.i"
@@ -18,5 +18,5 @@
 %apply (int* IN_ARRAY1, int DIM1) {(int *samples_ranges, int n2)}
 %apply (int** ARGOUTVIEW_ARRAY1, int *DIM1) {(int **samples_indices, int *n)}
 
-%include "cito_compiled_helpers.h"
+%include "wax_compiled_helpers.h"
 
