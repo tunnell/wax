@@ -53,8 +53,6 @@ if __name__ == '__main__':
     class eb(schema.Schema, Configuration.EventBuilder, Configuration.Mongo):
         pass
 
-    # glue everything together
-    glue = configglue(eb,
-                      ['config.ini'])
+    glue = configglue(eb, ['config.ini'])
 
     main(glue.schema_parser)

@@ -162,7 +162,7 @@ class ProcessTask():
             self.log.debug('No data found in [%d, %d]' % (t0, t1))
             return 0
 
-        ranges = cch.build_events(10000, int(MAX_DRIFT / reduction_factor))
+        ranges = cch.build_events(1000, int(MAX_DRIFT / reduction_factor))
 
 
         #  One event has many samples, thus to mapping represented as samples -> event
