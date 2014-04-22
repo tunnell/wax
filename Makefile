@@ -27,7 +27,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 --ignore=E501 cito tests
+	flake8 --ignore=E501 wax tests
 
 test:
 	python setup.py test
@@ -36,20 +36,20 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source cito setup.py test
+	coverage run --source wax setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
 
 docs:
-	rm -f docs/cito.rst
+	rm -f docs/wax.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ cito
+	sphinx-apidoc -o docs/ wax
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 
-	cp -r docs/_build/html/* ../citodocs/
-	bash -c "cd ../citodocs;git add -A;git commit -m \"Generated gh-pages\";git push origin gh-pages;cd ../cito"
+	cp -r docs/_build/html/* ../waxdocs/
+	bash -c "cd ../waxdocs;git add -A;git commit -m \"Generated gh-pages\";git push origin gh-pages;cd ../wax"
 
 	echo open docs/_build/html/index.html
 
@@ -77,4 +77,4 @@ sdist: clean
 
 profile: clean
 	rm -f profile
-	python cito/EventBuilder/Processor.py
+	python wax/EventBuilder/Processor.py

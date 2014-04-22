@@ -3,6 +3,13 @@
 History
 -------
 
+2.0 (2014-04-22)
+++++++++++++++++
+
+* Rename project to wax
+* Remove cliff dependency since underutilized
+* Processing of waveforms is now done in C using swig
+
 1.9 (2014-03-19)
 ++++++++++++++++
 
