@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
-import os
+from setuptools import setup, Extension
+#from distutils.core import Extension, setup
+import numpy as np  # Third-party modules - we depend on numpy for everything
 
-from setuptools import setup
-
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    sys.exit()
+# Obtain the numpy include directory.  This logic works across numpy versions.
+numpy_include = np.get_include()
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
@@ -28,6 +26,8 @@ setup(
                'bin/file-builder',
                'bin/event-builder',
                ],
+    url='https://github.com/tunnell/cito',
+    download_url='https://github.com/tunnell/cito/tarball/master',
     packages=[
         'wax', 'wax.core', 'wax.EventBuilder',
         'wax.Database', 'wax.Trigger',
@@ -47,5 +47,10 @@ setup(
         'Programming Language :: Python :: 3.3',
     ],
     test_suite='tests',
+    ext_modules=[Extension("_cito_compiled_helpers",
+                           ["cito/cito_compiled_helpers.i", "cito/cito_compiled_helpers.c"],
+                           include_dirs=[numpy_include],
+                           extra_compile_args=[],
+    )],
 
 )

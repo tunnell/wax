@@ -4,12 +4,14 @@
 import logging
 
 import numpy as np
+
 import pymongo
 import snappy
 
 from wax.Database import DBMongoBase
 
-__author__ = 'tunnell'
+# Samples are actually 14 bit unsigned, so 16 bit signed fine
+SAMPLE_TYPE = np.int16
 
 
 class MongoDBInput(DBMongoBase.MongoDBBase):
@@ -29,8 +31,6 @@ class MongoDBInput(DBMongoBase.MongoDBBase):
 
         self.find_control_doc()
 
-        self.collection.ensure_index(self.get_sort_key(),
-                                     background=True)
 
     @staticmethod
     def get_db_name():
@@ -90,8 +90,8 @@ class MongoDBInput(DBMongoBase.MongoDBBase):
 
         if self.has_run_ended():
             doc = self.collection.find_one({},
-                                           fields=['time'],
-                                           sort=sort_key)
+                                             fields=['time'],
+                                             sort=sort_key)
             if doc is None or doc['time'] is None:
                 return self.get_min_time()
             return doc['time']
@@ -161,7 +161,10 @@ class MongoDBInput(DBMongoBase.MongoDBBase):
         subset_query = {"time": {'$gte': time0,
                                  '$lt': time1}}
 
-        result = list(self.collection.find(subset_query))
+        cursor = self.collection.find(subset_query,
+                                      sort=self.get_sort_key(pymongo.ASCENDING),
+                                      exhaust=True)
+        result = list(cursor)
         logging.debug("Fetched %d input documents." % len(result))
         return result
 
@@ -201,8 +204,7 @@ class MongoDBInput(DBMongoBase.MongoDBBase):
             data = snappy.uncompress(data)
 
         data = np.fromstring(data,
-                             dtype=np.uint32)
-
+                             dtype=SAMPLE_TYPE)
         if len(data) == 0:
             raise IndexError("Data has zero length")
 

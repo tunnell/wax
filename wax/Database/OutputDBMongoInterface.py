@@ -1,14 +1,13 @@
 __author__ = 'tunnell'
 
-import pickle
+import pymongo
 
 import snappy
 
 from wax.Database import DBMongoBase
 
 
-class MongoDBOutput(DBMongoBase.MongoDBBase):
-
+class MongoDBOutput(DBBase.MongoDBBase):
     """Write to MongoDB
 
     This class, I don't think, can know the event number since it events before it
@@ -26,22 +25,20 @@ class MongoDBOutput(DBMongoBase.MongoDBBase):
     def mongify_event(event_data):
         """Convert Python data to pickled and compressed data.
 
+        :param order: Ascending or descending order.
+        :type order: int
+        :returns:  list -- Returns, per pymongo format, a list of (variable, order)
+                           pairs.
         """
-        new_doc = {}
-        new_doc['evt_num'] = event_data['evt_num']
-        new_doc['range'] = event_data['range']
-        data = pickle.dumps(event_data)
-        new_doc['compressed_doc'] = snappy.compress(data)
-
-        return new_doc
+        return [('cnt', pymongo.ASCENDING), ('_id', pymongo.ASCENDING)]
 
     def write_events(self, event_data_list):
         """Save data to database
         """
         self.log.debug('writing event')
-        mongofied_list = [self.mongify_event(x) for x in event_data_list]
+        #mongofied_list = [self.mongify_event(x) for x in event_data_list]
 
-        self.collection.insert(mongofied_list,
+        self.collection.insert(event_data_list,
                                check_keys=False,
                                manipulate=False,
                                w=0)
