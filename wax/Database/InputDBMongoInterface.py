@@ -7,7 +7,7 @@ import numpy as np
 import pymongo
 import snappy
 
-from cito.Database import DBBase
+from wax.Database import DBBase
 
 __author__ = 'tunnell'
 

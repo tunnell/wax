@@ -7,44 +7,29 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 from cliff.show import ShowOne
 
-import cito
+import wax
 
 
-class CitoApp(App):
+DEFAULT_FILENAME = 'cito_file.pklz'
 
-    """Cito Cliff application
+class WaxApp(App):
+
+    """Wax Cliff application
 
     See cliff documentation to understand this."""
 
     def __init__(self):
-        super(CitoApp, self).__init__(
+        super(WaxApp, self).__init__(
             description='Data acquisition software for event building and software triggering.',
-            version=cito.__version__,
-            command_manager=CommandManager('cito.core.main'),
+            version=wax.__version__,
+            command_manager=CommandManager('wax.core.main'),
         )
 
     def initialize_app(self, argv):
-        log_file = 'logging.conf'
-        used_file_config = False
-        if os.path.exists(log_file):
-            logging.config.fileConfig(log_file)
-            used_file_config = True
-
         self.log = logging.getLogger(self.__class__.__name__)
-        if used_file_config:
-            logging.info("Loaded logging configuration: %s", log_file)
         self.log.debug('Initialize application')
 
-    def prepare_to_run_command(self, cmd):
-        self.log.debug('Preparing to run command %s', cmd.__class__.__name__)
-
-    def clean_up(self, cmd, result, err):
-        self.log.debug('Clean up %s', cmd.__class__.__name__)
-        if err:
-            self.log.error('Got an error: %s', err)
-
-
-class CitoShowOne(ShowOne):
+class WaxShowOne(ShowOne):
 
     """Base class for all DB commands.
 
@@ -56,7 +41,7 @@ class CitoShowOne(ShowOne):
         return self.__doc__
 
     def get_parser(self, prog_name):
-        parser = super(CitoShowOne, self).get_parser(prog_name)
+        parser = super(WaxShowOne, self).get_parser(prog_name)
 
         parser.add_argument("--hostname", help="MongoDB database address",
                             type=str,
@@ -76,11 +61,12 @@ class CitoShowOne(ShowOne):
         return columns, data
 
 
+
 def main(argv=sys.argv[1:]):
     if len(argv) == 0:
         print(
-            "HINT: Did you mean to run 'cito process' to start building events?\n")
+            "HINT: Did you mean to run 'wax process' to start building events?\n")
         argv = ['-h']
-    myapp = CitoApp()
+    myapp = WaxApp()
 
     return myapp.run(argv)

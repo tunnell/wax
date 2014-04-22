@@ -20,7 +20,7 @@ import time
 
 import numpy as np
 
-from cito.core.math import merge_subranges, find_subranges
+from wax.core.math import merge_subranges, find_subranges
 
 
 CWT_WIDTH = 50  # units of 10 ns

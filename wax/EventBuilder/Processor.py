@@ -5,11 +5,11 @@ import time
 from cliff.command import Command
 from tqdm import tqdm
 
-from cito.Database import InputDBInterface, OutputDBInterface
-from cito.EventBuilder import Logic
-from cito.core.math import sizeof_fmt
-from cito.core import Waveform
-from cito.Trigger.PeakFinder import MAX_DRIFT
+from wax.Database import InputDBInterface, OutputDBInterface
+from wax.EventBuilder import Logic
+from wax.core.math import sizeof_fmt
+from wax.core import Waveform
+from wax.Trigger.PeakFinder import MAX_DRIFT
 
 
 __author__ = 'tunnell'

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    cito.core.EventBuilding
+    wax.core.EventBuilding
     ~~~~~~~~~~~~~~~~~~~~~~~
 
     Event building converts time blocks of data (from different digitizer boards) into DAQ events.
@@ -23,8 +23,8 @@ import logging
 
 import numpy as np
 
-from cito.Trigger import PeakFinder
-from cito.core.math import compute_subranges
+from wax.Trigger import PeakFinder
+from wax.core.math import compute_subranges
 
 
 def find_sum_in_data(data):
@@ -178,7 +178,7 @@ class EventBuilder():
 
 if __name__ == '__main__':
     import sys
-    from cito.core.main import CitoApp
+    from wax.core.main import CitoApp
 
     myapp = CitoApp()
     import cProfile

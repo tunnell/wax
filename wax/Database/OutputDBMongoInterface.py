@@ -4,7 +4,7 @@ import pickle
 
 import snappy
 
-from cito.Database import DBBase
+from wax.Database import DBBase
 
 
 class MongoDBOutput(DBBase.MongoDBBase):
