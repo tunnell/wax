@@ -1,0 +1,22 @@
+wax.EventBuilder package
+========================
+
+Submodules
+----------
+
+wax.EventBuilder.Processor module
+---------------------------------
+
+.. automodule:: wax.EventBuilder.Processor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: wax.EventBuilder
+    :members:
+    :undoc-members:
+    :show-inheritance:

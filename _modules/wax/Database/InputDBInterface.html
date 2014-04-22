@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>wax.Database.InputDBInterface &mdash; Code for Intelligent Triggering Online 1.9.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Code for Intelligent Triggering Online 1.9.0 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="../../../index.html" class="fa fa-home"> Code for Intelligent Triggering Online</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../readme.html">WAX</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../readme.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../readme.html#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../readme.html#overview">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-python3-3">Installing Python3.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-system-dependencies">Installing system dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#preparing-python-environment">Preparing Python environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-cito">Installing Cito</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-file-builder">Starting the file builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#database-commands">Database commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../analyze_data.html">Analyzing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data_format.html">Internal data formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#input-database">Input database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#output-database">Output database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#file-from-file-builder-format">File from File Builder  format</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../jargon.html">Jargon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#types-of-contributions">Types of Contributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#get-started">Get Started!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#tips">Tips</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../authors.html#development-lead">Development Lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">2.0 (2014-04-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id2">1.9 (2014-03-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id3">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id4">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id5">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id6">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id7">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id8">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id9">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id10">0.1 (2013-08-11)</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">Code for Intelligent Triggering Online</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>wax.Database.InputDBInterface</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <h1>Source code for wax.Database.InputDBInterface</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Interface code to the input data in MongoDB</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">pymongo</span>
+
+<span class="kn">from</span> <span class="nn">wax.Database</span> <span class="kn">import</span> <span class="n">DBBase</span>
+
+
+<div class="viewcode-block" id="MongoDBInput"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput">[docs]</a><span class="k">class</span> <span class="nc">MongoDBInput</span><span class="p">(</span><span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Read from MongoDB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="n">DBBase</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_compressed</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Cannot initialize input.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">ensure_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">(),</span>
+                                     <span class="n">background</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">find_control_doc</span><span class="p">()</span>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MongoDBInput.get_db_name"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_db_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_name</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s">&#39;input&#39;</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.find_control_doc"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.find_control_doc">[docs]</a>    <span class="k">def</span> <span class="nf">find_control_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">control_docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s">&quot;runtype&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                                                  <span class="s">&quot;starttime&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                                                  <span class="s">&quot;compressed&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                                                  <span class="s">&quot;data_taking_ended&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                                                  <span class="s">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">}}))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">control_docs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;More than one control document found in </span><span class="si">%s</span><span class="s">.&quot;</span> <span class="o">%</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Control document already set&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">control_docs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;No control document found.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span> <span class="o">=</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;_id&#39;</span><span class="p">]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Control document:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_compressed</span> <span class="o">=</span> <span class="n">control_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;compressed&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.get_control_document"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_control_document">[docs]</a>    <span class="k">def</span> <span class="nf">get_control_document</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetch current control document from collection</span>
+
+<span class="sd">        This stores all the information about the dataset</span>
+
+<span class="sd">        :returns:  dict -- Control document.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_doc_id</span><span class="p">})</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.get_modules"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_modules">[docs]</a>    <span class="k">def</span> <span class="nf">get_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get modules</span>
+
+<span class="sd">        :returns:  list[int] -- Return list of integers</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">modules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">modules</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;No modules found&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">modules</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.get_max_time"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_max_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_max_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get maximum time that has been seen by any channel.</span>
+
+<span class="sd">        :returns:  int -- A time in units of 10 ns</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sort_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_run_ended</span><span class="p">():</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({},</span>
+                                             <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span>
+                                             <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
+
+        <span class="n">modules</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modules</span><span class="p">()</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;module&#39;</span><span class="p">:</span> <span class="n">module</span><span class="p">}</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">,</span>
+                                           <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="s">&#39;module&#39;</span><span class="p">],</span>
+                                           <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                           <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
+            <span class="c"># See if cursor is fast with cursor.explain()[&#39;indexOnly&#39;]</span>
+
+            <span class="n">times</span><span class="p">[</span><span class="n">module</span><span class="p">]</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
+
+        <span class="c"># Want the earliest time (i.e., the min) of all the max times</span>
+        <span class="c"># for the boards.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">time</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.get_min_time"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_min_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_min_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get minumum time</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           int:  A time in units of 10 ns</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sort_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}},</span>
+                                       <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">doc</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Could not find starting time since no documents with &#39;time&#39; field exist&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
+        <span class="c"># return self.get_control_document()[&#39;starttime&#39;]</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.has_run_ended"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.has_run_ended">[docs]</a>    <span class="k">def</span> <span class="nf">has_run_ended</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Determine if run has ended</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">           int:  A time in units of 10 ns</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_control_document</span><span class="p">()[</span><span class="s">&#39;data_taking_ended&#39;</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MongoDBInput.get_data_docs"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_data_docs">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time0</span><span class="p">,</span> <span class="n">time1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetch from DB the documents within time range.</span>
+
+<span class="sd">        .. todo:: Must this know padding?  Maybe just hand cursor so can mock?</span>
+
+<span class="sd">        :param time0: Initial time to query.</span>
+<span class="sd">        :type time0: int.</span>
+<span class="sd">        :param time1: Final time.</span>
+<span class="sd">        :type time1: int.</span>
+<span class="sd">        :returns:  list -- Input documents see docs :ref:`data_format#input`</span>
+<span class="sd">        :raises: AssertionError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># $gte and $lt are special mongo functions for greater than and less than</span>
+        <span class="n">subset_query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;time&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$gte&#39;</span><span class="p">:</span> <span class="n">time0</span><span class="p">,</span>
+                                 <span class="s">&#39;$lt&#39;</span><span class="p">:</span> <span class="n">time1</span><span class="p">}}</span>
+
+        <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">subset_query</span><span class="p">,</span>
+                                      <span class="n">sort</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sort_key</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span>
+                                      <span class="n">exhaust</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Fetched </span><span class="si">%d</span><span class="s"> input documents.&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MongoDBInput.get_sort_key"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_sort_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_sort_key</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sort key used for MongoDB sorting and indexing.</span>
+
+<span class="sd">        :param order: Ascending or descending order.</span>
+<span class="sd">        :type order: int</span>
+<span class="sd">        :returns:  list -- Returns, per pymongo format, a list of (variable, order)</span>
+<span class="sd">                           pairs.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">!=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span> <span class="ow">and</span> <span class="n">order</span> <span class="o">!=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&#39;_id&#39;</span><span class="p">,</span> <span class="n">order</span><span class="p">)]</span></div></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013, Christopher Tunnell.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1.9.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

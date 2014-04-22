@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Trigger package &mdash; Code for Intelligent Triggering Online 1.9.0 documentation</title>
+  <title>wax.EventBuilder package &mdash; Code for Intelligent Triggering Online 1.9.0 documentation</title>
   
 
   
@@ -132,10 +132,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>cito.Trigger package</li>
+    <li>wax.EventBuilder package</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/cito.Trigger.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/wax.EventBuilder.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -143,16 +143,67 @@
 </div>
           <div role="main">
             
-  <div class="section" id="cito-trigger-package">
-<h1>cito.Trigger package<a class="headerlink" href="#cito-trigger-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="wax-eventbuilder-package">
+<h1>wax.EventBuilder package<a class="headerlink" href="#wax-eventbuilder-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="cito-trigger-peakfinder-module">
-<h2>cito.Trigger.PeakFinder module<a class="headerlink" href="#cito-trigger-peakfinder-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-wax.EventBuilder.Processor">
+<span id="wax-eventbuilder-processor-module"></span><h2>wax.EventBuilder.Processor module<a class="headerlink" href="#module-wax.EventBuilder.Processor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wax.EventBuilder.Processor.ProcessTask">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">ProcessTask</tt><big>(</big><em>dataset</em>, <em>hostname</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Process a time block</p>
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.drop_collection">
+<tt class="descname">drop_collection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.drop_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.drop_collection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.print_stats">
+<tt class="descname">print_stats</tt><big>(</big><em>amount_data_processed</em>, <em>dt</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.print_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.print_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.process_dataset">
+<tt class="descname">process_dataset</tt><big>(</big><em>chunk_size</em>, <em>chunks</em>, <em>padding</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.process_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.process_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.process_time_range">
+<tt class="descname">process_time_range</tt><big>(</big><em>t0</em>, <em>t1</em>, <em>padding</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.process_time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.process_time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a time chunk</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t0</strong> (<em>int.</em>) &#8211; Initial time to query.</li>
+<li><strong>t1</strong> (<em>int.</em>) &#8211; Final time.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">int &#8211; number of bytes processed</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">AssertionError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wax.EventBuilder.Processor.sizeof_fmt">
+<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">sizeof_fmt</tt><big>(</big><em>num</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#sizeof_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.sizeof_fmt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-wax.EventBuilder">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wax.EventBuilder" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

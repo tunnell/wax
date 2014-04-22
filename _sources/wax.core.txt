@@ -1,0 +1,22 @@
+wax.core package
+================
+
+Submodules
+----------
+
+wax.core.Configuration module
+-----------------------------
+
+.. automodule:: wax.core.Configuration
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: wax.core
+    :members:
+    :undoc-members:
+    :show-inheritance:

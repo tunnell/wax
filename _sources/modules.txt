@@ -1,6 +1,7 @@
-cito
-====
+wax
+===
 
 .. toctree::
    :maxdepth: 4
 
+   wax

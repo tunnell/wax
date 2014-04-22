@@ -1,0 +1,38 @@
+wax.Database package
+====================
+
+Submodules
+----------
+
+wax.Database.DBBase module
+--------------------------
+
+.. automodule:: wax.Database.DBBase
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+wax.Database.InputDBInterface module
+------------------------------------
+
+.. automodule:: wax.Database.InputDBInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+wax.Database.OutputDBInterface module
+-------------------------------------
+
+.. automodule:: wax.Database.OutputDBInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: wax.Database
+    :members:
+    :undoc-members:
+    :show-inheritance:

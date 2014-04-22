@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.Trigger package &mdash; Code for Intelligent Triggering Online 1.9.0 documentation</title>
+  <title>wax.EventAnalyzer package &mdash; Code for Intelligent Triggering Online 1.9.0 documentation</title>
   
 
   
@@ -132,10 +132,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>cito.Trigger package</li>
+    <li>wax.EventAnalyzer package</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/cito.Trigger.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/wax.EventAnalyzer.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -143,16 +143,53 @@
 </div>
           <div role="main">
             
-  <div class="section" id="cito-trigger-package">
-<h1>cito.Trigger package<a class="headerlink" href="#cito-trigger-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="wax-eventanalyzer-package">
+<h1>wax.EventAnalyzer package<a class="headerlink" href="#wax-eventanalyzer-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="cito-trigger-peakfinder-module">
-<h2>cito.Trigger.PeakFinder module<a class="headerlink" href="#cito-trigger-peakfinder-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-wax.EventAnalyzer.Offline">
+<span id="wax-eventanalyzer-offline-module"></span><h2>wax.EventAnalyzer.Offline module<a class="headerlink" href="#module-wax.EventAnalyzer.Offline" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wax.EventAnalyzer.Offline.ProcessCommand">
+<em class="property">class </em><tt class="descclassname">wax.EventAnalyzer.Offline.</tt><tt class="descname">ProcessCommand</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/wax/EventAnalyzer/Offline.html#ProcessCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventAnalyzer.Offline.ProcessCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.command.Command</span></tt></p>
+<dl class="method">
+<dt id="wax.EventAnalyzer.Offline.ProcessCommand.get_description">
+<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventAnalyzer/Offline.html#ProcessCommand.get_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventAnalyzer.Offline.ProcessCommand.get_description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventAnalyzer.Offline.ProcessCommand.get_parser">
+<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/wax/EventAnalyzer/Offline.html#ProcessCommand.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventAnalyzer.Offline.ProcessCommand.get_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventAnalyzer.Offline.ProcessCommand.take_action">
+<tt class="descname">take_action</tt><big>(</big><em>parsed_args</em><big>)</big><a class="reference internal" href="_modules/wax/EventAnalyzer/Offline.html#ProcessCommand.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventAnalyzer.Offline.ProcessCommand.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-wax.EventAnalyzer.Samples">
+<span id="wax-eventanalyzer-samples-module"></span><h2>wax.EventAnalyzer.Samples module<a class="headerlink" href="#module-wax.EventAnalyzer.Samples" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="wax.EventAnalyzer.Samples.get_samples_from_doc">
+<tt class="descclassname">wax.EventAnalyzer.Samples.</tt><tt class="descname">get_samples_from_doc</tt><big>(</big><em>doc</em>, <em>is_compressed</em><big>)</big><a class="reference internal" href="_modules/wax/EventAnalyzer/Samples.html#get_samples_from_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventAnalyzer.Samples.get_samples_from_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a mongo document, fetch the data payload and decompress if
+necessary</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>doc (dictionary):  Document from mongodb to analyze</dd>
+<dt>Returns:</dt>
+<dd>bytes: decompressed data</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-wax.EventAnalyzer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wax.EventAnalyzer" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
