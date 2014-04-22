@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.EventBuilder package &mdash; Code for Intelligent Triggering Online 1.8.8 documentation</title>
+  <title>cito.EventBuilder package &mdash; Code for Intelligent Triggering Online 1.9.0 documentation</title>
   
 
   
@@ -18,20 +18,6 @@
 
   
   
-
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:'./',
-        VERSION:'1.8.8',
-        COLLAPSE_INDEX:false,
-        FILE_SUFFIX:'.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
     
 
   
@@ -39,32 +25,34 @@
   
   
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.8 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 1.9.0 documentation" href="index.html"/> 
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="icon icon-home"> Code for Intelligent Triggering Online</a>
-        <form class="wy-form" action="search.html" method="get">
-  <input type="text" name="q" placeholder="Search docs" />
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
+        <a href="index.html" class="fa fa-home"> Code for Intelligent Triggering Online</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
             <ul>
@@ -109,7 +97,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="history.html#id1">1.9 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html#id1">1.9 (2014-03-19)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id2">1.8 (2014-03-05)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id3">1.7 (2014-03-05)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id4">1.6 (2014-02-27)</a></li>
@@ -130,105 +118,37 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top">
-        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
-        <a href="/">Code for Intelligent Triggering Online</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Code for Intelligent Triggering Online</a>
       </nav>
 
 
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          <ul class="wy-breadcrumbs">
-  <li><a href="index.html">Docs</a> &raquo;</li>
-  <li><a href="">cito.EventBuilder package</a></li>
-  
-</ul>
-<hr/>
-
-          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>cito.EventBuilder package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/cito.EventBuilder.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
   <div class="section" id="cito-eventbuilder-package">
 <h1>cito.EventBuilder package<a class="headerlink" href="#cito-eventbuilder-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-cito.EventBuilder.Logic">
-<span id="cito-eventbuilder-logic-module"></span><h2>cito.EventBuilder.Logic module<a class="headerlink" href="#module-cito.EventBuilder.Logic" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="cito-core-eventbuilding">
-<h3>cito.core.EventBuilding<a class="headerlink" href="#cito-core-eventbuilding" title="Permalink to this headline">¶</a></h3>
-<p>Event building converts time blocks of data (from different digitizer boards) into DAQ events.</p>
-<p>Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,
-using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
-that performs the following sequential operations:</p>
-<ul class="simple">
-<li>Build sum waveform</li>
-<li>Using trigger algorithm, identify peaks in time.</li>
-<li>If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before
-and after each peak.</li>
-</ul>
-<p>More technically about pileup, if two particles interact in the detector within a typical &#8216;event window&#8217;, then
-these two interactions are saved as one event.  Identifying how to break up the event is thus left for
-postprocessing.  For example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</p>
-<dl class="class">
-<dt id="cito.EventBuilder.Logic.EventBuilder">
-<em class="property">class </em><tt class="descclassname">cito.EventBuilder.Logic.</tt><tt class="descname">EventBuilder</tt><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#EventBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.EventBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
-<p>From data, construct events</p>
-<p>This is a separate class since it has to keep track of event number</p>
-<dl class="method">
-<dt id="cito.EventBuilder.Logic.EventBuilder.build_event">
-<tt class="descname">build_event</tt><big>(</big><em>data</em>, <em>t0</em>, <em>t1</em>, <em>padding</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#EventBuilder.build_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.EventBuilder.build_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build events out of raw data.</p>
-<p>Using the sum waveform provided as an input, distinct events are identified.
-Subsequently, all of the relevant individual channel PMT information (also
-an input) is saved for that specific event.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data</strong> (<em>dict.</em>) &#8211; Data to query, including sum waveform and individual channels</li>
-<li><strong>t0</strong> (<em>int.</em>) &#8211; Earliest possible time for sanity checks.  If None, skip check.</li>
-<li><strong>t1</strong> (<em>int.</em>) &#8211; Latest possible time for sanity checks.  If None, skip check.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dict &#8211; Sum waveform indices and samples.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="cito.EventBuilder.Logic.EventBuilder.get_event_number">
-<tt class="descname">get_event_number</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#EventBuilder.get_event_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.EventBuilder.get_event_number" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.EventBuilder.Logic.find_sum_in_data">
-<tt class="descclassname">cito.EventBuilder.Logic.</tt><tt class="descname">find_sum_in_data</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="_modules/cito/EventBuilder/Logic.html#find_sum_in_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.EventBuilder.Logic.find_sum_in_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find sum waveform in channel data</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>dict.</em>) &#8211; Initial time to query.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dict &#8211; Sum waveform indices and samples.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">ValueError</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</div>
+<div class="section" id="cito-eventbuilder-logic-module">
+<h2>cito.EventBuilder.Logic module<a class="headerlink" href="#cito-eventbuilder-logic-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="cito-eventbuilder-output-module">
 <h2>cito.EventBuilder.Output module<a class="headerlink" href="#cito-eventbuilder-output-module" title="Permalink to this headline">¶</a></h2>
@@ -242,16 +162,19 @@ an input) is saved for that specific event.</p>
 </div>
 
 
+          </div>
           <footer>
   
 
   <hr/>
 
-  <p>
-      &copy; Copyright 2013, Christopher Tunnell.
-  </p>
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013, Christopher Tunnell.
+    </p>
+  </div>
 
-  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
 </footer>
         </div>
       </div>
@@ -260,6 +183,38 @@ an input) is saved for that specific event.</p>
 
   </div>
   
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
 
 </body>
 </html>

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>cito.core package &mdash; Code for Intelligent Triggering Online 1.8.8 documentation</title>
+  <title>cito.core package &mdash; Code for Intelligent Triggering Online 1.9.0 documentation</title>
   
 
   
@@ -18,20 +18,6 @@
 
   
   
-
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:'./',
-        VERSION:'1.8.8',
-        COLLAPSE_INDEX:false,
-        FILE_SUFFIX:'.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
     
 
   
@@ -39,32 +25,34 @@
   
   
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 1.8.8 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 1.9.0 documentation" href="index.html"/> 
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="icon icon-home"> Code for Intelligent Triggering Online</a>
-        <form class="wy-form" action="search.html" method="get">
-  <input type="text" name="q" placeholder="Search docs" />
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
+        <a href="index.html" class="fa fa-home"> Code for Intelligent Triggering Online</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
             <ul>
@@ -109,7 +97,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="history.html#id1">1.9 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html#id1">1.9 (2014-03-19)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id2">1.8 (2014-03-05)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id3">1.7 (2014-03-05)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="history.html#id4">1.6 (2014-02-27)</a></li>
@@ -130,201 +118,66 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top">
-        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
-        <a href="/">Code for Intelligent Triggering Online</a>
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Code for Intelligent Triggering Online</a>
       </nav>
 
 
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          <ul class="wy-breadcrumbs">
-  <li><a href="index.html">Docs</a> &raquo;</li>
-  <li><a href="">cito.core package</a></li>
-  
-</ul>
-<hr/>
-
-          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>cito.core package</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/cito.core.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
   <div class="section" id="cito-core-package">
 <h1>cito.core package<a class="headerlink" href="#cito-core-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-cito.core.Waveform">
-<span id="cito-core-waveform-module"></span><h2>cito.core.Waveform module<a class="headerlink" href="#module-cito.core.Waveform" title="Permalink to this headline">¶</a></h2>
-<p>Perform operations on sets of blocks</p>
-<dl class="function">
-<dt id="cito.core.Waveform.get_data_and_sum_waveform">
-<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_data_and_sum_waveform</tt><big>(</big><em>cursor</em>, <em>input</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_data_and_sum_waveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_data_and_sum_waveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get inverted sum waveform from mongo</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first docutils">
-<dt>cursor (iterable):  An iterable object of documents containing Caen</dt>
-<dd>blocks.  This can be a pymongo Cursor.</dd>
-</dl>
-<p class="last">input - class</p>
-</dd>
-<dt>Returns:</dt>
-<dd>dict: Results dictionary with key &#8216;size&#8217; and &#8216;occurences&#8217;</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.core.Waveform.get_samples">
-<tt class="descclassname">cito.core.Waveform.</tt><tt class="descname">get_samples</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="_modules/cito/core/Waveform.html#get_samples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.Waveform.get_samples" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="cito-core-waveform-module">
+<h2>cito.core.Waveform module<a class="headerlink" href="#cito-core-waveform-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="cito-core-xedb-module">
 <h2>cito.core.XeDB module<a class="headerlink" href="#cito-core-xedb-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-cito.core.main">
-<span id="cito-core-main-module"></span><h2>cito.core.main module<a class="headerlink" href="#module-cito.core.main" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="cito.core.main.CitoApp">
-<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoApp</tt><a class="reference internal" href="_modules/cito/core/main.html#CitoApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.app.App</span></tt></p>
-<p>Cito Cliff application</p>
-<p>See cliff documentation to understand this.</p>
-<dl class="method">
-<dt id="cito.core.main.CitoApp.clean_up">
-<tt class="descname">clean_up</tt><big>(</big><em>cmd</em>, <em>result</em>, <em>err</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoApp.clean_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp.clean_up" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoApp.initialize_app">
-<tt class="descname">initialize_app</tt><big>(</big><em>argv</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoApp.initialize_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp.initialize_app" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoApp.prepare_to_run_command">
-<tt class="descname">prepare_to_run_command</tt><big>(</big><em>cmd</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoApp.prepare_to_run_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoApp.prepare_to_run_command" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="cito.core.main.CitoShowOne">
-<em class="property">class </em><tt class="descclassname">cito.core.main.</tt><tt class="descname">CitoShowOne</tt><big>(</big><em>app</em>, <em>app_args</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cliff.show.ShowOne</span></tt></p>
-<p>Base class for all DB commands.</p>
-<p>Handles logging, descriptions, and common fuctions.</p>
-<dl class="method">
-<dt id="cito.core.main.CitoShowOne.get_description">
-<tt class="descname">get_description</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne.get_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne.get_description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoShowOne.get_parser">
-<tt class="descname">get_parser</tt><big>(</big><em>prog_name</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne.get_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne.get_parser" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="cito.core.main.CitoShowOne.get_status">
-<tt class="descname">get_status</tt><big>(</big><em>db</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#CitoShowOne.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.CitoShowOne.get_status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return DB errors, if any</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="cito.core.main.CitoShowOne.log">
-<tt class="descname">log</tt><em class="property"> = &lt;logging.Logger object at 0x107199a10&gt;</em><a class="headerlink" href="#cito.core.main.CitoShowOne.log" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.core.main.main">
-<tt class="descclassname">cito.core.main.</tt><tt class="descname">main</tt><big>(</big><em>argv=['-b', 'html', '-d', '_build/doctrees', '.', '_build/html']</em><big>)</big><a class="reference internal" href="_modules/cito/core/main.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.main.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="cito-core-main-module">
+<h2>cito.core.main module<a class="headerlink" href="#cito-core-main-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-cito.core.math">
-<span id="cito-core-math-module"></span><h2>cito.core.math module<a class="headerlink" href="#module-cito.core.math" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="cito.core.math.compute_subranges">
-<tt class="descclassname">cito.core.math.</tt><tt class="descname">compute_subranges</tt><big>(</big><em>peaks</em>, <em>range_around_peak=(-18000</em>, <em>18000)</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#compute_subranges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.compute_subranges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine overlapping ranges</p>
-<p>range_around_peak in units of 10 ns
-18000 means 180 us.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.core.math.find_subranges">
-<tt class="descclassname">cito.core.math.</tt><tt class="descname">find_subranges</tt><big>(</big><em>values</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#find_subranges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.find_subranges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Identify continuous ranges in a list and return their location.</p>
-<p>For example, if values is:</p>
-<blockquote>
-<div>[2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 20]</div></blockquote>
-<p>Then the continuous ranges are at:</p>
-<blockquote>
-<div>[(0,3), (4, 9), (10, 10)]</div></blockquote>
-<p>See <a class="reference external" href="http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list">http://stackoverflow.com/questions/2154249/identify-groups-of-continuous-numbers-in-a-list</a></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.core.math.merge_subranges">
-<tt class="descclassname">cito.core.math.</tt><tt class="descname">merge_subranges</tt><big>(</big><em>ranges</em>, <em>indices</em>, <em>distance</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#merge_subranges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.merge_subranges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ranges is a list of tuples, that are merged if less than distance between them</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="cito.core.math.overlap">
-<tt class="descclassname">cito.core.math.</tt><tt class="descname">overlap</tt><big>(</big><em>min1</em>, <em>max1</em>, <em>min2</em>, <em>max2</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#overlap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.overlap" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="cito.core.math.overlap_region">
-<tt class="descclassname">cito.core.math.</tt><tt class="descname">overlap_region</tt><big>(</big><em>range1</em>, <em>range2</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#overlap_region"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.overlap_region" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="cito.core.math.sizeof_fmt">
-<tt class="descclassname">cito.core.math.</tt><tt class="descname">sizeof_fmt</tt><big>(</big><em>num</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#sizeof_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.sizeof_fmt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="cito.core.math.speed_in1d_continous">
-<tt class="descclassname">cito.core.math.</tt><tt class="descname">speed_in1d_continous</tt><big>(</big><em>a</em>, <em>b</em>, <em>x</em>, <em>y</em><big>)</big><a class="reference internal" href="_modules/cito/core/math.html#speed_in1d_continous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cito.core.math.speed_in1d_continous" title="Permalink to this definition">¶</a></dt>
-<dd><p>A speedy version of numpy.in1d if dealing with ranges.</p>
-<blockquote>
-<div><p>We know that a &lt;= b and x &lt;= y</p>
-<p>Combinatorics: all permutations of (a, b, x, y) where x &lt; y and a &lt; b:</p>
-<dl class="docutils">
-<dt>Seperate:</dt>
-<dd>(&#8216;a&#8217;, &#8216;b&#8217;, &#8216;x&#8217;, &#8216;y&#8217;)
-(&#8216;x&#8217;, &#8216;y&#8217;, &#8216;a&#8217;, &#8216;b&#8217;)</dd>
-</dl>
-</div></blockquote>
-<dl class="docutils">
-<dt>Embedded:</dt>
-<dd>(&#8216;x&#8217;, &#8216;a&#8217;, &#8216;b&#8217;, &#8216;y&#8217;)
-(&#8216;a&#8217;, &#8216;x&#8217;, &#8216;y&#8217;, &#8216;b&#8217;)</dd>
-<dt>Partially embedded:</dt>
-<dd>(&#8216;a&#8217;, &#8216;x&#8217;, &#8216;b&#8217;, &#8216;y&#8217;)
-(&#8216;x&#8217;, &#8216;a&#8217;, &#8216;y&#8217;, &#8216;b&#8217;)</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="cito-core-math-module">
+<h2>cito.core.math module<a class="headerlink" href="#cito-core-math-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-cito.core"></span></div>
+<div class="section" id="module-cito.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cito.core" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
+          </div>
           <footer>
   
 
   <hr/>
 
-  <p>
-      &copy; Copyright 2013, Christopher Tunnell.
-  </p>
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2013, Christopher Tunnell.
+    </p>
+  </div>
 
-  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
 </footer>
         </div>
       </div>
@@ -333,6 +186,38 @@
 
   </div>
   
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.9.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
 
 </body>
 </html>
