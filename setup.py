@@ -14,7 +14,7 @@ required = open('requirements.txt').read().splitlines()
 
 setup(
     name='wax',
-    version='2.1.1',
+    version='2.1.2',
     description='Generic particle-physics software trigger and data processor.',
     long_description=readme + '\n\n' + history,
     author='Christopher Tunnell',
