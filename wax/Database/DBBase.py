@@ -10,7 +10,7 @@ import pymongo
 
 from wax.Configuration import HOSTNAME
 
-
+CONNECTION = None
 
 class MongoDBBase():
     """Read from MongoDB
@@ -20,8 +20,15 @@ class MongoDBBase():
 
     def __init__(self, collection_name=None, hostname=HOSTNAME):
         self.log = logging.getLogger(self.__class__.__name__)
-        self.connection = pymongo.MongoClient(hostname)
-        self.db = self.connection[self.get_db_name()]
+
+        global CONNECTION
+        if CONNECTION is None:
+            self.log.error("making new con")
+            CONNECTION = pymongo.Connection(hostname)
+        else:
+            self.log.error("keeping old conn")
+
+        self.db = CONNECTION[self.get_db_name()]
 
         self._initialized = True
 

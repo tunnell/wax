@@ -3,6 +3,8 @@ import numpy as np
 
 MAX_DRIFT = 18000  # units of 10 ns
 HOSTNAME = '127.0.0.1'
+CHUNK_SIZE = 2 ** 28
+PADDING = (3 * MAX_DRIFT)
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
 SAMPLE_TYPE = np.int16
 
@@ -17,11 +19,11 @@ class File(schema.Section):
                                            help='filename')
 
 class EventBuilder(schema.Section):
-    chunksize = schema.IntOption(default=2 ** 28,
+    chunksize = schema.IntOption(default=CHUNK_SIZE,
                                   help='How many samples to search at once')
 
     padding = schema.IntOption(help='Padding to overlap processing windows [10 ns step]',
-                            default=(3 * MAX_DRIFT))
+                            default=PADDING)
 
     chunks = schema.IntOption(help='Limit the numbers of chunks to analyze (-1 means no limit)',
                               default=-1)

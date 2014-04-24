@@ -123,7 +123,7 @@ class MongoDBInput(DBBase.MongoDBBase):
            int:  A time in units of 10 ns
 
         """
-        sort_key = self.get_sort_key(pymongo.ASCENDING)
+        sort_key = self.get_sort_key(1)
         doc = self.collection.find_one({"time": {'$exists': True}},
                                        sort=sort_key)
         if doc == None:
@@ -158,14 +158,13 @@ class MongoDBInput(DBBase.MongoDBBase):
                                  '$lt': time1}}
 
         cursor = self.collection.find(subset_query,
-                                      sort=self.get_sort_key(pymongo.ASCENDING),
-                                      exhaust=True)
+                                      sort=self.get_sort_key(1))#,exhaust=True)
         result = list(cursor)
         logging.debug("Fetched %d input documents." % len(result))
         return result
 
     @staticmethod
-    def get_sort_key(order=pymongo.DESCENDING):
+    def get_sort_key(order=-1):
         """Sort key used for MongoDB sorting and indexing.
 
         :param order: Ascending or descending order.
@@ -175,7 +174,7 @@ class MongoDBInput(DBBase.MongoDBBase):
 
 
         """
-        if order != pymongo.DESCENDING and order != pymongo.ASCENDING:
+        if order != -1 and order != 1:
             raise ValueError()
 
         return [('time', order),

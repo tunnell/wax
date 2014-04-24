@@ -3,6 +3,12 @@
 History
 -------
 
+2.1 (2014-04-24)
+++++++++++++++++
+
+* Mock pymongo and include test on real data
+* BUG: Didn't include the time offset of search window
+
 2.0 (2014-04-22)
 ++++++++++++++++
 

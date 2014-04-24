@@ -1,7 +1,7 @@
 """Example of how to use cito to analyze data
 """
 import numpy as np
-import _cito_compiled_helpers as cch
+import _wax_compiled_helpers as cch
 
 import unittest
 

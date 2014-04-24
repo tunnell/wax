@@ -1,7 +1,7 @@
 __author__ = 'tunnell'
 
 from cliff.command import Command
-
+import logging
 
 class ProcessCommand(Command):
 

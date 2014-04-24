@@ -8,20 +8,7 @@ int* ourranges = NULL;
 int ourrangeindex = 0;
 int i = 0, subindex = 0;
 
-void setup(int n) { 
-  if (xn != 0 && xn != n) {
-    printf("Setup size error\n");
-  }
-  if (x == NULL) {
-    x = malloc(sizeof(int) * n);
-  }
-  if (ourranges == NULL) {
-    ourranges = malloc(sizeof(int) * n * 2);
-  }
-  memset(x, 0, sizeof(int) * n);
-  memset(ourranges, 0, sizeof(int) * n * 2);
-  xn = n;
-}
+
 
 int baseline = 0;
 void add_samples(int* samples, int n,
@@ -110,5 +97,23 @@ void get_sum(int** sum, int *n) {
 
 void shutdown() {
   if (x != NULL) free(x);
+  x = NULL;
   if (ourranges != NULL) free(ourranges);
+  ourranges = NULL;
+}
+
+void setup(int n) {
+  if (xn != 0 && xn != n) {
+    printf("wax_compiled_helpers already initialized; will try to reinitialize...\n");
+    shutdown();
+  }
+  if (x == NULL) {
+    x = malloc(sizeof(int) * n);
+  }
+  if (ourranges == NULL) {
+    ourranges = malloc(sizeof(int) * n * 2);
+  }
+  memset(x, 0, sizeof(int) * n);
+  memset(ourranges, 0, sizeof(int) * n * 2);
+  xn = n;
 }

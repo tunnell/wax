@@ -6,6 +6,7 @@ import _wax_compiled_helpers as cch
 import numpy as np
 
 from tqdm import tqdm
+from wax import Configuration
 from wax.Database import InputDBInterface, OutputDBInterface
 from wax.EventAnalyzer.Samples import get_samples_from_doc
 
@@ -25,11 +26,19 @@ def sizeof_fmt(num):
     return "%3.1f %s" % (num, 'TB')
 
 
+
+import logging
+import time
+
+from wax import Configuration
+
+
+
 class ProcessTask():
     """Process a time block
     """
 
-    def __init__(self, dataset, hostname):
+    def __init__(self, dataset = None, hostname = '127.0.0.1'):
 
         self.log = logging.getLogger(__name__)
 
@@ -40,8 +49,10 @@ class ProcessTask():
             # delete
             self.delete_collection_when_done = False
 
+
         self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
                                                    hostname=hostname)
+
         if self.input.initialized:
             self.output = OutputDBInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
                                                           hostname=hostname)
@@ -60,7 +71,9 @@ class ProcessTask():
             rate_string = sizeof_fmt(data_rate) + 'ps'
             self.log.debug("Rate: %s" % (rate_string))
 
-    def process_dataset(self, chunk_size, chunks, padding):
+    def process_dataset(self, chunk_size = Configuration.CHUNK_SIZE,
+                        chunks = -1,
+                        padding = Configuration.PADDING):
         # Used for benchmarking
         start_time = time.time()
 
@@ -169,8 +182,9 @@ class ProcessTask():
         mappings = cch.overlaps(doc_ranges.flatten())
         events = []
 
-        ranges += t0
         ranges *= reduction_factor
+        ranges = np.uint64(t0) + ranges.astype(np.uint64)
+
         ranges.resize((ranges.size / 2, 2))
 
         reduced_data_count = 0
@@ -211,3 +225,33 @@ class ProcessTask():
     def drop_collection(self):
         self.input.get_db().drop_collection(self.input.get_collection_name())
 
+
+def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):
+    log = logging.getLogger('EventBuilderDatasetLooper')
+    p = "blah"
+
+    while True:
+        try:
+            p = ProcessTask(dataset,
+                            hostname)
+        except Exception as e:
+            log.exception(e)
+            log.fatal("Exception resulted in fatal error; quiting.")
+            raise
+
+        if chunks != -1:
+            p.delete_collection_when_done = False
+
+        if not p.input.initialized:
+            log.warning("No dataset available to process; waiting one second.")
+            time.sleep(1)
+        else:
+            p.process_dataset(chunk_size=chunksize,
+                              chunks=chunks,
+                              padding=padding)
+
+        # If only a single dataset was specified, break
+        if dataset is not None or chunks != -1:
+            break
+
+    return p.output
