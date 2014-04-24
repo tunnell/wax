@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.Configuration &mdash; Code for Intelligent Triggering Online 2.0.2 documentation</title>
+  <title>wax.Configuration &mdash; Code for Intelligent Triggering Online 2.1.0 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.0.2 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -98,16 +98,17 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">2.0 (2014-04-22)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id2">1.9 (2014-03-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id3">1.8 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id4">1.7 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id5">1.6 (2014-02-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id6">1.5 (2014-02-24)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id7">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id8">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id9">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../history.html#id10">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">2.1 (2014-04-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id2">2.0 (2014-04-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id3">1.9 (2014-03-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id4">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id5">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id6">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id7">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id8">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id9">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id10">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id11">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -150,6 +151,8 @@
 
 <span class="n">MAX_DRIFT</span> <span class="o">=</span> <span class="mi">18000</span>  <span class="c"># units of 10 ns</span>
 <span class="n">HOSTNAME</span> <span class="o">=</span> <span class="s">&#39;127.0.0.1&#39;</span>
+<span class="n">CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">28</span>
+<span class="n">PADDING</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">MAX_DRIFT</span><span class="p">)</span>
 <span class="c"># Samples are actually 14 bit unsigned, so 16 bit signed fine</span>
 <span class="n">SAMPLE_TYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
 
@@ -164,11 +167,11 @@
                                            <span class="n">help</span><span class="o">=</span><span class="s">&#39;filename&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="EventBuilder"><a class="viewcode-back" href="../../wax.html#wax.Configuration.EventBuilder">[docs]</a><span class="k">class</span> <span class="nc">EventBuilder</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">Section</span><span class="p">):</span>
-    <span class="n">chunksize</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">IntOption</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">28</span><span class="p">,</span>
+    <span class="n">chunksize</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">IntOption</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">CHUNK_SIZE</span><span class="p">,</span>
                                   <span class="n">help</span><span class="o">=</span><span class="s">&#39;How many samples to search at once&#39;</span><span class="p">)</span>
 
     <span class="n">padding</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">IntOption</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s">&#39;Padding to overlap processing windows [10 ns step]&#39;</span><span class="p">,</span>
-                            <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">MAX_DRIFT</span><span class="p">))</span>
+                            <span class="n">default</span><span class="o">=</span><span class="n">PADDING</span><span class="p">)</span>
 
     <span class="n">chunks</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">IntOption</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s">&#39;Limit the numbers of chunks to analyze (-1 means no limit)&#39;</span><span class="p">,</span>
                               <span class="n">default</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -205,7 +208,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.0.2',
+            VERSION:'2.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -1,29 +1,29 @@
-cito.EventBuilder package
+cito.EventBuilderDatasetLooper package
 =========================
 
 Submodules
 ----------
 
-cito.EventBuilder.Logic module
+cito.EventBuilderDatasetLooper.Logic module
 ------------------------------
 
-.. automodule:: cito.EventBuilder.Logic
+.. automodule:: cito.EventBuilderDatasetLooper.Logic
     :members:
     :undoc-members:
     :show-inheritance:
 
-cito.EventBuilder.Output module
+cito.EventBuilderDatasetLooper.Output module
 -------------------------------
 
-.. automodule:: cito.EventBuilder.Output
+.. automodule:: cito.EventBuilderDatasetLooper.Output
     :members:
     :undoc-members:
     :show-inheritance:
 
-cito.EventBuilder.Tasks module
+cito.EventBuilderDatasetLooper.Tasks module
 ------------------------------
 
-.. automodule:: cito.EventBuilder.Tasks
+.. automodule:: cito.EventBuilderDatasetLooper.Tasks
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ cito.EventBuilder.Tasks module
 Module contents
 ---------------
 
-.. automodule:: cito.EventBuilder
+.. automodule:: cito.EventBuilderDatasetLooper
     :members:
     :undoc-members:
     :show-inheritance:

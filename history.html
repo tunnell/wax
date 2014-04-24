@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>History &mdash; Code for Intelligent Triggering Online 2.0.2 documentation</title>
+  <title>History &mdash; Code for Intelligent Triggering Online 2.1.0 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.0.2 documentation" href="index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.1.0 documentation" href="index.html"/>
         <link rel="prev" title="Credits" href="authors.html"/> 
 
   
@@ -98,16 +98,17 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">2.0 (2014-04-22)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">1.9 (2014-03-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">1.8 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">1.7 (2014-03-05)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">1.6 (2014-02-27)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">1.5 (2014-02-24)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">1.4 (2014-02-19)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id8">1.1 (2014-02-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id9">1.0 (2014-02-10)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id10">0.1 (2013-08-11)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">2.1 (2014-04-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">2.0 (2014-04-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">1.9 (2014-03-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">1.8 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">1.7 (2014-03-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">1.6 (2014-02-27)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">1.5 (2014-02-24)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">1.4 (2014-02-19)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">1.1 (2014-02-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">1.0 (2014-02-10)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id11">0.1 (2013-08-11)</a></li>
 </ul>
 </li>
 </ul>
@@ -147,23 +148,29 @@
   <div class="section" id="history">
 <h1>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>2.0 (2014-04-22)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>2.1 (2014-04-24)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Mock pymongo and include test on real data</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>2.0 (2014-04-22)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Rename project to wax</li>
 <li>Remove cliff dependency since underutilized</li>
 <li>Processing of waveforms is now done in C using swig</li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>1.9 (2014-03-19)<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>1.9 (2014-03-19)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>BUG: Not all PMT data was being written to output file (if PMT had lots of hits)</li>
 <li>Begining of testing and general cleanup</li>
 <li>Speed up some math routines</li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>1.8 (2014-03-05)<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>1.8 (2014-03-05)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix major bug that included rejected data</li>
 <li>Continuous processing</li>
@@ -174,52 +181,52 @@
 <li>Find minimal time rather than relying on control doc.</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>1.7 (2014-03-05)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>1.7 (2014-03-05)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Major refactoring of DB interface due to interface changes to input DB</li>
 <li>Include control documents - see docs</li>
 <li>Allow auto discovery of datasets</li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h2>1.6 (2014-02-27)<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>1.6 (2014-02-27)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add version number to output</li>
 <li>Fix some issues with how timing was defined in input.</li>
 <li>Speed up after profiling</li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>1.5 (2014-02-24)<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>1.5 (2014-02-24)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Reactor DB interfaces now that there are two (output, input)</li>
 <li>Improve DB access commands within cito</li>
 <li>Improve help</li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h2>1.4 (2014-02-19)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id8">
+<h2>1.4 (2014-02-19)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Switch from convolution to filtering using a butter filter.</li>
 <li>Expansion of command line argument options.</li>
 <li>Fixed bug that resulted in filtering/convolution occuring over the entire 1s window.</li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h2>1.1 (2014-02-12)<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h2>1.1 (2014-02-12)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix some major bugs associated with 1.0 due to misplaced files and failed refactoring.</li>
 </ul>
 </div>
-<div class="section" id="id9">
-<h2>1.0 (2014-02-10)<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id10">
+<h2>1.0 (2014-02-10)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Beta release reading for use and testing.</li>
 </ul>
 </div>
-<div class="section" id="id10">
-<h2>0.1 (2013-08-11)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h2>0.1 (2013-08-11)<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Alpha release based on testing in Bern.</li>
 </ul>
@@ -262,7 +269,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.0.2',
+            VERSION:'2.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
