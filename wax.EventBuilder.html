@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.EventBuilderDatasetLooper package &mdash; Code for Intelligent Triggering Online 2.1.0 documentation</title>
+  <title>wax.EventBuilder package &mdash; Code for Intelligent Triggering Online 2.1.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.1.0 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 2.1.1 documentation" href="index.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -133,7 +133,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>wax.EventBuilderDatasetLooper package</li>
+    <li>wax.EventBuilder package</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/wax.EventBuilder.txt" rel="nofollow"> View page source</a>
@@ -144,16 +144,72 @@
 </div>
           <div role="main">
             
-  <div class="section" id="wax-eventbuilderdatasetlooper-package">
-<h1>wax.EventBuilderDatasetLooper package<a class="headerlink" href="#wax-eventbuilderdatasetlooper-package" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="wax-eventbuilder-package">
+<h1>wax.EventBuilder package<a class="headerlink" href="#wax-eventbuilder-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="wax-eventbuilderdatasetlooper-processor-module">
-<h2>wax.EventBuilderDatasetLooper.Processor module<a class="headerlink" href="#wax-eventbuilderdatasetlooper-processor-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-wax.EventBuilder.Processor">
+<span id="wax-eventbuilder-processor-module"></span><h2>wax.EventBuilder.Processor module<a class="headerlink" href="#module-wax.EventBuilder.Processor" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="wax.EventBuilder.Processor.EventBuilderDatasetLooper">
+<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">EventBuilderDatasetLooper</tt><big>(</big><em>hostname</em>, <em>dataset</em>, <em>chunks</em>, <em>chunksize</em>, <em>padding</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#EventBuilderDatasetLooper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.EventBuilderDatasetLooper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="wax.EventBuilder.Processor.ProcessTask">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">ProcessTask</tt><big>(</big><em>dataset=None</em>, <em>hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Process a time block</p>
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.drop_collection">
+<tt class="descname">drop_collection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.drop_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.drop_collection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.print_stats">
+<tt class="descname">print_stats</tt><big>(</big><em>amount_data_processed</em>, <em>dt</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.print_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.print_stats" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.process_dataset">
+<tt class="descname">process_dataset</tt><big>(</big><em>chunk_size=268435456</em>, <em>chunks=-1</em>, <em>padding=54000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.process_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.process_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.ProcessTask.process_time_range">
+<tt class="descname">process_time_range</tt><big>(</big><em>t0</em>, <em>t1</em>, <em>padding</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.process_time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.process_time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a time chunk</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t0</strong> (<em>int.</em>) &#8211; Initial time to query.</li>
+<li><strong>t1</strong> (<em>int.</em>) &#8211; Final time.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">int &#8211; number of bytes processed</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">AssertionError</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wax.EventBuilder.Processor.sizeof_fmt">
+<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">sizeof_fmt</tt><big>(</big><em>num</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#sizeof_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.sizeof_fmt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-wax.EventBuilder">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wax.EventBuilder" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -186,7 +242,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.1.0',
+            VERSION:'2.1.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

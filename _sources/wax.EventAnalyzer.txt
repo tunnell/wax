@@ -20,6 +20,14 @@ wax.EventAnalyzer.Samples module
     :undoc-members:
     :show-inheritance:
 
+wax.EventAnalyzer.Wax module
+----------------------------
+
+.. automodule:: wax.EventAnalyzer.Wax
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

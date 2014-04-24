@@ -1,13 +1,13 @@
-wax.EventBuilderDatasetLooper package
+wax.EventBuilder package
 ========================
 
 Submodules
 ----------
 
-wax.EventBuilderDatasetLooper.Processor module
+wax.EventBuilder.Processor module
 ---------------------------------
 
-.. automodule:: wax.EventBuilderDatasetLooper.Processor
+.. automodule:: wax.EventBuilder.Processor
     :members:
     :undoc-members:
     :show-inheritance:
@@ -16,7 +16,7 @@ wax.EventBuilderDatasetLooper.Processor module
 Module contents
 ---------------
 
-.. automodule:: wax.EventBuilderDatasetLooper
+.. automodule:: wax.EventBuilder
     :members:
     :undoc-members:
     :show-inheritance:
