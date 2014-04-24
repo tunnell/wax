@@ -22,9 +22,8 @@ Usage
 
 To run `wax`::
 
-    $ pip install wax
-    $ wax process
-    $ wax file builder
+    $ pip install git+https://github.com/tunnell/wax.git
+    $ wax-off --help
 
 See the usage section in the documentation for more information.
 
@@ -36,6 +35,7 @@ Features
 * Flexible trigger windows and thresholds
 * MongoDB data backend
 * First open-source software trigger framework
+* Data analysis online `wax-on` and offline `wax-off`
 
 Overview
 --------
