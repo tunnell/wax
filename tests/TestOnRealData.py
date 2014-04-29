@@ -13,18 +13,19 @@ from tqdm import tqdm
 
 from wax.Database import OutputDBInterface, InputDBInterface
 from wax.EventBuilder.Processor import ProcessTask
-
+from wax.Configuration import PADDING
 
 class TestOnGoodEvents(unittest.TestCase):
     def setUp(self):
         f = gzip.open('tests/test_data.pkl.gz', 'rb')
         x = pickle.load(f)
         self.answer = pickle.load(f)
-        hostname = '127.0.0.1'
-        self.input = InputDBInterface.MongoDBInput(collection_name='dataset',
-                                                 hostname=hostname)
-        self.output = OutputDBInterface.MongoDBOutput(collection_name='dataset',
-                                                 hostname=hostname)
+        self.hostname = '127.0.0.1'
+        self.dataset = 'dataset'
+        self.input = InputDBInterface.MongoDBInput(collection_name=self.dataset,
+                                                 hostname=self.hostname)
+        self.output = OutputDBInterface.MongoDBOutput(collection_name=self.dataset,
+                                                 hostname=self.hostname)
 
         while (1):
             try:
@@ -37,11 +38,14 @@ class TestOnGoodEvents(unittest.TestCase):
         print('')
 
     def test_something(self):
-        p = ProcessTask('dataset', '127.0.0.1')
+        p = ProcessTask(chunk_size=10**8,
+                        padding=PADDING)
+        p._initialize(hostname=self.hostname,
+                                 dataset=self.dataset)
 
         for i in range(15):
             print('i %d' % i)
-            p.process_time_range(i * 10**8, (i+1) * 10**8, padding=0)
+            p._process_time_range(i * 10**8, (i+1) * 10**8 + PADDING)
 
         collection = self.output.get_collection()
         cursor = collection.find()
@@ -67,7 +71,7 @@ class TestOnGoodEvents(unittest.TestCase):
             else:
                 print('fail', value)
 
-        self.assertGreater((float(good)/all_count), 0.8)
+        self.assertGreaterEqual((float(good)/all_count), 1.0)
 
 
 

@@ -23,10 +23,10 @@ class MongoDBBase():
 
         global CONNECTION
         if CONNECTION is None:
-            self.log.error("making new con")
+            self.log.debug("Creating first pymongo connection.")
             CONNECTION = pymongo.Connection(hostname)
         else:
-            self.log.error("keeping old conn")
+            self.log.debug("Reusing old pymongo connection.")
 
         self.db = CONNECTION[self.get_db_name()]
 

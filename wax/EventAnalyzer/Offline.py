@@ -39,7 +39,7 @@ class ProcessCommand(Command):
                 self.log.warning("No dataset available to process; waiting one second.")
                 time.sleep(1)
             else:
-                p.process_dataset(chunk_size=parsed_args.chunksize,
+                p._process_chosen_dataset(chunk_size=parsed_args.chunksize,
                                   chunks=parsed_args.chunks,
                                   padding=parsed_args.padding)
 

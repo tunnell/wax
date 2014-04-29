@@ -40,12 +40,12 @@ void build_events(int **ranges, int *n, int threshold, int gap) {
       int start = i - gap;
       int stop = i + gap;
       if ( ourrangeindex > 0 && start < ourranges[ourrangeindex - 1]) {
-	ourranges[ourrangeindex - 1] = stop;
+	    ourranges[ourrangeindex - 1] = stop;
       }
       else {
-	ourranges[ourrangeindex] = start;
-	ourranges[ourrangeindex + 1] = stop;
-	ourrangeindex += 2;
+        ourranges[ourrangeindex] = start;
+        ourranges[ourrangeindex + 1] = stop;
+        ourrangeindex += 2;
       }
     }
   }

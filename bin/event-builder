@@ -24,29 +24,14 @@ def main(config):
     # do something
     values = config.values('__main__')
 
-    while True:
-        try:
-            p = ProcessTask(values.get('dataset'),
-                            values.get('hostname'))
-        except Exception as e:
-            log.exception(e)
-            log.fatal("Exception resulted in fatal error; quiting.")
-            raise
+    p = ProcessTask(chunk_size=values.get('chunksize'),
+                    padding=values.get('padding'))
 
-        if values.get('chunks') != -1:
-            p.delete_collection_when_done = False
-
-        if not p.input.initialized:
-            log.warning("No dataset available to process; waiting one second.")
-            time.sleep(1)
-        else:
-            p.process_dataset(chunk_size=values.get('chunksize'),
-                              chunks=values.get('chunks'),
-                              padding=values.get('padding'))
-
-        # If only a single dataset was specified, break
-        if values.get('dataset') is not None or values.get('chunks') != -1:
-            break
+    if values.get('dataset') == None:
+        p.loop_and_find_new_datasets(values.get('hostname'))
+    else:
+        p.process_single_dataset(hostname=values.get('hostname'),
+                                 dataset=values.get('dataset'))
 
 
 if __name__ == '__main__':

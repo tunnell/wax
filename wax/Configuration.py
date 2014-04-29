@@ -1,6 +1,7 @@
 from configglue import schema
 import numpy as np
 
+MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
 MAX_DRIFT = 18000  # units of 10 ns
 HOSTNAME = '127.0.0.1'
 CHUNK_SIZE = 2 ** 28
