@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.Configuration &mdash; Code for Intelligent Triggering Online 2.1.1 documentation</title>
+  <title>wax.Configuration &mdash; Code for Intelligent Triggering Online 2.1.2 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.1.1 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.1.2 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -149,6 +149,7 @@
 <span class="kn">from</span> <span class="nn">configglue</span> <span class="kn">import</span> <span class="n">schema</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
+<span class="n">MAX_ADC_VALUE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">14</span>  <span class="c"># 14 bit ADC samples</span>
 <span class="n">MAX_DRIFT</span> <span class="o">=</span> <span class="mi">18000</span>  <span class="c"># units of 10 ns</span>
 <span class="n">HOSTNAME</span> <span class="o">=</span> <span class="s">&#39;127.0.0.1&#39;</span>
 <span class="n">CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">28</span>
@@ -208,7 +209,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.1.1',
+            VERSION:'2.1.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

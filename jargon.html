@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Jargon &mdash; Code for Intelligent Triggering Online 2.1.1 documentation</title>
+  <title>Jargon &mdash; Code for Intelligent Triggering Online 2.1.2 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.1.1 documentation" href="index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.1.2 documentation" href="index.html"/>
         <link rel="next" title="Contributing" href="contributing.html"/>
         <link rel="prev" title="Internal data formats" href="data_format.html"/> 
 
@@ -153,7 +153,9 @@
 <li>DAQ event - Contiguous time block that typically corresponds a particle interaction in the detector with a time
 range of to the maximum drift time.</li>
 <li>File builder - Take DAQ events and write them to a file.</li>
+<li>Occurence - The digitizers only send data when a threshold is crossed.  An occurence is just a continous (in time)</li>
 </ul>
+<p>block of data for just one channel.  An event will be composed of many occurences.</p>
 </div>
 
 
@@ -194,7 +196,7 @@ range of to the maximum drift time.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.1.1',
+            VERSION:'2.1.2',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
