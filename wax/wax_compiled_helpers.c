@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 
-int* x = NULL;
-int xn = 0;
+int* sum_waveform = NULL;  // sum waveform
+int sum_waveform_n = 0;  // length of x
 int* ourranges = NULL;
 int ourrangeindex = 0;
 int i = 0, subindex = 0;
@@ -13,7 +13,8 @@ int i = 0, subindex = 0;
 int baseline = 0;
 void add_samples(int* samples, int n,
 		 int t0, int reduction) {
-  
+  // This takes an 'occurence', which is data seen by only one PMT
+  // and adds it to the sum waveform 'sum_waveform'.
   for (i = 0; i < n; ++i) {
     samples[i] = -1 * samples[i] + 16384;
   }
@@ -25,18 +26,16 @@ void add_samples(int* samples, int n,
   baseline /= 3;
   for (i = 0; i < n; ++i) {
     subindex = (t0 + i) / reduction;
-    x[subindex] += samples[i] - baseline;
+    sum_waveform[subindex] += samples[i] - baseline;
   }  
 }
-
-//18000
 
 void build_events(int **ranges, int *n, int threshold, int gap) {
   // create 2tupes with +/- 180us
   // Then merge with single For loop
   ourrangeindex = 0;
-  for (i = 0; i < xn; ++i) {
-    if (x[i] > threshold) {  // Above threshold 
+  for (i = 0; i < sum_waveform_n; ++i) {
+    if (sum_waveform[i] > threshold) {  // Above threshold
       int start = i - gap;
       int stop = i + gap;
       if ( ourrangeindex > 0 && start < ourranges[ourrangeindex - 1]) {
@@ -91,29 +90,29 @@ void overlaps(int **samples_indices, int *n,
 }
 
 void get_sum(int** sum, int *n) {
-  *sum = x;
-  *n = xn;
+  *sum = sum_waveform;
+  *n = sum_waveform_n;
 }
 
 void shutdown() {
-  if (x != NULL) free(x);
-  x = NULL;
+  if (sum_waveform != NULL) free(sum_waveform);
+  sum_waveform = NULL;
   if (ourranges != NULL) free(ourranges);
   ourranges = NULL;
 }
 
 void setup(int n) {
-  if (xn != 0 && xn != n) {
+  if (sum_waveform_n != 0 && sum_waveform_n != n) {
     printf("wax_compiled_helpers already initialized; will try to reinitialize...\n");
     shutdown();
   }
-  if (x == NULL) {
-    x = malloc(sizeof(int) * n);
+  if (sum_waveform == NULL) {
+    sum_waveform = malloc(sizeof(int) * n);
   }
   if (ourranges == NULL) {
     ourranges = malloc(sizeof(int) * n * 2);
   }
-  memset(x, 0, sizeof(int) * n);
+  memset(sum_waveform, 0, sizeof(int) * n);
   memset(ourranges, 0, sizeof(int) * n * 2);
-  xn = n;
+  sum_waveform_n = n;
 }

@@ -11,12 +11,12 @@ class CompiledHelpersTestCase(unittest.TestCase):
     def setUp(self):
         self.sample_type = np.int32
 
-    def check(self, x, y, gap = 1):
+    def check(self, x, y, gap = 1, offset=0):
         cch.setup(10)
 
         x *= -1
         x += 16384
-        cch.add_samples(x, 0, 1)
+        cch.add_samples(x, offset, 1)
 
         y2 = cch.build_events(5, gap)
 
@@ -32,6 +32,12 @@ class CompiledHelpersTestCase(unittest.TestCase):
         x = np.array([0, 0, 0, 0, 10, 0, ], dtype=self.sample_type)
         y = np.array([3, 5], dtype=self.sample_type)
         self.check(x, y)
+
+    def test_offset(self):
+        """Offset in add_samples"""
+        x = np.array([0, 0, 0, 0, 10, 0, ], dtype=self.sample_type)
+        y = np.array([6, 8], dtype=self.sample_type)
+        self.check(x, y, offset=3)
 
     def test_double_pulse(self):
         """Double signal above threshold"""
