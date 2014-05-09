@@ -1,4 +1,4 @@
-"""Example of how to use cito to analyze data
+"""Place holder
 """
 import unittest
 

@@ -1,4 +1,8 @@
-"""Example of how to use cito to analyze data
+"""Tests of the C extensions to speed up event building.
+
+This calls C code, which involves pointers and memory allocation; therefore,
+it is very important to test this well.  Segmentation faults in this code
+would be very hard to track down since the DAQ would just stop running.
 """
 import unittest
 
@@ -12,6 +16,12 @@ class CompiledHelpersTestCase(unittest.TestCase):
         self.sample_type = np.int32
 
     def check(self, x, y, gap=1, offset=0):
+        """Helper routine
+
+        To avoid every test case having to set up the C module, add samples to
+        it, then build events, we've provided a method that performs these
+        common actions.
+        """
         cch.setup(10)
 
         x *= -1

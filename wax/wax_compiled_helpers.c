@@ -3,12 +3,15 @@
 #include <stdio.h>
 
 int            *sum_waveform = NULL;
-//sum waveform
+
+//length of sum_waveform
 int		sum_waveform_n = 0;
-//length of x
-int            *ourranges = NULL;
-int		ourrangeindex = 0;
-int		i = 0,	subindex = 0;
+
+int *ourranges = NULL;
+int ourrangeindex = 0;
+
+int i = 0;
+int subindex = 0;
 
 
 int		baseline = 0;
@@ -122,3 +125,4 @@ setup(int n) {
     memset(sum_waveform, 0, sizeof(int) * n);
     memset(ourranges, 0, sizeof(int) * n * 2);
     sum_waveform_n = n;
+}
