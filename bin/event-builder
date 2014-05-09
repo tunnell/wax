@@ -25,10 +25,8 @@ def main(config):
     values = config.values('__main__')
 
     p = ProcessTask(chunk_size=values.get('chunksize'),
-                    padding=values.get('padding'))
-
-
-    p.set_threshold(values.get('threshold'))
+                    padding=values.get('padding'),
+                    threshold=values.get('threshold'))
 
     if values.get('dataset') == None:
         p.loop_and_find_new_datasets(values.get('hostname'))

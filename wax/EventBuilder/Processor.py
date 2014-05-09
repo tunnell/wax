@@ -1,4 +1,29 @@
-"""Processing class for the event builder (incl. software trigger)
+"""
+cito.core.EventBuilding
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Event building converts time blocks of data (from different digitizer boards) into DAQ events.
+
+Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,
+using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
+that performs the following sequential operations:
+
+* Build sum waveform
+* Using trigger algorithm, identify peaks in time.
+* If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before
+  and after each peak.
+
+More technically, a boolean array is created for each time sample, where True corresponds to a sample being saved
+and false corresponds to an event being discarded.  These values default to false.  Two variables are defined by the
+user: t_pre and t_post.  For each peak that the triggering algorithm identifies (e.g., charge above 100 pe), the
+range [peak_i - t_pre, peak_i + t_post] is set to true  (see get_index_mask_for_trigger).  Subsequently, continuous
+blocks of 'true' are called an event.
+
+In other words, if two particles interact in the detector within a typical 'event window', then these two
+interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
+example, for peak_k > peak_i, if peak_i + t_post > peak_k - t_pre, these are one event.
+
+
 """
 
 import math
