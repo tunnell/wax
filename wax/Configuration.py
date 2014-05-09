@@ -5,7 +5,7 @@ MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
 MAX_DRIFT = 18000  # units of 10 ns
 HOSTNAME = '127.0.0.1'
 THRESHOLD = 10000
-CHUNK_SIZE = 2 ** 28
+CHUNKSIZE = 2 ** 28
 PADDING = (3 * MAX_DRIFT)
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
 SAMPLE_TYPE = np.int16
@@ -21,7 +21,7 @@ class File(schema.Section):
                                            help='filename')
 
 class EventBuilder(schema.Section):
-    chunksize = schema.IntOption(default=CHUNK_SIZE,
+    chunksize = schema.IntOption(default=CHUNKSIZE,
                                   help='How many samples to search at once')
 
     padding = schema.IntOption(help='Padding to overlap processing windows [10 ns step]',
@@ -36,4 +36,5 @@ class EventBuilder(schema.Section):
     dataset = schema.StringOption(help='Analyze only a single dataset',
                                   default=None)
 
+    profile = schema.BoolOption(help='run profiler', default=False)
 

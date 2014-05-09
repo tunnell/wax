@@ -158,7 +158,7 @@ class MongoDBInput(DBBase.MongoDBBase):
                                  '$lt': time1}}
 
         cursor = self.collection.find(subset_query,
-                                      sort=self.get_sort_key(1))#,exhaust=True)
+                                      sort=self.get_sort_key(1),exhaust=True)
         result = list(cursor)
         logging.debug("Fetched %d input documents." % len(result))
         return result

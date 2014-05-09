@@ -77,4 +77,4 @@ sdist: clean
 
 profile: clean
 	rm -f profile
-	python wax/EventBuilder/Processor.py
+	python wax/event-builder --profile

@@ -18,27 +18,52 @@ from wax import Configuration
 from wax.EventBuilder.Processor import ProcessTask
 
 
-def main(config):
+def main(chunksize,
+         padding,
+         threshold,
+         dataset,
+         hostname,
+         **kwargs):
     log = logging.getLogger('EventBuilder')
 
-    # do something
-    values = config.values('__main__')
+    p = ProcessTask(chunksize=chunksize,
+                    padding=padding,
+                    threshold=threshold)
 
-    p = ProcessTask(chunk_size=values.get('chunksize'),
-                    padding=values.get('padding'),
-                    threshold=values.get('threshold'))
-
-    if values.get('dataset') == None:
-        p.loop_and_find_new_datasets(values.get('hostname'))
+    if dataset == None:
+        p.loop_and_find_new_datasets(hostname=hostname)
     else:
-        p.process_single_dataset(hostname=values.get('hostname'),
-                                 dataset=values.get('dataset'))
+        p.process_single_dataset(hostname=hostname,
+                                 dataset=dataset)
 
 
 if __name__ == '__main__':
+
+
     class eb(schema.Schema, Configuration.EventBuilder, Configuration.Mongo):
         pass
 
     glue = configglue(eb, ['config.ini'])
 
-    main(glue.schema_parser)
+    values = glue.schema_parser.values('__main__')
+
+    if values.get('profile'):
+        import time
+        start_time = time.time()
+        print("warning: we are profiling, so runs slow")
+        import cProfile
+        something = []
+        for key, value in dict(values).items():
+            if isinstance(value, str):
+                something.append('%s="%s"' % (key, value))
+            else:
+                something.append('%s=%s' % (key, str(value)))
+
+        something = ",".join(something)
+        print('something', something)
+        cProfile.runctx("""main(%s)""" % something, locals(), globals(),
+                        filename='wax.profile')
+        print("Total time:", time.time() - start_time)
+    else:
+        print('Arguments:', dict(values))
+        main(**dict(values))

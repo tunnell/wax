@@ -38,7 +38,7 @@ class TestOnGoodEvents(unittest.TestCase):
         print('')
 
     def test_something(self):
-        p = ProcessTask(chunk_size=10**8,
+        p = ProcessTask(chunksize=10**8,
                         padding=PADDING)
         p._initialize(hostname=self.hostname,
                                  dataset=self.dataset)

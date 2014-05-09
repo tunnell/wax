@@ -90,7 +90,7 @@ class ProcessTask():
     """
 
 
-    def __init__(self, chunk_size=Configuration.CHUNK_SIZE,
+    def __init__(self, chunksize=Configuration.CHUNKSIZE,
                  padding=Configuration.PADDING,
                  threshold=Configuration.THRESHOLD):
         """None dataset means it will find it
@@ -101,16 +101,16 @@ class ProcessTask():
         self._input = None
         self._output = None
 
-        if chunk_size <= 0:
-            raise ValueError("chunk_size <= 0: cannot analyze negative number of samples.")
-        self.log.error("using chunk size of %s" % sampletime_fmt(chunk_size))
-        self.chunk_size = chunk_size
+        if chunksize <= 0:
+            raise ValueError("chunksize <= 0: cannot analyze negative number of samples.")
+        self.log.info("Using chunk size of %s" % sampletime_fmt(chunksize))
+        self.chunksize = chunksize
 
         if padding < 0:
             raise ValueError("padding < 0: cannot analyze negative number of samples.")
-        if padding >= chunk_size:
+        if padding >= chunksize:
             self.warning("Padding is bigger than chunk?")
-        self.log.error("using padding of %s" % sampletime_fmt(padding))
+        self.log.info("Using padding of %s" % sampletime_fmt(padding))
         self.padding = padding
         self.threshold = threshold
 
@@ -193,7 +193,7 @@ class ProcessTask():
         waittime = 1  # s
 
         # int rounds down
-        min_time_index = int(self.input.get_min_time() / self.chunk_size)
+        min_time_index = int(self.input.get_min_time() / self.chunksize)
         current_time_index = min_time_index
 
         search_for_more_data = True
@@ -203,29 +203,28 @@ class ProcessTask():
                 # Round up
                 self.log.info("Data taking has ended; processing remaining data.")
                 max_time_index = math.ceil(
-                    self.input.get_max_time() / self.chunk_size)
+                    self.input.get_max_time() / self.chunksize)
                 search_for_more_data = False
             else:
                 # Round down
-                max_time_index = int(self.input.get_max_time() / self.chunk_size)
+                max_time_index = int(self.input.get_max_time() / self.chunksize)
 
             if max_time_index > current_time_index:
                 for i in tqdm(range(current_time_index, max_time_index)):
-                    t0 = (i * self.chunk_size)
-                    t1 = (i + 1) * self.chunk_size
+                    t0 = (i * self.chunksize)
+                    t1 = (i + 1) * self.chunksize
 
                     self.log.debug('Processing [%f s, %f s]' % (t0 / 1e8,
                                                                 t1 / 1e8))
 
                     amount_data_processed += self._process_time_range(t0,
-                                                                      t1 + self.padding,
-                                                                      self.padding)
+                                                                      t1 + self.padding)
 
                     self._print_stats(amount_data_processed,
                                       time.time() - start_time)
 
                 processed_time = (max_time_index - current_time_index)
-                processed_time *= self.chunk_size / 1e8
+                processed_time *= self.chunksize / 1e8
                 self.log.info("Processed %d seconds; searching for more data." % processed_time)
                 current_time_index = max_time_index
             else:
@@ -336,11 +335,11 @@ class ProcessTask():
                 events.append(last)  # Save event
 
         if len(events):
-            self.log.error("Saving %d events" % len(events))
+            self.log.info("Saving %d events" % len(events))
             self.output.write_events(events)
         else:
             self.log.debug("No events found between %d and %d." % (t0, t1))
-        self.log.fatal("Discarded: (%d/%d) = %0.3f%%",
+        self.log.info("Discarded: (%d/%d) = %0.3f%%",
                        reduced_data_count,
                        (len(data_docs) - reduced_data_count),
                        100 * float(reduced_data_count) / (len(data_docs) - reduced_data_count))
