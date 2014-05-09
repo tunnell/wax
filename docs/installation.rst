@@ -2,7 +2,7 @@
 Installation
 ============
 
-Every attempt is made to make `cito` as portable as possible and install in a wide range of environments.  However,
+Every attempt is made to make wax` as portable as possible and install in a wide range of environments.  However,
 installation instructions are given for Ubuntu 12 LTS.
 
 
@@ -11,7 +11,7 @@ Installing Python3.3
 
 If you have Python 3.3, skip this.
 
-`cito`, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
+`wax`, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
 following, which is inspired from
 `here <http://linuxg.net/how-to-install-python-3-3-on-ubuntu-13-04-12-10-and-12-04/>`_::
 
@@ -82,8 +82,8 @@ Preparing Python environment
 It is advised to install within a virtualenv::
 
 
-    $ virtualenv-3.3 -p python3.3 citoenv
-    $ cd citoenv
+    $ virtualenv-3.3 -p python3.3 waxenv
+    $ cd waxenv
     $ source bin/activate
 
 To avoid potential complications with the order in which python packages are installed, we recommend installing numpy
@@ -91,16 +91,16 @@ explicitly (i.e., scipy can be `annoying <annoying`:http://github.com/scipy/scip
 
     $ easy_install numpy
 
-Installing Cito
+Installing Wax
 ===============
 
-Up to this point, you've been installing the dependencies of `cito`.  However, installing `cito` itself is easy.  At the
-command line, using 'easy_install' or 'pip', install `cito`::
+Up to this point, you've been installing the dependencies of `wax`.  However, installing `wax` itself is easy.  At the
+command line, using 'easy_install' or 'pip', install `wax`::
 
-    $ easy_install cito
+    $ pip install git+https://github.com/tunnell/wax.git
 
 
-This line also installs all the Python dependencies of `cito`. If you observe a problem, please submit a bug report.
+This line also installs all the Python dependencies of `wax`. If you observe a problem, please submit a bug report.
 
 
 (Optional) Installing own MongoDB database
