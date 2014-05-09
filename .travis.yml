@@ -9,7 +9,7 @@ python:
 
 
 virtualenv:
-  system_site_packages: false
+  system_site_packages: true
 
 before_install:
  - sudo apt-get update -qq
@@ -21,7 +21,7 @@ before_install:
  - pip install -U git+https://github.com/vmalloc/mongomock.git
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -U -r requirements.txt
+install: pip install -U -r requirements.txt --use-mirrors
 
 # command to run tests, e.g. python setup.py test
 script: python setup.py test
