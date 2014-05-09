@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.EventBuilder.Processor &mdash; Code for Intelligent Triggering Online 2.1.2 documentation</title>
+  <title>wax.EventBuilder.Processor &mdash; Code for Intelligent Triggering Online 2.1.3 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.1.2 documentation" href="../../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.1.3 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -146,7 +146,32 @@
           <div role="main">
             
   <h1>Source code for wax.EventBuilder.Processor</h1><div class="highlight"><pre>
-<span class="sd">&quot;&quot;&quot;Processing class for the event builder (incl. software trigger)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">cito.core.EventBuilding</span>
+<span class="sd">~~~~~~~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">Event building converts time blocks of data (from different digitizer boards) into DAQ events.</span>
+
+<span class="sd">Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,</span>
+<span class="sd">using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined</span>
+<span class="sd">that performs the following sequential operations:</span>
+
+<span class="sd">* Build sum waveform</span>
+<span class="sd">* Using trigger algorithm, identify peaks in time.</span>
+<span class="sd">* If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before</span>
+<span class="sd">  and after each peak.</span>
+
+<span class="sd">More technically, a boolean array is created for each time sample, where True corresponds to a sample being saved</span>
+<span class="sd">and false corresponds to an event being discarded.  These values default to false.  Two variables are defined by the</span>
+<span class="sd">user: t_pre and t_post.  For each peak that the triggering algorithm identifies (e.g., charge above 100 pe), the</span>
+<span class="sd">range [peak_i - t_pre, peak_i + t_post] is set to true  (see get_index_mask_for_trigger).  Subsequently, continuous</span>
+<span class="sd">blocks of &#39;true&#39; are called an event.</span>
+
+<span class="sd">In other words, if two particles interact in the detector within a typical &#39;event window&#39;, then these two</span>
+<span class="sd">interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For</span>
+<span class="sd">example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</span>
+
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">math</span>
@@ -213,8 +238,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">CHUNK_SIZE</span><span class="p">,</span>
-                 <span class="n">padding</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">PADDING</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">CHUNKSIZE</span><span class="p">,</span>
+                 <span class="n">padding</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">PADDING</span><span class="p">,</span>
+                 <span class="n">threshold</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">THRESHOLD</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;None dataset means it will find it</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -223,17 +249,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_input</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="o">=</span> <span class="bp">None</span>
 
-        <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;chunk_size &lt;= 0: cannot analyze negative number of samples.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;using chunk size of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sampletime_fmt</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span>
+        <span class="k">if</span> <span class="n">chunksize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;chunksize &lt;= 0: cannot analyze negative number of samples.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Using chunk size of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sampletime_fmt</span><span class="p">(</span><span class="n">chunksize</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span> <span class="o">=</span> <span class="n">chunksize</span>
 
         <span class="k">if</span> <span class="n">padding</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;padding &lt; 0: cannot analyze negative number of samples.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">padding</span> <span class="o">&gt;=</span> <span class="n">chunk_size</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">padding</span> <span class="o">&gt;=</span> <span class="n">chunksize</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Padding is bigger than chunk?&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;using padding of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sampletime_fmt</span><span class="p">(</span><span class="n">padding</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Using padding of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sampletime_fmt</span><span class="p">(</span><span class="n">padding</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
 
 
     <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">):</span>
@@ -314,7 +341,7 @@
         <span class="n">waittime</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c"># s</span>
 
         <span class="c"># int rounds down</span>
-        <span class="n">min_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">)</span>
+        <span class="n">min_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
         <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">min_time_index</span>
 
         <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">True</span>
@@ -324,29 +351,28 @@
                 <span class="c"># Round up</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Data taking has ended; processing remaining data.&quot;</span><span class="p">)</span>
                 <span class="n">max_time_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
                 <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c"># Round down</span>
-                <span class="n">max_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">)</span>
+                <span class="n">max_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">max_time_index</span> <span class="o">&gt;</span> <span class="n">current_time_index</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">current_time_index</span><span class="p">,</span> <span class="n">max_time_index</span><span class="p">)):</span>
-                    <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">)</span>
-                    <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span>
+                    <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+                    <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Processing [</span><span class="si">%f</span><span class="s"> s, </span><span class="si">%f</span><span class="s"> s]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span> <span class="o">/</span> <span class="mf">1e8</span><span class="p">,</span>
                                                                 <span class="n">t1</span> <span class="o">/</span> <span class="mf">1e8</span><span class="p">))</span>
 
                     <span class="n">amount_data_processed</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_time_range</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span>
-                                                                      <span class="n">t1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
-                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+                                                                      <span class="n">t1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_print_stats</span><span class="p">(</span><span class="n">amount_data_processed</span><span class="p">,</span>
                                       <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
 
                 <span class="n">processed_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_time_index</span> <span class="o">-</span> <span class="n">current_time_index</span><span class="p">)</span>
-                <span class="n">processed_time</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span> <span class="o">/</span> <span class="mf">1e8</span>
+                <span class="n">processed_time</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span> <span class="o">/</span> <span class="mf">1e8</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processed </span><span class="si">%d</span><span class="s"> seconds; searching for more data.&quot;</span> <span class="o">%</span> <span class="n">processed_time</span><span class="p">)</span>
                 <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">max_time_index</span>
             <span class="k">else</span><span class="p">:</span>
@@ -403,7 +429,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;No data found in [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
             <span class="k">return</span> <span class="mi">0</span>
 
-        <span class="n">ranges</span> <span class="o">=</span> <span class="n">cch</span><span class="o">.</span><span class="n">build_events</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="c"># Threshold</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="n">cch</span><span class="o">.</span><span class="n">build_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="c"># Threshold</span>
                                   <span class="nb">int</span><span class="p">(</span><span class="n">MAX_DRIFT</span> <span class="o">/</span> <span class="n">reduction_factor</span><span class="p">))</span>
 
 
@@ -414,11 +440,7 @@
         <span class="n">ranges</span> <span class="o">*=</span> <span class="n">reduction_factor</span>
         <span class="n">ranges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span> <span class="o">+</span> <span class="n">ranges</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&#39;0 ranges&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span>
         <span class="n">ranges</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">ranges</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&#39;1 ranges </span><span class="si">%d</span><span class="s"> </span><span class="si">%d</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="n">ranges</span><span class="p">)</span>
         <span class="n">reduced_data_count</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">last</span> <span class="o">=</span> <span class="bp">None</span>
@@ -461,11 +483,11 @@
                 <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>  <span class="c"># Save event</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Saving </span><span class="si">%d</span><span class="s"> events&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Saving </span><span class="si">%d</span><span class="s"> events&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write_events</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No events found between </span><span class="si">%d</span><span class="s"> and </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;Discarded: (</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">) = </span><span class="si">%0.3f%%</span><span class="s">&quot;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Discarded: (</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">) = </span><span class="si">%0.3f%%</span><span class="s">&quot;</span><span class="p">,</span>
                        <span class="n">reduced_data_count</span><span class="p">,</span>
                        <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_docs</span><span class="p">)</span> <span class="o">-</span> <span class="n">reduced_data_count</span><span class="p">),</span>
                        <span class="mi">100</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">reduced_data_count</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_docs</span><span class="p">)</span> <span class="o">-</span> <span class="n">reduced_data_count</span><span class="p">))</span>
@@ -503,7 +525,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.1.2',
+            VERSION:'2.1.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
