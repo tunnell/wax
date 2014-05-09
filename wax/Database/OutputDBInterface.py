@@ -23,6 +23,6 @@ class MongoDBOutput(DBBase.MongoDBBase):
         """
 
         self.collection.insert(event_data_list,
-                               check_keys=False,
+                               #check_keys=False,
                                manipulate=False,
                                safe=False)

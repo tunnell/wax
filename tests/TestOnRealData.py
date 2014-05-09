@@ -70,7 +70,7 @@ class TestOnGoodEvents(unittest.TestCase):
             all_count += 1
             if check_in_range(value['time']):
                 good += 1
-                print('.', end='')
+                #print('.', end='')
             else:
                 print('fail', value)
 
