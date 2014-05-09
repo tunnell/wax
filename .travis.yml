@@ -9,7 +9,7 @@ python:
 
 
 virtualenv:
-  system_site_packages: true
+  system_site_packages: false
 
 before_install:
  - sudo apt-get update -qq
