@@ -1,13 +1,11 @@
 """Example of how to use cito to analyze data
 """
-import numpy as np
-from wax.EventAnalyzer import Samples
-
 import unittest
+
+from wax.EventAnalyzer import Samples
 
 
 class SamplesTestCase(unittest.TestCase):
-
     def test_single_pulse(self):
         doc = {}
         doc['data'] = b''

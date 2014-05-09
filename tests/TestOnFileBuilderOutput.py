@@ -1,15 +1,13 @@
 """Example of how to use cito to analyze data
 """
 import pickle
-import numpy as np
 import gzip
-
-
 import unittest
+
+import numpy as np
 
 
 class SumDataTestCase(unittest.TestCase):
-
     def setUp(self):
         # Load the wax output file
         self.f = gzip.open('tests/cito_file.pklz', 'rb')

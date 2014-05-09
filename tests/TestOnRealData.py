@@ -1,8 +1,10 @@
 __author__ = 'tunnell'
 
 import sys
-import pymongo
+
 import mongomock
+
+
 sys.modules['pymongo'] = mongomock
 
 import unittest
@@ -15,6 +17,7 @@ from wax.Database import OutputDBInterface, InputDBInterface
 from wax.EventBuilder.Processor import ProcessTask
 from wax.Configuration import PADDING
 
+
 class TestOnGoodEvents(unittest.TestCase):
     def setUp(self):
         f = gzip.open('tests/test_data.pkl.gz', 'rb')
@@ -23,9 +26,9 @@ class TestOnGoodEvents(unittest.TestCase):
         self.hostname = '127.0.0.1'
         self.dataset = 'dataset'
         self.input = InputDBInterface.MongoDBInput(collection_name=self.dataset,
-                                                 hostname=self.hostname)
+                                                   hostname=self.hostname)
         self.output = OutputDBInterface.MongoDBOutput(collection_name=self.dataset,
-                                                 hostname=self.hostname)
+                                                      hostname=self.hostname)
 
         while (1):
             try:
@@ -38,14 +41,14 @@ class TestOnGoodEvents(unittest.TestCase):
         print('')
 
     def test_something(self):
-        p = ProcessTask(chunksize=10**8,
+        p = ProcessTask(chunksize=10 ** 8,
                         padding=PADDING)
         p._initialize(hostname=self.hostname,
-                                 dataset=self.dataset)
+                      dataset=self.dataset)
 
         for i in range(15):
             print('i %d' % i)
-            p._process_time_range(i * 10**8, (i+1) * 10**8 + PADDING)
+            p._process_time_range(i * 10 ** 8, (i + 1) * 10 ** 8 + PADDING)
 
         collection = self.output.get_collection()
         cursor = collection.find()
@@ -71,10 +74,7 @@ class TestOnGoodEvents(unittest.TestCase):
             else:
                 print('fail', value)
 
-        self.assertGreaterEqual((float(good)/all_count), 1.0)
-
-
-
+        self.assertGreaterEqual((float(good) / all_count), 1.0)
 
 
 if __name__ == '__main__':
