@@ -10,6 +10,7 @@ int		sum_waveform_n = 0;
 int *ourranges = NULL;
 int ourrangeindex = 0;
 
+
 int i = 0;
 int subindex = 0;
 
