@@ -9,7 +9,6 @@ int ourrangeindex = 0;
 int i = 0, subindex = 0;
 
 
-
 int baseline = 0;
 void add_samples(int* samples, int n,
 		 int t0, int reduction) {
