@@ -4,6 +4,7 @@ import numpy as np
 MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
 MAX_DRIFT = 18000  # units of 10 ns
 HOSTNAME = '127.0.0.1'
+THRESHOLD = 10000
 CHUNK_SIZE = 2 ** 28
 PADDING = (3 * MAX_DRIFT)
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
@@ -28,6 +29,9 @@ class EventBuilder(schema.Section):
 
     chunks = schema.IntOption(help='Limit the numbers of chunks to analyze (-1 means no limit)',
                               default=-1)
+
+    threshold = schema.IntOption(help='Threshold [adc counts]',
+                                 default=THRESHOLD)
 
     dataset = schema.StringOption(help='Analyze only a single dataset',
                                   default=None)

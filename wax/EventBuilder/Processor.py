@@ -66,7 +66,8 @@ class ProcessTask():
 
 
     def __init__(self, chunk_size=Configuration.CHUNK_SIZE,
-                 padding=Configuration.PADDING):
+                 padding=Configuration.PADDING,
+                 threshold=Configuration.THRESHOLD):
         """None dataset means it will find it
 
         """
@@ -86,6 +87,7 @@ class ProcessTask():
             self.warning("Padding is bigger than chunk?")
         self.log.error("using padding of %s" % sampletime_fmt(padding))
         self.padding = padding
+        self.threshold = threshold
 
 
     def _initialize(self, dataset=None, hostname='127.0.0.1'):
@@ -255,7 +257,7 @@ class ProcessTask():
             self.log.debug('No data found in [%d, %d]' % (t0, t1))
             return 0
 
-        ranges = cch.build_events(10000, # Threshold
+        ranges = cch.build_events(self.threshold, # Threshold
                                   int(MAX_DRIFT / reduction_factor))
 
 
