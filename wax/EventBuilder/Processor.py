@@ -268,11 +268,7 @@ class ProcessTask():
         ranges *= reduction_factor
         ranges = np.uint64(t0) + ranges.astype(np.uint64)
 
-        self.log.fatal('0 ranges')
-        self.log.fatal(ranges)
         ranges.resize((int(ranges.size / 2), 2))
-        self.log.fatal('1 ranges %d %d', t0, t1)
-        self.log.fatal(ranges)
         reduced_data_count = 0
 
         last = None
