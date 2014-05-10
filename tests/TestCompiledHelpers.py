@@ -22,7 +22,7 @@ class CompiledHelpersTestCase(unittest.TestCase):
         it, then build events, we've provided a method that performs these
         common actions.
         """
-        cch.setup(10)
+        cch.setup(100)
 
         x *= -1
         x += 16384
@@ -43,11 +43,11 @@ class CompiledHelpersTestCase(unittest.TestCase):
         y = np.array([3, 5], dtype=self.sample_type)
         self.check(x, y)
 
-    #def test_offset(self):
-    #    """Offset in add_samples"""
-    #    x = np.array([0, 0, 0, 0, 10, 0, ], dtype=self.sample_type)
-    #    y = np.array([6, 8], dtype=self.sample_type)
-    #    self.check(x, y, offset=3)
+    def test_offset(self):
+        """Offset in add_samples"""
+        x = np.array([0, 0, 0, 0, 10, 0, ], dtype=self.sample_type)
+        y = np.array([6, 8], dtype=self.sample_type)
+        self.check(x, y, offset=3)
 
     def test_double_pulse(self):
         """Double signal above threshold"""
