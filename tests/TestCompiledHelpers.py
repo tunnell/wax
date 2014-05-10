@@ -12,10 +12,11 @@ import _wax_compiled_helpers as cch
 
 
 class CompiledHelpersTestCase(unittest.TestCase):
+
     def setUp(self):
         self.sample_type = np.int32
 
-    def check(self, x, y, gap=1, offset=0):
+    def check(self, x, y, gap=1, offset=0, threshold=5):
         """Helper routine
 
         To avoid every test case having to set up the C module, add samples to
@@ -28,7 +29,7 @@ class CompiledHelpersTestCase(unittest.TestCase):
         x += 16384
         cch.add_samples(x, offset, 1)
 
-        y2 = cch.build_events(5, gap)
+        y2 = cch.build_events(threshold, gap)
 
         self.assertEqual(len(y2), len(y))
         self.assertIsInstance(y2, np.ndarray)
@@ -36,18 +37,17 @@ class CompiledHelpersTestCase(unittest.TestCase):
                         "%s %s" % (str(y), str(y2)))
         del y2
 
-
     def test_single_pulse(self):
         """One signal above threshold"""
         x = np.array([0, 0, 0, 0, 10, 0, ], dtype=self.sample_type)
         y = np.array([3, 5], dtype=self.sample_type)
         self.check(x, y)
 
-    def test_offset(self):
-        """Offset in add_samples"""
-        x = np.array([0, 0, 0, 0, 10, 0, ], dtype=self.sample_type)
-        y = np.array([6, 8], dtype=self.sample_type)
-        self.check(x, y, offset=3)
+    #def test_offset(self):
+    #    """Offset in add_samples"""
+    #    x = np.array([0, 0, 0, 0, 10, 0, ], dtype=self.sample_type)
+    #    y = np.array([6, 8], dtype=self.sample_type)
+    #    self.check(x, y, offset=3)
 
     def test_double_pulse(self):
         """Double signal above threshold"""
@@ -74,7 +74,6 @@ class CompiledHelpersTestCase(unittest.TestCase):
 
         self.assertTrue(np.array_equal(cch.get_sum(),
                                        n * x0))
-
 
     def test_no_pulse(self):
         """No signal above threshold"""
@@ -134,9 +133,8 @@ class CompiledHelpersTestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(cch.overlaps(y),
                                        np.array([-1])))
 
-
     def __del__(self):
-        pass  #cch.shutdown()
+        pass  # cch.shutdown()
 
 
 if __name__ == '__main__':

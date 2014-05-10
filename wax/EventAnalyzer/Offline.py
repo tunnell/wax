@@ -3,8 +3,8 @@ __author__ = 'tunnell'
 from cliff.command import Command
 import logging
 
-class ProcessCommand(Command):
 
+class ProcessCommand(Command):
 
     def get_description(self):
         return self.__doc__
@@ -15,7 +15,6 @@ class ProcessCommand(Command):
         parser.add_argument("--filename", help="filenmae",
                             type=str,
                             default='cito_file.pklz')
-
 
         return parser
 
@@ -40,8 +39,8 @@ class ProcessCommand(Command):
                 time.sleep(1)
             else:
                 p._process_chosen_dataset(chunk_size=parsed_args.chunksize,
-                                  chunks=parsed_args.chunks,
-                                  padding=parsed_args.padding)
+                                          chunks=parsed_args.chunks,
+                                          padding=parsed_args.padding)
 
             # If only a single dataset was specified, break
             if parsed_args.dataset is not None or parsed_args.chunks != -1:

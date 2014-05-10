@@ -75,6 +75,7 @@ def sizeof_fmt(num):
         num /= 1024.0
     return "%3.1f %s" % (num, 'TB')
 
+
 def sampletime_fmt(num):
     num *= 10
     for x in ['ns', 'us', 'ms']:
@@ -84,11 +85,10 @@ def sampletime_fmt(num):
     return "%3.1f %s" % (num, 's')
 
 
-
 class ProcessTask():
+
     """Process a time block
     """
-
 
     def __init__(self, chunksize=Configuration.CHUNKSIZE,
                  padding=Configuration.PADDING,
@@ -114,7 +114,6 @@ class ProcessTask():
         self.padding = padding
         self.threshold = threshold
 
-
     def _initialize(self, dataset=None, hostname='127.0.0.1'):
         """If dataset == None, finds a collection on its own"""
         self.delete_collection_when_done = True
@@ -131,9 +130,8 @@ class ProcessTask():
             self.log.debug("Cannot setup output DB.")
             self.output = None
 
-
     def process_single_dataset(self, hostname, dataset):
-        #def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):
+        # def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):
         """This function makes lots of processing classes"""
 
         try:
@@ -150,14 +148,12 @@ class ProcessTask():
         else:
             self._process_chosen_dataset()
 
-
-
     def loop_and_find_new_datasets(self, hostname):
-        #def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):
+        # def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):
         """This function makes lots of processing classes"""
         while True:
             try:
-                self._initialize(hostname=hostname) # Dataset=None means it finds one
+                self._initialize(hostname=hostname)  # Dataset=None means it finds one
             except Exception as e:
                 self.log.exception(e)
                 self.log.fatal("Exception resulted in fatal error; quiting.")
@@ -168,8 +164,6 @@ class ProcessTask():
                 time.sleep(1)
             else:
                 self._process_chosen_dataset()
-
-
 
     def _print_stats(self, amount_data_processed, dt):
 
@@ -281,9 +275,8 @@ class ProcessTask():
             self.log.debug('No data found in [%d, %d]' % (t0, t1))
             return 0
 
-        ranges = cch.build_events(self.threshold, # Threshold
+        ranges = cch.build_events(self.threshold,  # Threshold
                                   int(MAX_DRIFT / reduction_factor))
-
 
         #  One event has many samples, thus to mapping represented as samples -> event
         mappings = cch.overlaps(doc_ranges.flatten())
@@ -340,9 +333,9 @@ class ProcessTask():
         else:
             self.log.debug("No events found between %d and %d." % (t0, t1))
         self.log.info("Discarded: (%d/%d) = %0.3f%%",
-                       reduced_data_count,
-                       (len(data_docs) - reduced_data_count),
-                       100 * float(reduced_data_count) / (len(data_docs) - reduced_data_count))
+                      reduced_data_count,
+                      (len(data_docs) - reduced_data_count),
+                      100 * float(reduced_data_count) / (len(data_docs) - reduced_data_count))
         return size
 
     def drop_collection(self):

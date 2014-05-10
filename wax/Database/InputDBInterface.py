@@ -3,8 +3,6 @@
 
 import logging
 
-import pymongo
-
 from wax.Database import DBBase
 
 
@@ -26,7 +24,6 @@ class MongoDBInput(DBBase.MongoDBBase):
         self.collection.ensure_index(self.get_sort_key(),
                                      background=True)
         self.find_control_doc()
-
 
     @staticmethod
     def get_db_name():
@@ -86,8 +83,8 @@ class MongoDBInput(DBBase.MongoDBBase):
 
         if self.has_run_ended():
             doc = self.collection.find_one({},
-                                             fields=['time'],
-                                             sort=sort_key)
+                                           fields=['time'],
+                                           sort=sort_key)
             if doc is None or doc['time'] is None:
                 return self.get_min_time()
             return doc['time']
@@ -126,7 +123,7 @@ class MongoDBInput(DBBase.MongoDBBase):
         sort_key = self.get_sort_key(1)
         doc = self.collection.find_one({"time": {'$exists': True}},
                                        sort=sort_key)
-        if doc == None:
+        if doc is None:
             raise ValueError("Could not find starting time since no documents with 'time' field exist")
         return doc['time']
         # return self.get_control_document()['starttime']
@@ -158,7 +155,7 @@ class MongoDBInput(DBBase.MongoDBBase):
                                  '$lt': time1}}
 
         cursor = self.collection.find(subset_query,
-                                      sort=self.get_sort_key(1))#,exhaust=True)
+                                      sort=self.get_sort_key(1))  # ,exhaust=True)
         result = list(cursor)
         logging.debug("Fetched %d input documents." % len(result))
         return result

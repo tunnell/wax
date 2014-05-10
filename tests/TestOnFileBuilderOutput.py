@@ -8,6 +8,7 @@ import numpy as np
 
 
 class SumDataTestCase(unittest.TestCase):
+
     def setUp(self):
         # Load the wax output file
         self.f = gzip.open('tests/cito_file.pklz', 'rb')

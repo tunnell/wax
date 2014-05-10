@@ -20,13 +20,15 @@ clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr *.egg-info
+	rm -f wax/wax_compiled_helpers.py
+	rm -f wax/wax_compiled_helpers_wrap.c
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 
-lint:
+lint:	clean
 	flake8 --ignore=E501 wax tests
 
 test:

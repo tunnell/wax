@@ -12,7 +12,9 @@ from wax.Configuration import HOSTNAME
 
 CONNECTION = None
 
+
 class MongoDBBase():
+
     """Read from MongoDB
 
     The subclass is responsible for setting up the collection
@@ -38,7 +40,6 @@ class MongoDBBase():
             self.collection = self.db[collection_name]
         else:
             self.collection = self.discover_collection()
-
 
     @property
     def initialized(self):

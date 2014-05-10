@@ -19,6 +19,7 @@ from wax.Configuration import PADDING
 
 
 class TestOnGoodEvents(unittest.TestCase):
+
     def setUp(self):
         f = gzip.open('tests/test_data.pkl.gz', 'rb')
         x = pickle.load(f)

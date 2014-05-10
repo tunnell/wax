@@ -6,6 +6,7 @@ from wax.EventAnalyzer import Samples
 
 
 class SamplesTestCase(unittest.TestCase):
+
     def test_single_pulse(self):
         doc = {}
         doc['data'] = b''
