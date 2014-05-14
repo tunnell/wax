@@ -33,6 +33,7 @@ import time
 import numpy as np
 
 import snappy
+import pymongo
 import _wax_compiled_helpers as cch
 from tqdm import tqdm
 from wax.Configuration import SAMPLE_TYPE, MAX_DRIFT
@@ -154,6 +155,10 @@ class ProcessTask():
         while True:
             try:
                 self._initialize(hostname=hostname)  # Dataset=None means it finds one
+            except pymongo.errors.ConnectionFailure as e:
+                self.log.error(e)
+                self.log.error("Cannot connect to mongodb.  Will retry in 10 seconds.")
+                time.sleep(10)
             except Exception as e:
                 self.log.exception(e)
                 self.log.fatal("Exception resulted in fatal error; quiting.")

@@ -9,3 +9,4 @@ Jargon
 * File builder - Take DAQ events and write them to a file.
 * Occurence - The digitizers only send data when a threshold is crossed.  An occurence is just a continous (in time)
 block of data for just one channel.  An event will be composed of many occurences.
+* Sample - a 14-bit measurement from the digitizers corresponding to a 10-ns window

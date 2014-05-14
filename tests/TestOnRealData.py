@@ -22,7 +22,7 @@ class TestOnGoodEvents(unittest.TestCase):
 
     def setUp(self):
         f = gzip.open('tests/test_data.pkl.gz', 'rb')
-        x = pickle.load(f)
+        pickle.load(f)
         self.answer = pickle.load(f)
         self.hostname = '127.0.0.1'
         self.dataset = 'dataset'
@@ -71,7 +71,6 @@ class TestOnGoodEvents(unittest.TestCase):
             all_count += 1
             if check_in_range(value['time']):
                 good += 1
-                #print('.', end='')
             else:
                 print('fail', value)
 
