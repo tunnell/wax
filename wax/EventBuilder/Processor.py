@@ -159,6 +159,7 @@ class ProcessTask():
                 self.log.error(e)
                 self.log.error("Cannot connect to mongodb.  Will retry in 10 seconds.")
                 time.sleep(10)
+                continue
             except Exception as e:
                 self.log.exception(e)
                 self.log.fatal("Exception resulted in fatal error; quiting.")
