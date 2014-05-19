@@ -9,7 +9,7 @@ installation instructions are given for Ubuntu 12 LTS.
 Installing Python3.3
 ====================
 
-If you have Python 3.3, skip this.
+If you have Python 3.3, skip this.  This requires root access.
 
 `wax`, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
 following, which is inspired from
@@ -30,7 +30,7 @@ These commands need only be run once.
 Installing system dependencies
 ==============================
 
-Here we install the basics required to compile code, and some dependencies such as math libraries for later codes.
+Here we install the basics required to compile code, and some dependencies such as math libraries for later codes.  All commands that include `sudo` require root access to your machine.  If you don't have it, talk to the system administrator.
 
 Compiler
 --------

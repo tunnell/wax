@@ -79,7 +79,7 @@ Given that we are using a NoSQL database, variables may be added.  However, the 
 * `evtnum`: event number from either MC or a processed format.  This is used
   for helping study the trigger efficiency.
 
-..warning  If start time is too small, the DAQ will skip the first data chunk (~1s) to avoid trying to record data at negative times.
+..warning  If start time is too small, the DAQ will skip the first data chunk (~1s) to avoid trying to record data at negative times.  See FAQ.
 
 
 Output database
