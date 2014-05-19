@@ -32,24 +32,12 @@ class MongoDBBase():
 
         self.db = CONNECTION[self.get_db_name()]
 
-        self._initialized = True
-
-        self.log.setLevel(logging.DEBUG)
+        self.initialized = True
 
         if collection_name is not None:
             self.collection = self.db[collection_name]
         else:
             self.collection = self.discover_collection()
-
-    @property
-    def initialized(self):
-        return self._initialized
-
-    @initialized.setter
-    def initialized(self, x):
-        if not isinstance(self.initialized, bool):
-            raise ValueError("Initialization status must be bool")
-        self._initialized = x
 
     @staticmethod
     def get_db_name():

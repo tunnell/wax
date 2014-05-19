@@ -21,8 +21,7 @@ class MongoDBOutput(DBBase.MongoDBBase):
     def write_events(self, event_data_list):
         """Save data to database
         """
-
         self.collection.insert(event_data_list,
-                               # check_keys=False,
-                               manipulate=False,
-                               safe=False)
+                               check_keys=True,
+                               manipulate=True,
+                                safe=True)

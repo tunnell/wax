@@ -37,7 +37,7 @@ import pymongo
 import _wax_compiled_helpers as cch
 from tqdm import tqdm
 from wax.Configuration import SAMPLE_TYPE, MAX_DRIFT
-from wax.Database import InputDBInterface, OutputDBInterface
+from wax.Database import InputDBInterface, OutputDBInterface, ControlDBInterface
 from wax import Configuration
 
 
@@ -63,6 +63,7 @@ def get_samples_from_doc(doc, is_compressed):
 
     data = np.fromstring(data,
                          dtype=SAMPLE_TYPE)
+
     if len(data) == 0:
         raise IndexError("Data has zero length")
 
@@ -91,7 +92,8 @@ class ProcessTask():
     """Process a time block
     """
 
-    def __init__(self, chunksize=Configuration.CHUNKSIZE,
+    def __init__(self,
+                 chunksize=Configuration.CHUNKSIZE,
                  padding=Configuration.PADDING,
                  threshold=Configuration.THRESHOLD):
         """None dataset means it will find it
@@ -101,6 +103,7 @@ class ProcessTask():
         self.log = logging.getLogger(__name__)
         self._input = None
         self._output = None
+        self._controldb = None
 
         if chunksize <= 0:
             raise ValueError("chunksize <= 0: cannot analyze negative number of samples.")
@@ -117,6 +120,9 @@ class ProcessTask():
 
     def _initialize(self, dataset=None, hostname='127.0.0.1'):
         """If dataset == None, finds a collection on its own"""
+        self._controldb = ControlDBInterface.MongoDBControl(collection_name='triggerrate',
+                                                            hostname=hostname)
+
         self.delete_collection_when_done = True
         if dataset is not None:
             # We've chosen a dataset to process, probably for testing so don't
@@ -160,13 +166,10 @@ class ProcessTask():
                 self.log.error("Cannot connect to mongodb.  Will retry in 10 seconds.")
                 time.sleep(10)
                 continue
-            except Exception as e:
-                self.log.exception(e)
-                self.log.fatal("Exception resulted in fatal error; quiting.")
-                raise
 
             if not self.input.initialized:
                 self.log.warning("No dataset available to process; waiting one second.")
+                self._controldb.send_stats()
                 time.sleep(1)
             else:
                 self._process_chosen_dataset()
@@ -193,7 +196,17 @@ class ProcessTask():
         waittime = 1  # s
 
         # int rounds down
-        min_time_index = int(self.input.get_min_time() / self.chunksize)
+        min_time_index = int(self.input.get_min_time()/self.chunksize)
+
+        # Time are unsigned integers.  This prevents observing partial events.
+        if min_time_index <= 0:
+            self.log.error("Start time is too small!")
+            self.log.error("Increasing to %d us to prevent wrap around." % (self.chunksize/100))
+            min_time_index = 1
+
+            if min_time_index * self.chunksize < (Configuration.MAX_DRIFT + Configuration.PADDING):
+                raise RuntimeError("Time wrap around")
+
         current_time_index = min_time_index
 
         search_for_more_data = True
@@ -202,34 +215,42 @@ class ProcessTask():
             if self.input.has_run_ended():
                 # Round up
                 self.log.info("Data taking has ended; processing remaining data.")
-                max_time_index = math.ceil(
-                    self.input.get_max_time() / self.chunksize)
+                max_time_index = math.ceil(self.input.get_max_time() / self.chunksize)
                 search_for_more_data = False
             else:
                 # Round down
                 max_time_index = int(self.input.get_max_time() / self.chunksize)
 
+
             if max_time_index > current_time_index:
                 for i in tqdm(range(current_time_index, max_time_index)):
+                    data = {}
+                    data['time'] = time.time()
                     t0 = (i * self.chunksize)
                     t1 = (i + 1) * self.chunksize
 
                     self.log.debug('Processing [%f s, %f s]' % (t0 / 1e8,
                                                                 t1 / 1e8))
 
-                    amount_data_processed += self._process_time_range(t0,
-                                                                      t1 + self.padding)
-
+                    triggered_size, rejected_size = self._process_time_range(t0, t1 + self.padding)
+                    amount_data_processed += rejected_size + triggered_size
+                    end_time = time.time()
+                    data['rateout'] = triggered_size / (end_time-data['time'])
+                    data['ratetoss'] = rejected_size / (end_time-data['time'])
+                    self._controldb.send_stats(data)
                     self._print_stats(amount_data_processed,
                                       time.time() - start_time)
 
                 processed_time = (max_time_index - current_time_index)
                 processed_time *= self.chunksize / 1e8
                 self.log.info("Processed %d seconds; searching for more data." % processed_time)
+
                 current_time_index = max_time_index
             else:
                 self.log.debug('Waiting %f seconds' % waittime)
+                self._controldb.send_stats()
                 time.sleep(waittime)
+                self._controldb.send_stats()
                 start_time = time.time()
                 amount_data_processed = 0
 
@@ -250,7 +271,7 @@ class ProcessTask():
         """
         data_docs = self.input.get_data_docs(t0, t1)
 
-        size = 0
+        untriggered_size = 0
         reduction_factor = 100
         n = int(np.ceil((t1 - t0) / reduction_factor))
         cch.setup(n)
@@ -269,15 +290,15 @@ class ProcessTask():
                              (time_correction + samples.size) / reduction_factor)
 
             cch.add_samples(samples, time_correction, reduction_factor)
-            size += doc['size']
+            untriggered_size += doc['size']
 
         #sum_data = cch.get_sum()
 
-        self.log.debug("Size of data process in bytes: %d", size)
+        self.log.debug("Size of data process in bytes: %d", untriggered_size)
 
         # If no data analyzed, return
-        self.log.debug("Size of data analyzed: %d", size)
-        if size == 0:
+        self.log.debug("Size of data analyzed: %d", untriggered_size)
+        if untriggered_size == 0:
             self.log.debug('No data found in [%d, %d]' % (t0, t1))
             return 0
 
@@ -338,11 +359,12 @@ class ProcessTask():
             self.output.write_events(events)
         else:
             self.log.debug("No events found between %d and %d." % (t0, t1))
-        self.log.info("Discarded: (%d/%d) = %0.3f%%",
-                      reduced_data_count,
-                      (len(data_docs) - reduced_data_count),
-                      100 * float(reduced_data_count) / (len(data_docs) - reduced_data_count))
-        return size
+
+        triggered_size = 0
+        for event in events:
+            triggered_size += event['size']
+
+        return triggered_size, (untriggered_size - triggered_size)
 
     def drop_collection(self):
         self.input.get_db().drop_collection(self.input.get_collection_name())
