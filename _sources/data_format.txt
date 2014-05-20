@@ -59,7 +59,7 @@ One data document is created per occurence.  Therefore, there is one document pe
 * `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
 * `module`: identifies the digitizer board.  For fake data, this is set to -1.
 * `channel`: Channel number.
-* `time`: 64-bit number in units of 10 ns.  This time corresponds to the same time of the data in this document.
+* `time`: 64-bit unsigned number in units of 10 ns.  This time corresponds to the same time of the data in this document.  Please begin at 1 second or something to prevent trigger trying to save data at negative times.
 * `data`: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.
 
 Said differently, expect:
@@ -72,7 +72,6 @@ Said differently, expect:
         "channel": int,
         "time": int,
         "data": binary,
-        "compressed": bool,
     }
 
 Given that we are using a NoSQL database, variables may be added.  However, the schema only requires the five fields above.  Examples of possible extra fields include:
@@ -80,7 +79,7 @@ Given that we are using a NoSQL database, variables may be added.  However, the 
 * `evtnum`: event number from either MC or a processed format.  This is used
   for helping study the trigger efficiency.
 
-
+..warning  If start time is too small, the DAQ will skip the first data chunk (~1s) to avoid trying to record data at negative times.  See FAQ.
 
 
 Output database
@@ -91,7 +90,7 @@ The output is stored in a database called, surprisingly, called `output`. This i
 * The `_id` field is a hex string used for internal bookkeeping within MongoDB.
   It is different for every document.
 * `evt_num` is an integer event number (if one has been assigned).
-* `range` is two 64-bit integers that correspond to the beginning and end of
+* `range` is two 64-bit unsigned integers that correspond to the beginning and end of
   the trigger window in units of 10 ns.
 * `compressed_doc` is binary data compressed with snappy and contains all the
   data that will go to file.  For more information, see :doc:`analyze_data`.

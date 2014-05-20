@@ -67,17 +67,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-system-dependencies">Installing system dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#preparing-python-environment">Preparing Python environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-cito">Installing Cito</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-wax">Installing Wax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-file-builder">Starting the file builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#database-commands">Database commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_format.html">Internal data formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#input-database">Input database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#output-database">Output database</a></li>
@@ -85,6 +83,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../jargon.html">Jargon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../faq.html#why-does-the-event-builder-not-analyze-the-first-few-seconds-of-data">Why does the event builder not analyze the first few seconds of data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../faq.html#what-is-the-mega-event">What is the mega event?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../compiled_helpers.html">Compiled Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#get-started">Get Started!</a></li>
@@ -178,50 +182,23 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-
-<span class="kn">import</span> <span class="nn">snappy</span>
-<span class="kn">import</span> <span class="nn">_wax_compiled_helpers</span> <span class="kn">as</span> <span class="nn">cch</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">wax.Configuration</span> <span class="kn">import</span> <span class="n">SAMPLE_TYPE</span><span class="p">,</span> <span class="n">MAX_DRIFT</span>
-<span class="kn">from</span> <span class="nn">wax.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span><span class="p">,</span> <span class="n">OutputDBInterface</span>
+<span class="kn">from</span> <span class="nn">wax.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span><span class="p">,</span> <span class="n">OutputDBInterface</span><span class="p">,</span> <span class="n">ControlDBInterface</span>
 <span class="kn">from</span> <span class="nn">wax</span> <span class="kn">import</span> <span class="n">Configuration</span>
-
+<span class="kn">from</span> <span class="nn">wax.EventBuilder.Tasks</span> <span class="kn">import</span> <span class="n">process_time_range</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;tunnell&#39;</span>
 
 
-<div class="viewcode-block" id="get_samples_from_doc"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.get_samples_from_doc">[docs]</a><span class="k">def</span> <span class="nf">get_samples_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">is_compressed</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;From a mongo document, fetch the data payload and decompress if</span>
-<span class="sd">    necessary</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">       doc (dictionary):  Document from mongodb to analyze</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">       bytes: decompressed data</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
-
-    <span class="k">if</span> <span class="n">is_compressed</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">snappy</span><span class="o">.</span><span class="n">uncompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-
-    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
-                         <span class="n">dtype</span><span class="o">=</span><span class="n">SAMPLE_TYPE</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s">&quot;Data has zero length&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">data</span>
-
-</div>
 <div class="viewcode-block" id="sizeof_fmt"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.sizeof_fmt">[docs]</a><span class="k">def</span> <span class="nf">sizeof_fmt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;KB&#39;</span><span class="p">,</span> <span class="s">&#39;MB&#39;</span><span class="p">,</span> <span class="s">&#39;GB&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mf">1024.0</span><span class="p">:</span>
             <span class="k">return</span> <span class="s">&quot;</span><span class="si">%3.1f</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
         <span class="n">num</span> <span class="o">/=</span> <span class="mf">1024.0</span>
     <span class="k">return</span> <span class="s">&quot;</span><span class="si">%3.1f</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="s">&#39;TB&#39;</span><span class="p">)</span>
+
 </div>
 <div class="viewcode-block" id="sampletime_fmt"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.sampletime_fmt">[docs]</a><span class="k">def</span> <span class="nf">sampletime_fmt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
     <span class="n">num</span> <span class="o">*=</span> <span class="mi">10</span>
@@ -231,14 +208,10 @@
         <span class="n">num</span> <span class="o">/=</span> <span class="mf">1000.0</span>
     <span class="k">return</span> <span class="s">&quot;</span><span class="si">%3.1f</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">)</span>
 
-
 </div>
-<div class="viewcode-block" id="ProcessTask"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.ProcessTask">[docs]</a><span class="k">class</span> <span class="nc">ProcessTask</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Process a time block</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">CHUNKSIZE</span><span class="p">,</span>
+<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">chunksize</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">CHUNKSIZE</span><span class="p">,</span>
                  <span class="n">padding</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">PADDING</span><span class="p">,</span>
                  <span class="n">threshold</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">THRESHOLD</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;None dataset means it will find it</span>
@@ -248,6 +221,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_controldb</span> <span class="o">=</span> <span class="bp">None</span>
 
         <span class="k">if</span> <span class="n">chunksize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;chunksize &lt;= 0: cannot analyze negative number of samples.&quot;</span><span class="p">)</span>
@@ -262,9 +236,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span> <span class="o">=</span> <span class="mi">1</span> <span class="c"># Wait 1 second, if no data around</span>
 
     <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;If dataset == None, finds a collection on its own&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_controldb</span> <span class="o">=</span> <span class="n">ControlDBInterface</span><span class="o">.</span><span class="n">MongoDBControl</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="s">&#39;triggerrate&#39;</span><span class="p">,</span>
+                                                            <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">delete_collection_when_done</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="c"># We&#39;ve chosen a dataset to process, probably for testing so don&#39;t</span>
@@ -279,9 +257,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Cannot setup output DB.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="bp">None</span>
 
-
-<div class="viewcode-block" id="ProcessTask.process_single_dataset"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.ProcessTask.process_single_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">process_single_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
-        <span class="c">#def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):</span>
+<div class="viewcode-block" id="Base.process_single_dataset"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.process_single_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">process_single_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="c"># def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):</span>
         <span class="sd">&quot;&quot;&quot;This function makes lots of processing classes&quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -297,27 +274,72 @@
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_process_chosen_dataset</span><span class="p">()</span>
-
-
 </div>
-<div class="viewcode-block" id="ProcessTask.loop_and_find_new_datasets"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.ProcessTask.loop_and_find_new_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">loop_and_find_new_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
-        <span class="c">#def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):</span>
+<div class="viewcode-block" id="Base.loop_and_find_new_datasets"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.loop_and_find_new_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">loop_and_find_new_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
+        <span class="c"># def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):</span>
         <span class="sd">&quot;&quot;&quot;This function makes lots of processing classes&quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span> <span class="c"># Dataset=None means it finds one</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;Exception resulted in fatal error; quiting.&quot;</span><span class="p">)</span>
-                <span class="k">raise</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>  <span class="c"># Dataset=None means it finds one</span>
+            <span class="k">except</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">ConnectionFailure</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Cannot connect to mongodb.  Will retry in 10 seconds.&quot;</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+                <span class="k">continue</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No dataset available to process; waiting one second.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_controldb</span><span class="o">.</span><span class="n">send_stats</span><span class="p">()</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_process_chosen_dataset</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_process_chosen_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This will process the dataset in chunks, but will wait until end of run</span>
+<span class="sd">        chunks -1 means go forever&quot;&quot;&quot;</span>
+
+        <span class="c"># int rounds down</span>
+        <span class="n">min_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+
+        <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">min_time_index</span>
+        <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="n">search_for_more_data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">has_run_ended</span><span class="p">():</span>
+                <span class="c"># Round up</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Data taking has ended; processing remaining data.&quot;</span><span class="p">)</span>
+                <span class="n">max_time_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+                <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Round down</span>
+                <span class="n">max_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+
+            <span class="c"># Rates should be posted by tasks to mongo?</span>
+            <span class="k">if</span> <span class="n">max_time_index</span> <span class="o">&gt;</span> <span class="n">current_time_index</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">current_time_index</span><span class="p">,</span> <span class="n">max_time_index</span><span class="p">)):</span>
+                    <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+                    <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span>
+
+                    <span class="n">process_time_range</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
+                                       <span class="n">collection_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">(),</span>
+                                       <span class="n">hostname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_hostname</span><span class="p">())</span>
+
+                <span class="n">processed_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_time_index</span> <span class="o">-</span> <span class="n">current_time_index</span><span class="p">)</span>
+                <span class="n">processed_time</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span> <span class="o">/</span> <span class="mf">1e8</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Processed </span><span class="si">%d</span><span class="s"> seconds; searching for more data.&quot;</span> <span class="o">%</span> <span class="n">processed_time</span><span class="p">)</span>
+
+                <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">max_time_index</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting </span><span class="si">%f</span><span class="s"> seconds&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
 
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_collection_when_done</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Base.get_processing_function"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.get_processing_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_processing_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 </div>
     <span class="k">def</span> <span class="nf">_print_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount_data_processed</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
 
@@ -330,171 +352,17 @@
             <span class="n">rate_string</span> <span class="o">=</span> <span class="n">sizeof_fmt</span><span class="p">(</span><span class="n">data_rate</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;ps&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Rate: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rate_string</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_process_chosen_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This will process the dataset in chunks, but will wait until end of run</span>
-<span class="sd">        chunks -1 means go forever&quot;&quot;&quot;</span>
-        <span class="c"># Used for benchmarking</span>
-        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<div class="viewcode-block" id="Base.drop_collection"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.drop_collection">[docs]</a>    <span class="k">def</span> <span class="nf">drop_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">())</span>
 
-        <span class="n">amount_data_processed</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="n">waittime</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c"># s</span>
-
-        <span class="c"># int rounds down</span>
-        <span class="n">min_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
-        <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">min_time_index</span>
-
-        <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">True</span>
-
-        <span class="k">while</span> <span class="p">(</span><span class="n">search_for_more_data</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">has_run_ended</span><span class="p">():</span>
-                <span class="c"># Round up</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Data taking has ended; processing remaining data.&quot;</span><span class="p">)</span>
-                <span class="n">max_time_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
-                <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">False</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c"># Round down</span>
-                <span class="n">max_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">max_time_index</span> <span class="o">&gt;</span> <span class="n">current_time_index</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">current_time_index</span><span class="p">,</span> <span class="n">max_time_index</span><span class="p">)):</span>
-                    <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
-                    <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Processing [</span><span class="si">%f</span><span class="s"> s, </span><span class="si">%f</span><span class="s"> s]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span> <span class="o">/</span> <span class="mf">1e8</span><span class="p">,</span>
-                                                                <span class="n">t1</span> <span class="o">/</span> <span class="mf">1e8</span><span class="p">))</span>
-
-                    <span class="n">amount_data_processed</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_time_range</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span>
-                                                                      <span class="n">t1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_print_stats</span><span class="p">(</span><span class="n">amount_data_processed</span><span class="p">,</span>
-                                      <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span>
-
-                <span class="n">processed_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_time_index</span> <span class="o">-</span> <span class="n">current_time_index</span><span class="p">)</span>
-                <span class="n">processed_time</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span> <span class="o">/</span> <span class="mf">1e8</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processed </span><span class="si">%d</span><span class="s"> seconds; searching for more data.&quot;</span> <span class="o">%</span> <span class="n">processed_time</span><span class="p">)</span>
-                <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">max_time_index</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting </span><span class="si">%f</span><span class="s"> seconds&#39;</span> <span class="o">%</span> <span class="n">waittime</span><span class="p">)</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">waittime</span><span class="p">)</span>
-                <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-                <span class="n">amount_data_processed</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_collection_when_done</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_process_time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Process a time chunk</span>
-
-<span class="sd">        .. todo:: Must this know padding?  Maybe just hand cursor so can mock?</span>
-
-<span class="sd">        :param t0: Initial time to query.</span>
-<span class="sd">        :type t0: int.</span>
-<span class="sd">        :param t1: Final time.</span>
-<span class="sd">        :type t1: int.</span>
-<span class="sd">        :returns:  int -- number of bytes processed</span>
-<span class="sd">        :raises: AssertionError</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">data_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_data_docs</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
-
-        <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">reduction_factor</span> <span class="o">=</span> <span class="mi">100</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">reduction_factor</span><span class="p">))</span>
-        <span class="n">cch</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-
-        <span class="c"># Every data doc has a start time and end time.  These ranges are used</span>
-        <span class="c"># later to compute overlaps with event ranges.</span>
-        <span class="n">doc_ranges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">data_docs</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">doc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_docs</span><span class="p">):</span>
-            <span class="n">time_correction</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span>
-
-            <span class="n">samples</span> <span class="o">=</span> <span class="n">get_samples_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">is_compressed</span><span class="p">)</span>
-            <span class="n">doc</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span>
-            <span class="c"># Record time range of these samples</span>
-            <span class="n">doc_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_correction</span> <span class="o">/</span> <span class="n">reduction_factor</span><span class="p">,</span>
-                             <span class="p">(</span><span class="n">time_correction</span> <span class="o">+</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">/</span> <span class="n">reduction_factor</span><span class="p">)</span>
-
-            <span class="n">cch</span><span class="o">.</span><span class="n">add_samples</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">time_correction</span><span class="p">,</span> <span class="n">reduction_factor</span><span class="p">)</span>
-            <span class="n">size</span> <span class="o">+=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">]</span>
-
-        <span class="c">#sum_data = cch.get_sum()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Size of data process in bytes: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
-
-        <span class="c"># If no data analyzed, return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Size of data analyzed: </span><span class="si">%d</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;No data found in [</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
-            <span class="k">return</span> <span class="mi">0</span>
-
-        <span class="n">ranges</span> <span class="o">=</span> <span class="n">cch</span><span class="o">.</span><span class="n">build_events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="c"># Threshold</span>
-                                  <span class="nb">int</span><span class="p">(</span><span class="n">MAX_DRIFT</span> <span class="o">/</span> <span class="n">reduction_factor</span><span class="p">))</span>
-
-
-        <span class="c">#  One event has many samples, thus to mapping represented as samples -&gt; event</span>
-        <span class="n">mappings</span> <span class="o">=</span> <span class="n">cch</span><span class="o">.</span><span class="n">overlaps</span><span class="p">(</span><span class="n">doc_ranges</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
-        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="n">ranges</span> <span class="o">*=</span> <span class="n">reduction_factor</span>
-        <span class="n">ranges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span> <span class="o">+</span> <span class="n">ranges</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
-
-        <span class="n">ranges</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">ranges</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
-        <span class="n">reduced_data_count</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="n">last</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mappings</span><span class="p">):</span>
-            <span class="c"># Document has no event, then skip</span>
-            <span class="k">if</span> <span class="n">mapping</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">reduced_data_count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">continue</span>
-
-            <span class="c"># If need to start event</span>
-            <span class="k">if</span> <span class="n">last</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;cnt&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mapping</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">last</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="c"># Check for event that spans many search blocks.  This super event &#39;should&#39;</span>
-                    <span class="c"># never happen.</span>
-                    <span class="k">if</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">t1</span> <span class="ow">and</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">t1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Event spans two search blocks (mega-event?)&quot;</span><span class="p">)</span>
-
-                    <span class="k">if</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">t0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="ow">and</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">t1</span><span class="p">:</span>
-                        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>  <span class="c"># Save event</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">Event </span><span class="si">%d</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
-                <span class="n">last</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="n">last</span><span class="p">[</span><span class="s">&#39;cnt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
-                <span class="n">last</span><span class="p">[</span><span class="s">&#39;compressed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">is_compressed</span>
-                <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ranges</span><span class="p">[</span><span class="n">mapping</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-                                 <span class="nb">int</span><span class="p">(</span><span class="n">ranges</span><span class="p">[</span><span class="n">mapping</span><span class="p">][</span><span class="mi">1</span><span class="p">])]</span>
-                <span class="n">last</span><span class="p">[</span><span class="s">&#39;docs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">last</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-            <span class="n">last</span><span class="p">[</span><span class="s">&#39;docs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_docs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">last</span><span class="p">[</span><span class="s">&#39;size&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">data_docs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s">&#39;size&#39;</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">last</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="c"># Check for event that spans many search blocks.  This super event &#39;should&#39;</span>
-            <span class="c"># never happen.</span>
-            <span class="k">if</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">t1</span> <span class="ow">and</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">t1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Event spans two search blocks (mega-event?)&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">t0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="ow">and</span> <span class="n">last</span><span class="p">[</span><span class="s">&#39;range&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">t1</span><span class="p">:</span>
-                <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last</span><span class="p">)</span>  <span class="c"># Save event</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Saving </span><span class="si">%d</span><span class="s"> events&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">write_events</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;No events found between </span><span class="si">%d</span><span class="s"> and </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Discarded: (</span><span class="si">%d</span><span class="s">/</span><span class="si">%d</span><span class="s">) = </span><span class="si">%0.3f%%</span><span class="s">&quot;</span><span class="p">,</span>
-                       <span class="n">reduced_data_count</span><span class="p">,</span>
-                       <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_docs</span><span class="p">)</span> <span class="o">-</span> <span class="n">reduced_data_count</span><span class="p">),</span>
-                       <span class="mi">100</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">reduced_data_count</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_docs</span><span class="p">)</span> <span class="o">-</span> <span class="n">reduced_data_count</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">size</span>
-
-<div class="viewcode-block" id="ProcessTask.drop_collection"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.ProcessTask.drop_collection">[docs]</a>    <span class="k">def</span> <span class="nf">drop_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">())</span></div></div>
+</div></div>
+<div class="viewcode-block" id="SingleThreaded"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded">[docs]</a><span class="k">class</span> <span class="nc">SingleThreaded</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="SingleThreaded.get_processing_function"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded.get_processing_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_processing_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">process_time_range</span>
+</div></div>
+<div class="viewcode-block" id="Celery"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Celery">[docs]</a><span class="k">class</span> <span class="nc">Celery</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Celery.get_processing_function"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Celery.get_processing_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_processing_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">process_time_range</span><span class="o">.</span><span class="n">delay</span></div></div>
 </pre></div>
 
           </div>

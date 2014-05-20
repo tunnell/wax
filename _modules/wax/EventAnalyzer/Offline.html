@@ -67,17 +67,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-system-dependencies">Installing system dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#preparing-python-environment">Preparing Python environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-cito">Installing Cito</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-wax">Installing Wax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-file-builder">Starting the file builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#database-commands">Database commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_format.html">Internal data formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#input-database">Input database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#output-database">Output database</a></li>
@@ -85,6 +83,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../jargon.html">Jargon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../faq.html#why-does-the-event-builder-not-analyze-the-first-few-seconds-of-data">Why does the event builder not analyze the first few seconds of data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../faq.html#what-is-the-mega-event">What is the mega event?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../compiled_helpers.html">Compiled Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#get-started">Get Started!</a></li>
@@ -151,8 +155,8 @@
 <span class="kn">from</span> <span class="nn">cliff.command</span> <span class="kn">import</span> <span class="n">Command</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<div class="viewcode-block" id="ProcessCommand"><a class="viewcode-back" href="../../../wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand">[docs]</a><span class="k">class</span> <span class="nc">ProcessCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
+<div class="viewcode-block" id="ProcessCommand"><a class="viewcode-back" href="../../../wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand">[docs]</a><span class="k">class</span> <span class="nc">ProcessCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
 
 <div class="viewcode-block" id="ProcessCommand.get_description"><a class="viewcode-back" href="../../../wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.get_description">[docs]</a>    <span class="k">def</span> <span class="nf">get_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__doc__</span>
@@ -163,7 +167,6 @@
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;--filename&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;filenmae&quot;</span><span class="p">,</span>
                             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                             <span class="n">default</span><span class="o">=</span><span class="s">&#39;cito_file.pklz&#39;</span><span class="p">)</span>
-
 
         <span class="k">return</span> <span class="n">parser</span>
 </div>
@@ -188,8 +191,8 @@
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">_process_chosen_dataset</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">chunksize</span><span class="p">,</span>
-                                  <span class="n">chunks</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">chunks</span><span class="p">,</span>
-                                  <span class="n">padding</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+                                          <span class="n">chunks</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">chunks</span><span class="p">,</span>
+                                          <span class="n">padding</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
 
             <span class="c"># If only a single dataset was specified, break</span>
             <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">chunks</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>

@@ -17,6 +17,8 @@ Contents:
    analyze_data
    data_format
    jargon
+   faq
+   compiled_helpers
    contributing
    authors
    history

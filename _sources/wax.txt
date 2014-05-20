@@ -21,14 +21,6 @@ wax.Configuration module
     :undoc-members:
     :show-inheritance:
 
-wax.wax_compiled_helpers module
--------------------------------
-
-.. automodule:: wax.wax_compiled_helpers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

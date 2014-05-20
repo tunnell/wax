@@ -30,7 +30,7 @@
   
     <link rel="top" title="Code for Intelligent Triggering Online 2.1.3 documentation" href="index.html"/>
         <link rel="next" title="Jargon" href="jargon.html"/>
-        <link rel="prev" title="Analyzing data" href="analyze_data.html"/> 
+        <link rel="prev" title="Usage" href="usage.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -68,17 +68,15 @@
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-system-dependencies">Installing system dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#preparing-python-environment">Preparing Python environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-cito">Installing Cito</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-wax">Installing Wax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-file-builder">Starting the file builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#database-commands">Database commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Internal data formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#input-database">Input database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#output-database">Output database</a></li>
@@ -86,6 +84,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="jargon.html">Jargon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-does-the-event-builder-not-analyze-the-first-few-seconds-of-data">Why does the event builder not analyze the first few seconds of data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-mega-event">What is the mega event?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compiled_helpers.html">Compiled Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#get-started">Get Started!</a></li>
@@ -198,7 +202,7 @@ in the final output.</li>
 <li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.</li>
 <li><cite>module</cite>: identifies the digitizer board.  For fake data, this is set to -1.</li>
 <li><cite>channel</cite>: Channel number.</li>
-<li><cite>time</cite>: 64-bit number in units of 10 ns.  This time corresponds to the same time of the data in this document.</li>
+<li><cite>time</cite>: 64-bit unsigned number in units of 10 ns.  This time corresponds to the same time of the data in this document.  Please begin at 1 second or something to prevent trigger trying to save data at negative times.</li>
 <li><cite>data</cite>: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.</li>
 </ul>
 <p>Said differently, expect:</p>
@@ -208,7 +212,6 @@ in the final output.</li>
     <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="kr">int</span><span class="p">,</span>
     <span class="s2">&quot;time&quot;</span><span class="o">:</span> <span class="kr">int</span><span class="p">,</span>
     <span class="s2">&quot;data&quot;</span><span class="o">:</span> <span class="nx">binary</span><span class="p">,</span>
-    <span class="s2">&quot;compressed&quot;</span><span class="o">:</span> <span class="nx">bool</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -217,6 +220,7 @@ in the final output.</li>
 <li><cite>evtnum</cite>: event number from either MC or a processed format.  This is used
 for helping study the trigger efficiency.</li>
 </ul>
+<p>..warning  If start time is too small, the DAQ will skip the first data chunk (~1s) to avoid trying to record data at negative times.  See FAQ.</p>
 </div>
 </div>
 <div class="section" id="output-database">
@@ -226,10 +230,10 @@ for helping study the trigger efficiency.</li>
 <li>The <cite>_id</cite> field is a hex string used for internal bookkeeping within MongoDB.
 It is different for every document.</li>
 <li><cite>evt_num</cite> is an integer event number (if one has been assigned).</li>
-<li><cite>range</cite> is two 64-bit integers that correspond to the beginning and end of
+<li><cite>range</cite> is two 64-bit unsigned integers that correspond to the beginning and end of
 the trigger window in units of 10 ns.</li>
 <li><cite>compressed_doc</cite> is binary data compressed with snappy and contains all the
-data that will go to file.  For more information, see <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</li>
+data that will go to file.  For more information, see <tt class="xref doc docutils literal"><span class="pre">analyze_data</span></tt>.</li>
 </ul>
 <p>Said differently:</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
@@ -243,7 +247,7 @@ data that will go to file.  For more information, see <a class="reference intern
 </div>
 <div class="section" id="file-from-file-builder-format">
 <h2>File from File Builder  format<a class="headerlink" href="#file-from-file-builder-format" title="Permalink to this headline">¶</a></h2>
-<p>See <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</p>
+<p>See <tt class="xref doc docutils literal"><span class="pre">analyze_data</span></tt>.</p>
 </div>
 </div>
 
@@ -256,7 +260,7 @@ data that will go to file.  For more information, see <a class="reference intern
         <a href="jargon.html" class="btn btn-neutral float-right" title="Jargon"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="analyze_data.html" class="btn btn-neutral" title="Analyzing data"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral" title="Usage"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

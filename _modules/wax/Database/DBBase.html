@@ -67,17 +67,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-system-dependencies">Installing system dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#preparing-python-environment">Preparing Python environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-cito">Installing Cito</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-wax">Installing Wax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-file-builder">Starting the file builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#database-commands">Database commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_format.html">Internal data formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#input-database">Input database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../data_format.html#output-database">Output database</a></li>
@@ -85,6 +83,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../jargon.html">Jargon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../faq.html#why-does-the-event-builder-not-analyze-the-first-few-seconds-of-data">Why does the event builder not analyze the first few seconds of data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../faq.html#what-is-the-mega-event">What is the mega event?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../compiled_helpers.html">Compiled Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#get-started">Get Started!</a></li>
@@ -160,7 +164,9 @@
 
 <span class="n">CONNECTION</span> <span class="o">=</span> <span class="bp">None</span>
 
+
 <div class="viewcode-block" id="MongoDBBase"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.DBBase.MongoDBBase">[docs]</a><span class="k">class</span> <span class="nc">MongoDBBase</span><span class="p">():</span>
+
     <span class="sd">&quot;&quot;&quot;Read from MongoDB</span>
 
 <span class="sd">    The subclass is responsible for setting up the collection</span>
@@ -178,26 +184,15 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">CONNECTION</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_db_name</span><span class="p">()]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="bp">True</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="bp">True</span>
 
         <span class="k">if</span> <span class="n">collection_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">[</span><span class="n">collection_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discover_collection</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="n">hostname</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span>
-
-    <span class="nd">@initialized.setter</span>
-<div class="viewcode-block" id="MongoDBBase.initialized"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.DBBase.MongoDBBase.initialized">[docs]</a>    <span class="k">def</span> <span class="nf">initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Initialization status must be bool&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="n">x</span>
-</div>
     <span class="nd">@staticmethod</span>
 <div class="viewcode-block" id="MongoDBBase.get_db_name"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.DBBase.MongoDBBase.get_db_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_name</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
@@ -248,7 +243,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span>
 </div>
 <div class="viewcode-block" id="MongoDBBase.get_collection_name"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.DBBase.MongoDBBase.get_collection_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_collection_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_collection</span><span class="p">()</span><span class="o">.</span><span class="n">name</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_collection</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+</div>
+<div class="viewcode-block" id="MongoDBBase.get_hostname"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.DBBase.MongoDBBase.get_hostname">[docs]</a>    <span class="k">def</span> <span class="nf">get_hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span></div></div>
 </pre></div>
 
           </div>

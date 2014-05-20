@@ -29,7 +29,7 @@
 
   
     <link rel="top" title="Code for Intelligent Triggering Online 2.1.3 documentation" href="index.html"/>
-        <link rel="next" title="Analyzing data" href="analyze_data.html"/>
+        <link rel="next" title="Internal data formats" href="data_format.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
   
@@ -68,17 +68,15 @@
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-system-dependencies">Installing system dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#preparing-python-environment">Preparing Python environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-cito">Installing Cito</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-wax">Installing Wax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#starting-the-file-builder">Starting the file builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#database-commands">Database commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_format.html">Internal data formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_format.html#input-database">Input database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_format.html#output-database">Output database</a></li>
@@ -86,6 +84,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="jargon.html">Jargon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-does-the-event-builder-not-analyze-the-first-few-seconds-of-data">Why does the event builder not analyze the first few seconds of data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-mega-event">What is the mega event?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compiled_helpers.html">Compiled Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#get-started">Get Started!</a></li>
@@ -148,54 +152,18 @@
             
   <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>Cito presents a command line interface, where you can see the possible commands by running <cite>cito</cite>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">cito</span> <span class="o">-</span><span class="n">h</span>
-</pre></div>
-</div>
+<p>Wax presents a command line interface.</p>
 <div class="section" id="starting-the-event-builder-and-software-trigger">
 <h2>Starting the event builder and software trigger<a class="headerlink" href="#starting-the-event-builder-and-software-trigger" title="Permalink to this headline">¶</a></h2>
 <p>By default, the data processing is done continuously.  This means that (unless otherwise specified) the software will wait for new datasets and data.  The default options are good for most situations.  To start the event building (which includes a software trigger), the following command can be run:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito process
+<div class="highlight-python"><div class="highlight"><pre><span class="n">event</span><span class="o">-</span><span class="n">builder</span>
 </pre></div>
 </div>
-<p>However, to do more complicated things, you can see the help file that will say what command-line arguments there are:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito help process
-</pre></div>
+<p>However, this is meant to run as a daemon and should already be running.  This is what one must do to restart.</p>
 </div>
-<p>where, for example, the hostname can be specified.</p>
-</div>
-<div class="section" id="starting-the-file-builder">
-<h2>Starting the file builder<a class="headerlink" href="#starting-the-file-builder" title="Permalink to this headline">¶</a></h2>
-<p>File building can performed by running the command:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito file builder
-</pre></div>
-</div>
-<p>This will create a file called <cite>cito_file.pklz</cite>.  To understand how to analyze this, see <a class="reference internal" href="analyze_data.html"><em>Analyzing data</em></a>.</p>
-<p>Similar to the event building command, there are command line arguments:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito help file builder
-</pre></div>
-</div>
-<p>where, for example, the hostname can be specified.</p>
-</div>
-<div class="section" id="database-commands">
-<h2>Database commands<a class="headerlink" href="#database-commands" title="Permalink to this headline">¶</a></h2>
-<p>To delete the input and output databases, the reset function can be used:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito reset
-</pre></div>
-</div>
-<p>but this cannot be used during a run and deletes all the database indices that are used to speed up searches.</p>
-<p>These commands can be used for the input and output databases individually:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito reset --db output
-</pre></div>
-</div>
-<p>Use the help command to understand what command line arguments exist:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito help reset
-</pre></div>
-</div>
-<p>To clear the <a class="reference external" href="http://en.wikipedia.org/wiki/Fragmentation_(computing)">fragmented</a> space in the database, a repair function is used. (The delete command does not free up space.)  However, this cannot be used during operation since it locks the database during the operation..:</p>
-<div class="highlight-python"><div class="highlight"><pre>cito repair
-</pre></div>
-</div>
+<div class="section" id="analyzing-data-in-output-database">
+<h2>Analyzing data in output database<a class="headerlink" href="#analyzing-data-in-output-database" title="Permalink to this headline">¶</a></h2>
+<p>See the <cite>wax-on</cite> and <cite>wax-off</cite> commands, where on is for online and off is for offline.  Currently, it just makes plots, but can be expanded to do whatever you want.</p>
 </div>
 </div>
 
@@ -205,7 +173,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="analyze_data.html" class="btn btn-neutral float-right" title="Analyzing data"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="data_format.html" class="btn btn-neutral float-right" title="Internal data formats"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="installation.html" class="btn btn-neutral" title="Installation"><span class="fa fa-arrow-circle-left"></span> Previous</a>

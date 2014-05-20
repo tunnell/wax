@@ -66,17 +66,15 @@
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-system-dependencies">Installing system dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#preparing-python-environment">Preparing Python environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-cito">Installing Cito</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-wax">Installing Wax</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-file-builder">Starting the file builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#database-commands">Database commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="analyze_data.html">Analyzing data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_format.html">Internal data formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data_format.html#input-database">Input database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_format.html#output-database">Output database</a></li>
@@ -84,6 +82,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="jargon.html">Jargon</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-does-the-event-builder-not-analyze-the-first-few-seconds-of-data">Why does the event builder not analyze the first few seconds of data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-mega-event">What is the mega event?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="compiled_helpers.html">Compiled Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#get-started">Get Started!</a></li>
@@ -172,41 +176,56 @@ blocks of &#8216;true&#8217; are called an event.</p>
 interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
 example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</p>
 <dl class="class">
-<dt id="wax.EventBuilder.Processor.ProcessTask">
-<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">ProcessTask</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=54000</em>, <em>threshold=10000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask" title="Permalink to this definition">¶</a></dt>
+<dt id="wax.EventBuilder.Processor.Base">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">Base</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=90000</em>, <em>threshold=10000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
-<p>Process a time block</p>
 <p>None dataset means it will find it</p>
 <dl class="method">
-<dt id="wax.EventBuilder.Processor.ProcessTask.drop_collection">
-<tt class="descname">drop_collection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.drop_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.drop_collection" title="Permalink to this definition">¶</a></dt>
+<dt id="wax.EventBuilder.Processor.Base.drop_collection">
+<tt class="descname">drop_collection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.drop_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.drop_collection" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="wax.EventBuilder.Processor.ProcessTask.loop_and_find_new_datasets">
-<tt class="descname">loop_and_find_new_datasets</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.loop_and_find_new_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.loop_and_find_new_datasets" title="Permalink to this definition">¶</a></dt>
+<dt id="wax.EventBuilder.Processor.Base.get_processing_function">
+<tt class="descname">get_processing_function</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.get_processing_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.get_processing_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.Base.loop_and_find_new_datasets">
+<tt class="descname">loop_and_find_new_datasets</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.loop_and_find_new_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.loop_and_find_new_datasets" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function makes lots of processing classes</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="wax.EventBuilder.Processor.ProcessTask.process_single_dataset">
-<tt class="descname">process_single_dataset</tt><big>(</big><em>hostname</em>, <em>dataset</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#ProcessTask.process_single_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.ProcessTask.process_single_dataset" title="Permalink to this definition">¶</a></dt>
+<dt id="wax.EventBuilder.Processor.Base.process_single_dataset">
+<tt class="descname">process_single_dataset</tt><big>(</big><em>hostname</em>, <em>dataset</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.process_single_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.process_single_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function makes lots of processing classes</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="wax.EventBuilder.Processor.get_samples_from_doc">
-<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">get_samples_from_doc</tt><big>(</big><em>doc</em>, <em>is_compressed</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#get_samples_from_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.get_samples_from_doc" title="Permalink to this definition">¶</a></dt>
-<dd><p>From a mongo document, fetch the data payload and decompress if
-necessary</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>doc (dictionary):  Document from mongodb to analyze</dd>
-<dt>Returns:</dt>
-<dd>bytes: decompressed data</dd>
-</dl>
+<dl class="class">
+<dt id="wax.EventBuilder.Processor.Celery">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">Celery</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=90000</em>, <em>threshold=10000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Celery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Celery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wax.EventBuilder.Processor.Base" title="wax.EventBuilder.Processor.Base"><tt class="xref py py-class docutils literal"><span class="pre">wax.EventBuilder.Processor.Base</span></tt></a></p>
+<p>None dataset means it will find it</p>
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.Celery.get_processing_function">
+<tt class="descname">get_processing_function</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Celery.get_processing_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Celery.get_processing_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wax.EventBuilder.Processor.SingleThreaded">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">SingleThreaded</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=90000</em>, <em>threshold=10000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#SingleThreaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.SingleThreaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wax.EventBuilder.Processor.Base" title="wax.EventBuilder.Processor.Base"><tt class="xref py py-class docutils literal"><span class="pre">wax.EventBuilder.Processor.Base</span></tt></a></p>
+<p>None dataset means it will find it</p>
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.SingleThreaded.get_processing_function">
+<tt class="descname">get_processing_function</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#SingleThreaded.get_processing_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.SingleThreaded.get_processing_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="function">
