@@ -3,6 +3,13 @@
 History
 -------
 
+2.2 (2014-05-20)
+++++++++++++++++
+
+* Introduce parallelism
+* Fix bug that crashed event builder if event range started before zero
+* Introduce another DB connection (ControlDB) that will have statistics and statuses
+
 2.1 (2014-04-24)
 ++++++++++++++++
 
