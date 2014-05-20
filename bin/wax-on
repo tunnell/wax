@@ -1,10 +1,8 @@
+#!/usr/bin/env python
 """Waveform analyzer for XENON Online
 
 This program is used to analyze already recorded and triggered data.
 """
-
-
-#!/usr/bin/env python
 # __author__ = 'tunnell'
 
 import logging
