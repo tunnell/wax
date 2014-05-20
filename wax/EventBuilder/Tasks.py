@@ -74,6 +74,7 @@ def process_time_range(t0, t1,
         doc_ranges[i] = (time_correction / reduction_factor,
                          (time_correction + samples.size) / reduction_factor)
 
+        assert type(time_correction) == int
         cch.add_samples(samples, time_correction, reduction_factor)
         untriggered_size += doc['size']
 
