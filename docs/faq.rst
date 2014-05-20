@@ -6,11 +6,9 @@ Frequently Asked Questions
 Why does the event builder not analyze the first few seconds of data?
 =====================================================================
 
-The first 'chunk', which is defaulted to roughly 2 seconds (2e28 * 10 ns),
-is skipped to avoid the event builder trying to find events before the time
-zero.  Times within the code are unsigned numbers and this would be an integer
-wrap around (or overflow error).
+Data is analyzed in chunks of about 1 second.  For events near the boundary of two chunks, some logic is required to determine which chunk 'owns' the event.  Remember: there are windows around events in addition to these chunks, so it requires a bit of logic.  There is overlap between chunks.  From t=0 till the overlap size (i.e. [0, t_overlap]) is from the -1 event, so is not saved.
 
-As an aside, events that happen exactly at t=0 are worthless from a physics
-perspective because it is unknown what occurred before this event. Maybe some
- interaction caused the event at t=0 that wasn't recorded.
+What is the mega event?
+=======================
+
+ If there is too much pile up, this software will start combining all the events together into one super large event.  If this happens for too long, then something outside the normal laws of the Universe is happening and the DAQ stops.

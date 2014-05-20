@@ -39,6 +39,8 @@ class MongoDBBase():
         else:
             self.collection = self.discover_collection()
 
+        self.hostname = hostname
+
     @staticmethod
     def get_db_name():
         raise NotImplementedError()
@@ -90,3 +92,6 @@ class MongoDBBase():
 
     def get_collection_name(self):
         return self.get_collection().name
+
+    def get_hostname(self):
+        return self.hostname

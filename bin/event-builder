@@ -15,7 +15,7 @@ from configglue import schema
 from configglue.glue import configglue
 
 from wax import Configuration
-from wax.EventBuilder.Processor import ProcessTask
+from wax.EventBuilder.Processor import SingleThreaded
 
 
 def main(chunksize,
@@ -26,7 +26,7 @@ def main(chunksize,
          **kwargs):
     log = logging.getLogger('EventBuilder')
 
-    p = ProcessTask(chunksize=chunksize,
+    p = SingleThreaded(chunksize=chunksize,
                     padding=padding,
                     threshold=threshold)
 

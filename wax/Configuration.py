@@ -6,7 +6,7 @@ MAX_DRIFT = 18000  # units of 10 ns
 HOSTNAME = '127.0.0.1'
 THRESHOLD = 10000
 CHUNKSIZE = 2 ** 28
-PADDING = (3 * MAX_DRIFT)
+PADDING = (5 * MAX_DRIFT)
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
 SAMPLE_TYPE = np.int16
 

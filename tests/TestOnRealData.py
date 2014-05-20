@@ -14,7 +14,7 @@ import gzip
 from tqdm import tqdm
 
 from wax.Database import OutputDBInterface, InputDBInterface
-from wax.EventBuilder.Processor import ProcessTask
+from wax.EventBuilder.Processor import SingleThreaded
 from wax.Configuration import PADDING
 
 
@@ -42,14 +42,16 @@ class TestOnGoodEvents(unittest.TestCase):
         print('')
 
     def test_something(self):
-        p = ProcessTask(chunksize=10 ** 8,
+        p = SingleThreaded(chunksize=10 ** 8,
                         padding=PADDING)
         p._initialize(hostname=self.hostname,
                       dataset=self.dataset)
 
         for i in range(15):
             print('i %d' % i)
-            p._process_time_range(i * 10 ** 8, (i + 1) * 10 ** 8 + PADDING)
+            p.get_processing_function()(i * 10 ** 8, (i + 1) * 10 ** 8 + PADDING,
+                                        hostname=self.hostname,
+                                        collection_name=self.dataset)
 
         collection = self.output.get_collection()
         cursor = collection.find()
