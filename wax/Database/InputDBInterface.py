@@ -21,7 +21,10 @@ class MongoDBInput(DBBase.MongoDBBase):
             self.log.debug("Cannot initialize input.")
             return
         self.log.error("Building index...")
-        self.collection.ensure_index(self.get_sort_key())
+        self.collection.ensure_index(self.get_sort_key(1),
+                                     background=True)
+        self.collection.ensure_index(self.get_sort_key(-1),
+                                     background=True)
                                      ## background=True)
 
         self.log.error("Index built...")
@@ -156,8 +159,9 @@ class MongoDBInput(DBBase.MongoDBBase):
         subset_query = {"time": {'$gte': time0,
                                  '$lt': time1}}
 
-        cursor = self.collection.find(subset_query,
-                                      sort=self.get_sort_key(1))  # ,exhaust=True)
+        cursor = self.collection.find(subset_query, exhaust=True).hint(self.get_sort_key(1))
+
+        #self.log.fatal('index?', str(cursor.explain()['indexOnly']))
         result = list(cursor)
         logging.debug("Fetched %d input documents." % len(result))
         return result
