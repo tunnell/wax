@@ -257,14 +257,15 @@ class Celery(Base):
         self.controldb.send_stats(self.stats)
 
     def block_till_all_results_backs(self):
-        self.log.info("Waiting for jobs to finish")
+        self.log.fatal("Waiting for jobs to finish")
 
         start_time = time.time()
-        for x in self.results.join(timeout=60):
+        for x in self.results.join():
             self.stats['size_pass'] += x[0]
             self.stats['size_fail'] += x[1]
 
         stop_time = time.time()
+        self.log.fatal("took %d secs" % (stop_time-start_time))
         self.stats['rate'] = self.stats['size_pass']/(stop_time-start_time)
         self.stats['duration'] = (stop_time-start_time)
 
