@@ -32,12 +32,9 @@ class MongoDBControl(DBBase.MongoDBBase):
             data = {}
         assert isinstance(data, dict)
 
-        if 'time' not in data:
-            data['time'] = time.time()
-        if 'ratetoss' not in data:
-            data['ratetoss'] = 0
-        if 'rateout' not in data:
-            data['rateout'] = 0
+        data = data.copy()
+
+        data['time'] = time.time()
         data['createdAt'] = datetime.now()
         data['expiresAfterSeconds'] = 43200
 

@@ -34,7 +34,9 @@ import pymongo
 from tqdm import tqdm
 from wax.Database import InputDBInterface, OutputDBInterface, ControlDBInterface
 from wax import Configuration
-from wax.EventBuilder.Tasks import process_time_range
+from wax.EventBuilder.Tasks import process_time_range_task
+
+from celery import result
 
 __author__ = 'tunnell'
 
@@ -63,13 +65,12 @@ class Base:
                  padding=Configuration.PADDING,
                  threshold=Configuration.THRESHOLD):
         """None dataset means it will find it
-
         """
 
         self.log = logging.getLogger(__name__)
-        self._input = None
-        self._output = None
-        self._controldb = None
+        self.input = None
+        self.output = None
+        self.controldb = None
 
         if chunksize <= 0:
             raise ValueError("chunksize <= 0: cannot analyze negative number of samples.")
@@ -86,16 +87,22 @@ class Base:
 
         self.waittime = 1 # Wait 1 second, if no data around
 
+        self.stats = { 'type' : 'waxster',
+                       'count_completed' : 0,
+                       'count_failed' : 0,
+                      'count_processing' : 0,
+                      'size_pass' : 0,
+                      'size_fail' : 0,
+                      'delay_average' : 0.0,
+                      'delay_longest' : 0.0
+                        }
+
+
     def _initialize(self, dataset=None, hostname='127.0.0.1'):
         """If dataset == None, finds a collection on its own"""
-        self._controldb = ControlDBInterface.MongoDBControl(collection_name='triggerrate',
+        self.controldb = ControlDBInterface.MongoDBControl(collection_name='stats',
                                                             hostname=hostname)
 
-        self.delete_collection_when_done = True
-        if dataset is not None:
-            # We've chosen a dataset to process, probably for testing so don't
-            # delete
-            self.delete_collection_when_done = False
         self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
                                                    hostname=hostname)
         if self.input.initialized:
@@ -137,7 +144,6 @@ class Base:
 
             if not self.input.initialized:
                 self.log.warning("No dataset available to process; waiting one second.")
-                self._controldb.send_stats()
                 time.sleep(1)
             else:
                 self._process_chosen_dataset()
@@ -168,23 +174,30 @@ class Base:
                     t0 = (i * self.chunksize)
                     t1 = (i + 1) * self.chunksize
 
-                    process_time_range(t0, t1 + self.padding,
-                                       collection_name=self.input.get_collection_name(),
-                                       hostname=self.input.get_hostname())
+                    self.process(t0=t0, t1=t1 + self.padding,
+                                 collection_name=self.input.get_collection_name(),
+                                 hostname=self.input.get_hostname())
 
+                self.send_stats()
                 processed_time = (max_time_index - current_time_index)
                 processed_time *= self.chunksize / 1e8
-                self.log.warning("Processed %d seconds; searching for more data." % processed_time)
+                self.log.info("Processed %d seconds; searching for more data." % processed_time)
 
                 current_time_index = max_time_index
             else:
                 self.log.debug('Waiting %f seconds' % self.waittime)
+                self.send_stats()
                 time.sleep(self.waittime)
+                self.send_stats()
 
+        self.send_stats()
 
-        if self.delete_collection_when_done:
-            self.drop_collection()
+        self.block_till_all_results_backs()
+        self.drop_collection()
+        self.send_stats()
 
+    def drop_collection(self):
+        self.input.get_db().drop_collection(self.input.get_collection_name())
 
     def get_processing_function(self):
         raise NotImplementedError()
@@ -200,14 +213,58 @@ class Base:
             rate_string = sizeof_fmt(data_rate) + 'ps'
             self.log.debug("Rate: %s" % (rate_string))
 
-    def drop_collection(self):
-        self.input.get_db().drop_collection(self.input.get_collection_name())
+    def process(self, **kwargs):
+        raise NotImplementedError()
+
+    def send_stats(self, **kwargs):
+        raise NotImplementedError()
+
+    def block_till_all_results_backs(self):
+        raise NotImplementedError
 
 
 class SingleThreaded(Base):
-    def get_processing_function(self):
-        return process_time_range
+    def __init__(self, **kwargs):
+        Base.__init__(self, **kwargs)
+
+    def process(self, **kwargs):
+        self.stats['count_completed'] += 1
+
+
+        x = process_time_range_task(**kwargs)
+        self.stats['count_completed'] += 1
+        self.stats['size_pass'] += x[0]
+        self.stats['size_fail'] += x[1]
+
+    def send_stats(self):
+        self.controldb.send_stats(self.stats)
+
+    def block_till_all_results_backs(self):
+        pass
+
 
 class Celery(Base):
-    def get_processing_function(self):
-        return process_time_range.delay
+    def __init__(self, **kwargs):
+        Base.__init__(self, **kwargs)
+        self.results = result.ResultSet([])
+
+    def process(self, **kwargs):
+        self.results.add(process_time_range_task.delay(**kwargs))
+
+    def send_stats(self):
+        self.stats['count_completed'] = self.results.completed_count()
+        self.stats['failed'] = self.results.failed()
+        self.controldb.send_stats(self.stats)
+
+    def block_till_all_results_backs(self):
+        self.log.info("Waiting for jobs to finish")
+
+        start_time = time.time()
+        for x in self.results.join(timeout=60):
+            self.stats['size_pass'] += x[0]
+            self.stats['size_fail'] += x[1]
+
+        stop_time = time.time()
+        self.stats['rate'] = self.stats['size_pass']/(stop_time-start_time)
+        self.stats['duration'] = (stop_time-start_time)
+

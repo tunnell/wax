@@ -8,9 +8,10 @@ import snappy
 from wax.Configuration import SAMPLE_TYPE, MAX_DRIFT, PADDING, THRESHOLD
 from wax.Database.InputDBInterface import MongoDBInput
 from wax.Database.OutputDBInterface import MongoDBOutput
+from wax.Database.ControlDBInterface import MongoDBControl
 
 #Specify mongodb host and datababse to connect to                                                                                              
-BROKER_URL = 'mongodb://xedaqje.no-ip.biz:27017/jobs'
+BROKER_URL = 'mongodb://127.0.0.1:27017/jobs'
 
 celery = Celery('EOD_TASKS',
                 broker=BROKER_URL,
@@ -27,7 +28,7 @@ def save_decision(events, last, t0, t1):
             events.append(last)  # Save event
 
 @celery.task
-def process_time_range(t0, t1,
+def process_time_range_task(t0, t1,
                         collection_name, hostname,
                         threshold=THRESHOLD):
     """Process a time chunk
@@ -44,6 +45,9 @@ def process_time_range(t0, t1,
     :returns:  int -- number of bytes processed
     :raises: AssertionError
     """
+    #controldb = MongoDBControl(collection_name='stats',
+    #                           hostname=hostname)
+
     input = MongoDBInput(collection_name=collection_name,
                          hostname=hostname)
 

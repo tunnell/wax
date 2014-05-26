@@ -17,6 +17,7 @@ int subindex = 0;
 
 int		baseline = 0;
 void add_samples(int *samples, int n, int t0, int reduction) {
+    // TODO: rename add_occurnece
     //This takes an 'occurence', which is data seen by only one PMT
     // and adds it to the sum waveform 'sum_waveform'.
     for (i = 0; i < n; ++i) {
@@ -74,7 +75,6 @@ overlaps(int **samples_indices, int *n,
         if (ourranges[2 * current_range_i + 1] < sample_start) {
             //Sample is starting after our event ends, thus move to next event
             current_range_i += 1;
-
             if (2 * current_range_i >= ourrangeindex) {
                 data[i / 2] = -1;
                 //-1 means sample has no event

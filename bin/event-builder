@@ -15,7 +15,7 @@ from configglue import schema
 from configglue.glue import configglue
 
 from wax import Configuration
-from wax.EventBuilder.Processor import SingleThreaded
+from wax.EventBuilder import Processor
 
 
 def main(chunksize,
@@ -23,12 +23,16 @@ def main(chunksize,
          threshold,
          dataset,
          hostname,
+         celery,
          **kwargs):
-    log = logging.getLogger('EventBuilder')
 
-    p = SingleThreaded(chunksize=chunksize,
-                    padding=padding,
-                    threshold=threshold)
+    processing_class = Processor.SingleThreaded
+    if celery:
+        processing_class = Processor.Celery
+
+    p = processing_class(chunksize=chunksize,
+                         padding=padding,
+                         threshold=threshold)
 
     if dataset == None:
         p.loop_and_find_new_datasets(hostname=hostname)

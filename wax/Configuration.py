@@ -4,12 +4,16 @@ import numpy as np
 MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
 MAX_DRIFT = 18000  # units of 10 ns
 HOSTNAME = '127.0.0.1'
-THRESHOLD = 10000
-CHUNKSIZE = 2 ** 28
+
+CHUNKSIZE = 2 ** 29
 PADDING = (5 * MAX_DRIFT)
 # Samples are actually 14 bit unsigned, so 16 bit signed fine
 SAMPLE_TYPE = np.int16
 
+# 1 ADC count = 2.2 V / 2^14
+# 10 ns samples
+# 2.4 mV * us = 150 pe   ->  0.2 V 10 ns
+THRESHOLD = 10000 # ADC counts, 10 ADC counts / pe
 
 class Mongo(schema.Section):
     hostname = schema.StringOption(default=HOSTNAME,
@@ -40,3 +44,4 @@ class EventBuilder(schema.Section):
                                   default=None)
 
     profile = schema.BoolOption(help='run profiler', default=False)
+    celery = schema.BoolOption(help='use celery for parallelism', default=False)
