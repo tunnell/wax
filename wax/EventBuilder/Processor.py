@@ -260,7 +260,7 @@ class Celery(Base):
         self.log.fatal("Waiting for jobs to finish")
 
         start_time = time.time()
-        for x in self.results.join():
+        for x in self.results.join(timeout=600):
             self.stats['size_pass'] += x[0]
             self.stats['size_fail'] += x[1]
 
