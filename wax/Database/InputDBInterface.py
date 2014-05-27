@@ -20,14 +20,11 @@ class MongoDBInput(DBBase.MongoDBBase):
         if self.initialized is False:
             self.log.debug("Cannot initialize input.")
             return
-        self.log.error("Building index...")
         self.collection.ensure_index(self.get_sort_key(1),
                                      background=True)
         self.collection.ensure_index(self.get_sort_key(-1),
                                      background=True)
-                                     ## background=True)
 
-        self.log.error("Index built...")
         self.find_control_doc()
 
     @staticmethod
