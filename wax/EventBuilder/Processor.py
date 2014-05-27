@@ -43,6 +43,7 @@ __author__ = 'tunnell'
 
 
 def sizeof_fmt(num):
+    """input is bytes"""
     for x in ['B', 'KB', 'MB', 'GB']:
         if num < 1024.0:
             return "%3.1f %s" % (num, x)
@@ -51,6 +52,7 @@ def sizeof_fmt(num):
 
 
 def sampletime_fmt(num):
+    """num is in 10s of ns"""
     num *= 10
     for x in ['ns', 'us', 'ms']:
         if num < 1000.0:
@@ -152,6 +154,8 @@ class Base:
         """This will process the dataset in chunks, but will wait until end of run
         chunks -1 means go forever"""
 
+        self._startup()
+
         # int rounds down
         min_time_index = int(self.input.get_min_time()/self.chunksize)
 
@@ -192,8 +196,8 @@ class Base:
 
         self.send_stats()
 
-        self.block_till_all_results_backs()
-        self.drop_collection()
+        self._shutdown()
+        #self.drop_collection()
         self.send_stats()
 
     def drop_collection(self):
@@ -219,28 +223,40 @@ class Base:
     def send_stats(self, **kwargs):
         raise NotImplementedError()
 
-    def block_till_all_results_backs(self):
-        raise NotImplementedError
+    def _startup(self):
+        pass
+
+    def _shutdown(self):
+        pass
 
 
 class SingleThreaded(Base):
     def __init__(self, **kwargs):
         Base.__init__(self, **kwargs)
+        self.start_time = None
 
     def process(self, **kwargs):
         self.stats['count_completed'] += 1
-
 
         x = process_time_range_task(**kwargs)
         self.stats['count_completed'] += 1
         self.stats['size_pass'] += x[0]
         self.stats['size_fail'] += x[1]
 
+        stop_time = time.time()
+
+        self.stats['rate'] = self.stats['size_pass']/(stop_time-self.start_time)
+        self.stats['duration'] = (stop_time-self.start_time)
+        self.log.fatal("took %d secs" % (stop_time-self.start_time))
+        self.log.fatal('rate %f' % self.stats['rate'])
+
+
     def send_stats(self):
         self.controldb.send_stats(self.stats)
 
-    def block_till_all_results_backs(self):
-        pass
+    def _startup(self):
+        self.start_time = time.time()
+
 
 
 class Celery(Base):
@@ -256,7 +272,7 @@ class Celery(Base):
         self.stats['failed'] = self.results.failed()
         self.controldb.send_stats(self.stats)
 
-    def block_till_all_results_backs(self):
+    def _shutdown(self):
         self.log.fatal("Waiting for jobs to finish")
 
         start_time = time.time()
@@ -265,7 +281,9 @@ class Celery(Base):
             self.stats['size_fail'] += x[1]
 
         stop_time = time.time()
-        self.log.fatal("took %d secs" % (stop_time-start_time))
         self.stats['rate'] = self.stats['size_pass']/(stop_time-start_time)
         self.stats['duration'] = (stop_time-start_time)
+
+        self.log.fatal("took %d secs" % (stop_time-start_time))
+        self.log.fatal('rate %sps' % sizeof_fmt(self.stats['rate']))
 

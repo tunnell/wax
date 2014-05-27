@@ -35,6 +35,13 @@ class MongoDBBase():
         self.initialized = True
 
         if collection_name is not None:
+            try:
+                self.db.create_collection(name=collection_name,
+                                          capped=True,
+                                          size=1073741824) # 1 GB
+            except pymongo.errors.CollectionInvalid:
+                pass # Collection already exists
+
             self.collection = self.db[collection_name]
         else:
             self.collection = self.discover_collection()
