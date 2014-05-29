@@ -20,8 +20,7 @@ clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr *.egg-info
-	rm -f wax/wax_compiled_helpers.py
-	rm -f wax/wax_compiled_helpers_wrap.c
+
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +

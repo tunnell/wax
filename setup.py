@@ -2,11 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, Extension
-#from distutils.core import Extension, setup
-import numpy as np  # Third-party modules - we depend on numpy for everything
-
-# Obtain the numpy include directory.  This logic works across numpy versions.
-numpy_include = np.get_include()
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
@@ -45,10 +40,11 @@ setup(
         'Programming Language :: Python :: 3.3',
     ],
     test_suite='tests',
-    ext_modules=[Extension("_wax_compiled_helpers",
-                           ["wax/wax_compiled_helpers.i", "wax/wax_compiled_helpers.c"],
-                           include_dirs=[numpy_include],
+    ext_modules=[Extension("waxcore",
+                           ["wax/EventBuilder/wax_compiled_helpers.cpp"],
                            extra_compile_args=[],
+                           library_dirs=['/opt/local/lib'],
+                           libraries=['mongoclient', 'boost_python-mt'],
     )],
 
 )
