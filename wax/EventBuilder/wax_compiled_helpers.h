@@ -29,9 +29,9 @@ void get_sum(int** sum, int *n);
 void shutdown();
 
 int GetDataFromBSON(mongo::BSONObj obj, std::vector<u_int16_t>&buff, std::string &id,
-                    int &module, bool &zipped, long long int &ttime, int &size);
+                    int &module, bool &zipped, int64_t &ttime, int &size);
 
-int ProcessTimeRangeTask(long long int t0, long long int t1,
+int ProcessTimeRangeTask(int64_t t0, int64_t t1,
 			 char* mongo_input_location,
 			 char* mongo_output_location,
 			 char* hostname,
@@ -41,8 +41,8 @@ int ProcessTimeRangeTask(long long int t0, long long int t1,
 
 bool SaveDecision(vector <mongo::BSONObj> &output_docs,
 		  mongo::BSONObjBuilder* builder,
-		  long long int t0, long long int t1,
-		  long long int e0, long long int e1,
+		  int64_t t0, int64_t t1,
+		  int64_t e0, int64_t e1,
 		  int size,
 		  BSONArrayBuilder* builder_occurences_array,
 		  int padding);

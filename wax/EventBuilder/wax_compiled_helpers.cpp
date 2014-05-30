@@ -6,6 +6,11 @@
  http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml
 
  And check it with cpplint.
+
+Note: some stupidity with types because mongoclient doesn't use system independent types.
+
+https://jira.mongodb.org/browse/SERVER-4536
+
  */
 #include "wax_compiled_helpers.h"
 
@@ -156,15 +161,15 @@ void Setup(int n) {
 
 bool SaveDecision(vector <mongo::BSONObj> &output_docs,
                 mongo::BSONObjBuilder* builder,
-                 long long int t0, long long int t1,
-                 long long int e0, long long int e1,
+                 int64_t t0, int64_t t1,
+                 int64_t e0, int64_t e1,
                  int size,
                  BSONArrayBuilder* builder_occurences_array,
                  int padding){
   if(builder != NULL) {
     builder->append("size", size);
     builder->appendArray("docs", builder_occurences_array->arr());
-
+    
     // Check for mega event: event spanning many search ranges (i.e., chunks).
     // This means that the padding/overlap between chunks is too small.  Or
     // something crazy happened in the detector.
@@ -173,16 +178,22 @@ bool SaveDecision(vector <mongo::BSONObj> &output_docs,
       cerr << "Event spans two search blocks (mega-event?)" << endl;
       return false;
     }
-
+    
     // Save event
     if (e0 > t0 + padding && e1 < t1) {
       output_docs.push_back(builder->obj());
     }
+    delete builder;
+  }
+
+  if (builder_occurences_array != NULL) {
+    // Leave out of above 'if' just in case...
+    delete builder_occurences_array;
   }
   return true;
 }
 
-int ProcessTimeRangeTask(long long int t0, long long int t1,
+int ProcessTimeRangeTask(int64_t t0, int64_t t1,
                            char *mongo_input_location,
                            char *mongo_output_location,
                            char *hostname,
@@ -223,7 +234,7 @@ int ProcessTimeRangeTask(long long int t0, long long int t1,
 
     mongo::BSONObj p;
     auto_ptr < mongo::DBClientCursor > cursor = conn.query(mongo_input_location,
-                                                            QUERY("time" << mongo::GT << t0 << "time" << mongo::LT << t1).sort("time", 1));
+							   QUERY("time" << mongo::GT << (long long int) t0 << "time" << mongo::LT << (long long int)t1).sort("time", 1));
     while (cursor->more()) {
         p = cursor->next();
         occurence_samples.clear();
@@ -281,11 +292,12 @@ int ProcessTimeRangeTask(long long int t0, long long int t1,
                          builder_occurences_array,
                          padding);
 
+	    // SaveDecision frees `builder` and `builder_occurences_array`, so need to reinitialize
+	    builder = new mongo::BSONObjBuilder();
+            builder_occurences_array = new mongo::BSONArrayBuilder();
 
             builder_mapping = occurence_mapping_to_trigger_ranges[i];
 
-            builder = new mongo::BSONObjBuilder();
-            builder_occurences_array = new mongo::BSONArrayBuilder();
             builder->append("cnt", occurence_mapping_to_trigger_ranges[i]);
             builder->append("compressed", false);
 

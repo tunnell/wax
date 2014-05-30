@@ -1,4 +1,4 @@
-
+from wax import Configuration
 import waxcore
 import time
 
@@ -19,7 +19,8 @@ for i in range(10):
                                 "output.dataset",
                                 "localhost",
                                 100,
-                                18000)
+                                18000,
+                                Configuration.PADDING)
 t1 = time.time()
 rate = '%sps' % sizeof_fmt(size/(t1-t0))
 print(sizeof_fmt(size), rate, t1-t0)

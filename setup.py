@@ -42,9 +42,9 @@ setup(
     test_suite='tests',
     ext_modules=[Extension("waxcore",
                            ["wax/EventBuilder/wax_compiled_helpers.cpp"],
-                           extra_compile_args=[],
-                           library_dirs=['/opt/local/lib'],
-                           libraries=['mongoclient', 'boost_python-mt'],
+                           extra_compile_args=['-std=c++0x',],
+                           library_dirs=['/opt/local/lib',],
+                           libraries=['mongoclient', 'boost_python-py34'],
     )],
 
 )
