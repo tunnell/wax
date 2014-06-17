@@ -28,6 +28,8 @@
   
 
   
+    <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
+  
     <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="index.html"/>
         <link rel="next" title="Contributing" href="contributing.html"/>
         <link rel="prev" title="Frequently Asked Questions" href="faq.html"/> 
@@ -156,15 +158,16 @@
 <p>To make the software trigger run quick enough to keep up with high data rates,
 parts of the code are written in C to make them fast.</p>
 <p>There are essentially two steps to this code, which involves calls to three different functions.  This is <cite>add_samples</cite>, which is used to send occurences to the code.  Then event ranges are found using two function calls to <cite>build_events</cite> and <cite>overlaps</cite>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre>In [69]: lines = plot([1,2,3])
+<dl class="class">
+<dt id="waxcore">
+<em class="property">class </em><tt class="descname">waxcore</tt><a class="headerlink" href="#waxcore" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="function">
+<dt>
+<tt class="descname">signatures</tt></dt>
+<dd></dd></dl>
 
-In [70]: setp(lines)
-  alpha: float
-  animated: [True | False]
-  antialiased or aa: [True | False]
-  ...snip
-</pre></div>
-</div>
+</dd></dl>
+
 </div>
 
 
