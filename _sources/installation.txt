@@ -74,7 +74,21 @@ we use the CPU a little, we can reduce the data size and send the data quicker.
     $ sudo apt-get install libsnappy-dev libsnappy1
 
 
+Install mongoclient
+-------------------
 
+Install mongo c++ client::
+
+    $ git clone https://github.com/mongodb/mongo-cxx-driver.git
+    $ cd mongo-cxx-driver
+    $ sudo scons install-mongoclient --sharedclient
+
+Install boost
+-------------
+
+Install boost for boost python::
+
+    $ sudo apt-get install libboost-all-dev
 
 Preparing Python environment
 ============================

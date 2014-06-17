@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.Configuration &mdash; Code for Intelligent Triggering Online 2.2.0 documentation</title>
+  <title>wax.Configuration &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.2.0 documentation" href="../../index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -157,12 +157,16 @@
 <span class="n">MAX_ADC_VALUE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">14</span>  <span class="c"># 14 bit ADC samples</span>
 <span class="n">MAX_DRIFT</span> <span class="o">=</span> <span class="mi">18000</span>  <span class="c"># units of 10 ns</span>
 <span class="n">HOSTNAME</span> <span class="o">=</span> <span class="s">&#39;127.0.0.1&#39;</span>
-<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mi">10000</span>
+
 <span class="n">CHUNKSIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">28</span>
 <span class="n">PADDING</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">MAX_DRIFT</span><span class="p">)</span>
 <span class="c"># Samples are actually 14 bit unsigned, so 16 bit signed fine</span>
 <span class="n">SAMPLE_TYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
 
+<span class="c"># 1 ADC count = 2.2 V / 2^14</span>
+<span class="c"># 10 ns samples</span>
+<span class="c"># 2.4 mV * us = 150 pe   -&gt;  0.2 V 10 ns</span>
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mi">10000</span> <span class="c"># ADC counts, 10 ADC counts / pe</span>
 
 <div class="viewcode-block" id="Mongo"><a class="viewcode-back" href="../../wax.html#wax.Configuration.Mongo">[docs]</a><span class="k">class</span> <span class="nc">Mongo</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">Section</span><span class="p">):</span>
     <span class="n">hostname</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">StringOption</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">HOSTNAME</span><span class="p">,</span>
@@ -192,7 +196,8 @@
     <span class="n">dataset</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">StringOption</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s">&#39;Analyze only a single dataset&#39;</span><span class="p">,</span>
                                   <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 
-    <span class="n">profile</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">BoolOption</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s">&#39;run profiler&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></div>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">BoolOption</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s">&#39;run profiler&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">celery</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">BoolOption</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s">&#39;use celery for parallelism&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -223,7 +228,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'2.2.0',
+            VERSION:'2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

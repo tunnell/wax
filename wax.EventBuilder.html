@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.EventBuilder package &mdash; Code for Intelligent Triggering Online 2.2.0 documentation</title>
+  <title>wax.EventBuilder package &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.2.0 documentation" href="index.html"/> 
+    <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="index.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -154,92 +154,8 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-wax.EventBuilder.Processor">
-<span id="wax-eventbuilder-processor-module"></span><h2>wax.EventBuilder.Processor module<a class="headerlink" href="#module-wax.EventBuilder.Processor" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="cito-core-eventbuilding">
-<h3>cito.core.EventBuilding<a class="headerlink" href="#cito-core-eventbuilding" title="Permalink to this headline">¶</a></h3>
-<p>Event building converts time blocks of data (from different digitizer boards) into DAQ events.</p>
-<p>Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,
-using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
-that performs the following sequential operations:</p>
-<ul class="simple">
-<li>Build sum waveform</li>
-<li>Using trigger algorithm, identify peaks in time.</li>
-<li>If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before
-and after each peak.</li>
-</ul>
-<p>More technically, a boolean array is created for each time sample, where True corresponds to a sample being saved
-and false corresponds to an event being discarded.  These values default to false.  Two variables are defined by the
-user: t_pre and t_post.  For each peak that the triggering algorithm identifies (e.g., charge above 100 pe), the
-range [peak_i - t_pre, peak_i + t_post] is set to true  (see get_index_mask_for_trigger).  Subsequently, continuous
-blocks of &#8216;true&#8217; are called an event.</p>
-<p>In other words, if two particles interact in the detector within a typical &#8216;event window&#8217;, then these two
-interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
-example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</p>
-<dl class="class">
-<dt id="wax.EventBuilder.Processor.Base">
-<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">Base</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=90000</em>, <em>threshold=10000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
-<p>None dataset means it will find it</p>
-<dl class="method">
-<dt id="wax.EventBuilder.Processor.Base.drop_collection">
-<tt class="descname">drop_collection</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.drop_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.drop_collection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wax.EventBuilder.Processor.Base.get_processing_function">
-<tt class="descname">get_processing_function</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.get_processing_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.get_processing_function" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="wax.EventBuilder.Processor.Base.loop_and_find_new_datasets">
-<tt class="descname">loop_and_find_new_datasets</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.loop_and_find_new_datasets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.loop_and_find_new_datasets" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function makes lots of processing classes</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wax.EventBuilder.Processor.Base.process_single_dataset">
-<tt class="descname">process_single_dataset</tt><big>(</big><em>hostname</em>, <em>dataset</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.process_single_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.process_single_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function makes lots of processing classes</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wax.EventBuilder.Processor.Celery">
-<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">Celery</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=90000</em>, <em>threshold=10000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Celery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Celery" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#wax.EventBuilder.Processor.Base" title="wax.EventBuilder.Processor.Base"><tt class="xref py py-class docutils literal"><span class="pre">wax.EventBuilder.Processor.Base</span></tt></a></p>
-<p>None dataset means it will find it</p>
-<dl class="method">
-<dt id="wax.EventBuilder.Processor.Celery.get_processing_function">
-<tt class="descname">get_processing_function</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Celery.get_processing_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Celery.get_processing_function" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wax.EventBuilder.Processor.SingleThreaded">
-<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">SingleThreaded</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=90000</em>, <em>threshold=10000</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#SingleThreaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.SingleThreaded" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#wax.EventBuilder.Processor.Base" title="wax.EventBuilder.Processor.Base"><tt class="xref py py-class docutils literal"><span class="pre">wax.EventBuilder.Processor.Base</span></tt></a></p>
-<p>None dataset means it will find it</p>
-<dl class="method">
-<dt id="wax.EventBuilder.Processor.SingleThreaded.get_processing_function">
-<tt class="descname">get_processing_function</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#SingleThreaded.get_processing_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.SingleThreaded.get_processing_function" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="wax.EventBuilder.Processor.sampletime_fmt">
-<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">sampletime_fmt</tt><big>(</big><em>num</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#sampletime_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.sampletime_fmt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="wax.EventBuilder.Processor.sizeof_fmt">
-<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">sizeof_fmt</tt><big>(</big><em>num</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#sizeof_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.sizeof_fmt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
+<div class="section" id="wax-eventbuilder-processor-module">
+<h2>wax.EventBuilder.Processor module<a class="headerlink" href="#wax-eventbuilder-processor-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-wax.EventBuilder">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wax.EventBuilder" title="Permalink to this headline">¶</a></h2>
@@ -275,7 +191,7 @@ example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these a
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.2.0',
+            VERSION:'2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

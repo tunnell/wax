@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; Code for Intelligent Triggering Online 2.2.0 documentation</title>
+  <title>Installation &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.2.0 documentation" href="index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="index.html"/>
         <link rel="next" title="Usage" href="usage.html"/>
         <link rel="prev" title="WAX" href="readme.html"/> 
 
@@ -212,6 +212,22 @@ we use the CPU a little, we can reduce the data size and send the data quicker.<
 </div>
 </div>
 </div>
+<div class="section" id="install-mongoclient">
+<h3>Install mongoclient<a class="headerlink" href="#install-mongoclient" title="Permalink to this headline">¶</a></h3>
+<p>Install mongo c++ client:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/mongodb/mongo-cxx-driver.git
+$ cd mongo-cxx-driver
+$ sudo scons install-mongoclient --sharedclient
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-boost">
+<h3>Install boost<a class="headerlink" href="#install-boost" title="Permalink to this headline">¶</a></h3>
+<p>Install boost for boost python:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install libboost-all-dev
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="preparing-python-environment">
 <h2>Preparing Python environment<a class="headerlink" href="#preparing-python-environment" title="Permalink to this headline">¶</a></h2>
@@ -288,7 +304,7 @@ sudo service mongodb restart
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.2.0',
+            VERSION:'2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

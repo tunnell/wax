@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Internal data formats &mdash; Code for Intelligent Triggering Online 2.2.0 documentation</title>
+  <title>Internal data formats &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.2.0 documentation" href="index.html"/>
+    <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="index.html"/>
         <link rel="next" title="Jargon" href="jargon.html"/>
         <link rel="prev" title="Usage" href="usage.html"/> 
 
@@ -203,7 +203,7 @@ in the final output.</li>
 <li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.</li>
 <li><cite>module</cite>: identifies the digitizer board.  For fake data, this is set to -1.</li>
 <li><cite>channel</cite>: Channel number.</li>
-<li><cite>time</cite>: 64-bit unsigned number in units of 10 ns.  This time corresponds to the same time of the data in this document.  Please begin at 1 second or something to prevent trigger trying to save data at negative times.</li>
+<li><cite>time</cite>: 64-bit unsigned number in units of 10 ns.  This time corresponds to the same time of the data in this document.  Please begin at 1 second or something to prevent trigger trying to save data at negative times.  Do not use floats!</li>
 <li><cite>data</cite>: An array of 16-bit unsigned numbers, corresponding to the actual data payload.  It is stored as a binary array.</li>
 </ul>
 <p>Said differently, expect:</p>
@@ -290,7 +290,7 @@ data that will go to file.  For more information, see <tt class="xref doc docuti
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'2.2.0',
+            VERSION:'2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
