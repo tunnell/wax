@@ -21,17 +21,17 @@ using namespace mongo;
 void Setup(uint32_t n);
 
 u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
-                         int64_t max_drift,
-                         int64_t padding,
-                         uint32_t threshold,
-                         char *hostname,
-                         char *mongo_input_location,
-                         char *mongo_output_location);
+                               int64_t max_drift,
+                               int64_t padding,
+                               uint32_t threshold,
+                               char *hostname,
+                               char *mongo_input_location,
+                               char *mongo_output_location);
 
 void Shutdown();
 
 void AddSamplesFromOccurence(vector<uint32_t>& occurence_samples,
-                                int t0, int reduction);
+                             int t0, int reduction);
 void BuildTriggerEventRanges(vector<int64_t> &trigger_event_ranges, uint32_t threshold, int64_t gap);
 void AssignOccurenceToTriggerEvent(vector<uint32_t> &occurence_ranges,
                                    vector<int64_t> &trigger_event_ranges,
@@ -45,11 +45,11 @@ int GetDataFromBSON(mongo::BSONObj obj, std::vector<uint32_t>&buff, std::string 
 
 
 bool SaveDecision(vector <mongo::BSONObj> &output_docs,
-		  mongo::BSONObjBuilder* builder,
-		  int64_t t0, int64_t t1,
-          int64_t e0, int64_t e1,
-		  int size,
-		  BSONArrayBuilder* builder_occurences_array,
-		  int padding);
+                  mongo::BSONObjBuilder* builder,
+                  int64_t t0, int64_t t1,
+                  int64_t e0, int64_t e1,
+                  int size,
+                  BSONArrayBuilder* builder_occurences_array,
+                  int padding);
 
 

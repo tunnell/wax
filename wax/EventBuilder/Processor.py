@@ -41,7 +41,6 @@ from celery import result
 __author__ = 'tunnell'
 
 
-
 def sizeof_fmt(num):
     """input is bytes"""
     for x in ['B', 'KB', 'MB', 'GB']:
@@ -62,6 +61,7 @@ def sampletime_fmt(num):
 
 
 class Base:
+
     def __init__(self,
                  chunksize=Configuration.CHUNKSIZE,
                  padding=Configuration.PADDING,
@@ -87,23 +87,22 @@ class Base:
         self.padding = padding
         self.threshold = threshold
 
-        self.waittime = 1 # Wait 1 second, if no data around
+        self.waittime = 1  # Wait 1 second, if no data around
 
-        self.stats = { 'type' : 'waxster',
-                       'count_completed' : 0,
-                       'count_failed' : 0,
-                      'count_processing' : 0,
-                      'size_pass' : 0,
-                      'size_fail' : 0,
-                      'delay_average' : 0.0,
-                      'delay_longest' : 0.0
-                        }
-
+        self.stats = {'type': 'waxster',
+                      'count_completed': 0,
+                      'count_failed': 0,
+                      'count_processing': 0,
+                      'size_pass': 0,
+                      'size_fail': 0,
+                      'delay_average': 0.0,
+                      'delay_longest': 0.0
+                      }
 
     def _initialize(self, dataset=None, hostname='127.0.0.1'):
         """If dataset == None, finds a collection on its own"""
         self.controldb = ControlDBInterface.DBStats(collection_name='stats',
-                                                            hostname=hostname)
+                                                    hostname=hostname)
 
         self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
                                                    hostname=hostname)
@@ -156,7 +155,7 @@ class Base:
         self._startup()
 
         # int rounds down
-        min_time_index = int(self.input.get_min_time()/self.chunksize)
+        min_time_index = int(self.input.get_min_time() / self.chunksize)
 
         current_time_index = min_time_index
         search_for_more_data = True
@@ -196,7 +195,7 @@ class Base:
         self.send_stats()
 
         self._shutdown()
-        #self.drop_collection()
+        # self.drop_collection()
         self.send_stats()
 
     def drop_collection(self):
@@ -232,6 +231,7 @@ class Base:
 
 
 class SingleThreaded(Base):
+
     def __init__(self, **kwargs):
         Base.__init__(self, **kwargs)
         self.start_time = None
@@ -245,17 +245,17 @@ class SingleThreaded(Base):
 
         stop_time = time.time()
 
-        self.stats['rate'] = self.stats['size_pass']/(stop_time-self.start_time)
-        self.stats['duration'] = (stop_time-self.start_time)
+        self.stats['rate'] = self.stats['size_pass'] / (stop_time - self.start_time)
+        self.stats['duration'] = (stop_time - self.start_time)
         # self.log.fatal("took %d secs" % (stop_time-self.start_time))
         self.log.fatal('rate %sps' % sizeof_fmt(self.stats['rate']))
-
 
     def send_stats(self):
         self.controldb.send_stats(self.stats)
 
 
 class Celery(Base):
+
     def __init__(self, **kwargs):
         Base.__init__(self, **kwargs)
         self.results = result.ResultSet([])
@@ -279,9 +279,8 @@ class Celery(Base):
             self.stats['size_fail'] += 0
 
         stop_time = time.time()
-        self.stats['rate'] = self.stats['size_pass']/(stop_time-start_time)
-        self.stats['duration'] = (stop_time-start_time)
+        self.stats['rate'] = self.stats['size_pass'] / (stop_time - start_time)
+        self.stats['duration'] = (stop_time - start_time)
 
-        self.log.fatal("took %d secs" % (stop_time-start_time))
+        self.log.fatal("took %d secs" % (stop_time - start_time))
         self.log.fatal('rate %sps' % sizeof_fmt(self.stats['rate']))
-

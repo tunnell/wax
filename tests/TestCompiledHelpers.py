@@ -8,7 +8,7 @@ import unittest
 
 import numpy as np
 
-import _wax_compiled_helpers as cch
+import ebcore
 
 
 class CompiledHelpersTestCase(unittest.TestCase):
@@ -23,13 +23,13 @@ class CompiledHelpersTestCase(unittest.TestCase):
         it, then build events, we've provided a method that performs these
         common actions.
         """
-        cch.setup(100)
+        ebcore.Setup(100)
 
         x *= -1
         x += 16384
-        cch.add_samples(x, offset, 1)
+        ebcore.add_samples(x, offset, 1)
 
-        y2 = cch.build_events(threshold, gap)
+        y2 = ebcore.build_events(threshold, gap)
 
         self.assertEqual(len(y2), len(y))
         self.assertIsInstance(y2, np.ndarray)

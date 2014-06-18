@@ -43,107 +43,107 @@ void Setup(int n) {
 }
 
 u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
-                         int64_t max_drift,
-                         int64_t padding,
-                         uint32_t threshold,
-                         char *hostname,
-                         char *mongo_input_location,
-                         char *mongo_output_location) {
+                               int64_t max_drift,
+                               int64_t padding,
+                               uint32_t threshold,
+                               char *hostname,
+                               char *mongo_input_location,
+                               char *mongo_output_location) {
 
     // **************************
     // ** Initialization phase **
     // **************************
     mongo::DBClientConnection conn;
     conn.connect(hostname);
-    
+
     // Overall statistics, processed is all data read from DB, triggered is just saved
     u_int32_t processed_size = 0, triggered_size = 0;
-    
+
     // Fetch this per doc
     vector <uint32_t> occurence_samples;
     int module, size;
     string id;
     bool zipped;
     int64_t time;
-    
+
     int64_t time_correction;
-    int reduction_factor = 100;
+    int reduction_factor = 10;
     int n = ceil((t1 - t0) / reduction_factor);
-    
+
     // Setup the sum waveform
     Setup(n);
-    
+
     vector <mongo::BSONObj> input_docs;
-    
+
     // Store the time range of every document.   This is not moved to a seperate
     // function that operated on 'docs' because it requires parsing the data
     // payload to determine the end time.  The format of the array is:
     //
     //   for event i: start_0 stop_0 start_1 stop_1 ...
     vector <uint32_t> local_occurence_ranges;
-    
+
     // Same, but for trigger-event ranges
     vector <int64_t> trigger_event_ranges;
-    
+
     // **********************
     // ** Fetch data phase **
     // **********************
-    
+
     // 'p' will be the fetched object
     mongo::BSONObj p;
-    
+
     // Construct a mongo query for a certain time range
     auto_ptr < mongo::DBClientCursor > cursor = conn.query(mongo_input_location,
-                                                           QUERY("time" << mongo::GT << t0 << "time" << mongo::LT << t1).sort("time", 1));
-    
+            QUERY("time" << mongo::GT << t0 << "time" << mongo::LT << t1).sort("time", 1));
+
     // Iterate over all data for this query
     while (cursor->more()) {
         p = cursor->next();
         occurence_samples.clear();
         GetDataFromBSON(p, occurence_samples, id, module, zipped, time, size);
-        
+
         time_correction = time - t0;
-        
+
         // Take note of the time range corresponding to this occurence
         local_occurence_ranges.push_back(time_correction / reduction_factor);
         local_occurence_ranges.push_back((time_correction + occurence_samples.size()) / reduction_factor);
-        
+
         input_docs.push_back(p.copy());
-        
+
         // Add samples to sum waveform
         AddSamplesFromOccurence(occurence_samples,
                                 time_correction,
                                 reduction_factor);
-        
+
         processed_size += size;
     }
 
     // Here we build the event ranges
     BuildTriggerEventRanges(trigger_event_ranges, threshold,
                             max_drift/reduction_factor);
-    
+
     vector<int> occurence_mapping_to_trigger_ranges(local_occurence_ranges.size()/2);
-    
+
     // Now determine for every occurence, which event it corresponds to.  The
     // first two ranges vectors are inputs, the mapping is the output.
     AssignOccurenceToTriggerEvent(local_occurence_ranges,
                                   trigger_event_ranges,
                                   occurence_mapping_to_trigger_ranges);
-    
+
     vector <mongo::BSONObj> output_docs;
-    
+
     mongo::BSONObjBuilder* builder =  NULL;
     BSONArrayBuilder* builder_occurences_array = NULL;
     int builder_mapping = 0;
     int current_size = 0;
-    
+
     int reduced_count = 0;
     for (int i = 0; i < occurence_mapping_to_trigger_ranges.size(); ++i) {
         if (occurence_mapping_to_trigger_ranges[i] == -1) {
             reduced_count += 1;
             continue;
         }
-        
+
         // If first time building BSON, or new event
         if (builder == NULL || builder_mapping != occurence_mapping_to_trigger_ranges[i]) {
             SaveDecision(output_docs,
@@ -153,20 +153,20 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                          current_size,
                          builder_occurences_array,
                          padding);
-            
-            
+
+
             builder_mapping = occurence_mapping_to_trigger_ranges[i];
-            
+
             builder = new mongo::BSONObjBuilder();
             builder_occurences_array = new mongo::BSONArrayBuilder();
             builder->append("cnt", occurence_mapping_to_trigger_ranges[i]);
             builder->append("compressed", false);
-            
+
             BSONArrayBuilder bab;
             bab.append(trigger_event_ranges[2*builder_mapping] * reduction_factor);
             bab.append(trigger_event_ranges[2*builder_mapping + 1] * reduction_factor);
             builder->appendArray("range", bab.arr());
-            
+
             current_size = 0;
         }
         BSONObjBuilder indoc_builder;
@@ -182,7 +182,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                  current_size,
                  builder_occurences_array,
                  padding);
-    
+
     conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,
                 output_docs);
@@ -204,7 +204,7 @@ void Shutdown() {
 // and adds it to the sum waveform 'sum_waveform'.  This 'sum waveform'
 // is stored in memory between calls to this function.
 void AddSamplesFromOccurence(vector <u_int32_t> &occurence_samples,
-                                int t0, int reduction) {
+                             int t0, int reduction) {
     int n = occurence_samples.size();
 
     // A PMT pulse is normally a dip from a baseline, so we want to invert this
@@ -238,15 +238,15 @@ void AddSamplesFromOccurence(vector <u_int32_t> &occurence_samples,
 // range of [t0 - gap, t1 + gap].  Each one of this contigous time blocks is
 // a 'trigger event'.
 void BuildTriggerEventRanges(vector<int64_t> &trigger_event_ranges,
-                                uint32_t threshold, int64_t gap) {
+                             uint32_t threshold, int64_t gap) {
     // Temporary variable for trigger time
     int trigger_event_start_time = 0;
     int trigger_event_stop_time = 0;
 
     // For every bin in the sum waveform
     for (int index_of_sum_waveform_bin = 0;
-         index_of_sum_waveform_bin < sum_waveform_n;
-         ++index_of_sum_waveform_bin) {
+            index_of_sum_waveform_bin < sum_waveform_n;
+            ++index_of_sum_waveform_bin) {
         // Check if this bin is above threshold
         if (sum_waveform[index_of_sum_waveform_bin] > threshold) {
             // The start and stop time for for delta function at this bin
@@ -279,8 +279,8 @@ void AssignOccurenceToTriggerEvent(vector<uint32_t> &local_occurence_ranges,
 
     // Note the divide by two.  Each range is two numbers.
     for (i_occurence = 0;
-         i_occurence < (local_occurence_ranges.size()/2);
-         i_occurence += 1) {
+            i_occurence < (local_occurence_ranges.size()/2);
+            i_occurence += 1) {
         // Sample is starting after our last event ends, thus try next event
         if (trigger_event_ranges[2 * i_trigger + 1] < local_occurence_ranges[2*i_occurence]) {
             // Move to next trigger event
@@ -307,40 +307,38 @@ void AssignOccurenceToTriggerEvent(vector<uint32_t> &local_occurence_ranges,
 }
 
 bool SaveDecision(vector <mongo::BSONObj> &output_docs,
-                mongo::BSONObjBuilder* builder,
-                 int64_t t0, int64_t t1,
-                 int64_t e0, int64_t e1,
-                 int size,
-                 BSONArrayBuilder* builder_occurences_array,
-                 int padding){
-  if(builder != NULL) {
-    builder->append("size", size);
-    builder->appendArray("docs", builder_occurences_array->arr());
+                  mongo::BSONObjBuilder* builder,
+                  int64_t t0, int64_t t1,
+                  int64_t e0, int64_t e1,
+                  int size,
+                  BSONArrayBuilder* builder_occurences_array,
+                  int padding) {
+    if(builder != NULL) {
+        builder->append("size", size);
+        builder->appendArray("docs", builder_occurences_array->arr());
 
-    // Check for mega event: event spanning many search ranges (i.e., chunks).
-    // This means that the padding/overlap between chunks is too small.  Or
-    // something crazy happened in the detector.
+        // Check for mega event: event spanning many search ranges (i.e., chunks).
+        // This means that the padding/overlap between chunks is too small.  Or
+        // something crazy happened in the detector.
 
-    if (e1 > t1 && e0 < t1 - padding) {
-      cerr << "FATAL ERROR IN COMPILED COMPONENT:" << endl;
-      cerr << "Event spans two search blocks (mega-event?)" << endl;
-          cerr<<"e1 "<<e1 << " t1 " << t1 <<" "<<(e1 > t1)<<endl;
-    cerr<<"e0 "<<e0 << " t1 - padding" << t1 - padding<<" "<< (e0 < t1 - padding) << endl;
-      return false;
+        if (e1 > t1 && e0 < t1 - padding) {
+            cerr << "FATAL ERROR IN COMPILED COMPONENT:" << endl;
+            cerr << "Event spans two search blocks (mega-event?)" << endl;
+            cerr<<"e1 "<<e1 << " t1 " << t1 <<" "<<(e1 > t1)<<endl;
+            cerr<<"e0 "<<e0 << " t1 - padding" << t1 - padding<<" "<< (e0 < t1 - padding) << endl;
+            return false;
+        }
+
+        // Save event
+        if (e0 > t0 + padding && e1 < t1) {
+            output_docs.push_back(builder->obj());
+        }
     }
-
-    // Save event
-    if (e0 > t0 + padding && e1 < t1) {
-      output_docs.push_back(builder->obj());
-    }
-  }
-  return true;
+    return true;
 }
 
-
-
 int GetDataFromBSON(mongo::BSONObj obj, vector <uint32_t> &buff, string & id,
-                int &module, bool & zipped, int64_t &ttime, int &size) {
+                    int &module, bool & zipped, int64_t &ttime, int &size) {
     module = obj.getIntField("module");
     ttime = obj.getField("time").numberLong();
 

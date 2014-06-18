@@ -9,6 +9,7 @@ from wax.Database import DBBase
 
 
 class DBStats(DBBase.MongoDBBase):
+
     def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
         if collection_name == None:
             collection_name = 'stats'

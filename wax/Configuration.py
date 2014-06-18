@@ -13,7 +13,8 @@ SAMPLE_TYPE = np.int16
 # 1 ADC count = 2.2 V / 2^14
 # 10 ns samples
 # 2.4 mV * us = 150 pe   ->  0.2 V 10 ns
-THRESHOLD = 10000 # ADC counts, 10 ADC counts / pe
+THRESHOLD = 10000  # ADC counts, 10 ADC counts / pe
+
 
 class Mongo(schema.Section):
     hostname = schema.StringOption(default=HOSTNAME,
