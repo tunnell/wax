@@ -102,7 +102,7 @@ class Base:
 
     def _initialize(self, dataset=None, hostname='127.0.0.1'):
         """If dataset == None, finds a collection on its own"""
-        self.controldb = ControlDBInterface.MongoDBControl(collection_name='stats',
+        self.controldb = ControlDBInterface.DBStats(collection_name='stats',
                                                             hostname=hostname)
 
         self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
@@ -133,7 +133,6 @@ class Base:
             self._process_chosen_dataset()
 
     def loop_and_find_new_datasets(self, hostname):
-        # def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):
         """This function makes lots of processing classes"""
         while True:
             try:
@@ -224,7 +223,9 @@ class Base:
         raise NotImplementedError()
 
     def _startup(self):
-        pass
+        self.start_time = time.time()
+        self.stats['size_pass'] = 0
+        self.stats['size_fail'] = 0
 
     def _shutdown(self):
         pass
@@ -238,25 +239,20 @@ class SingleThreaded(Base):
     def process(self, **kwargs):
         self.stats['count_completed'] += 1
 
-        x = process_time_range_task(**kwargs)
         self.stats['count_completed'] += 1
-        self.stats['size_pass'] += x[0]
-        self.stats['size_fail'] += x[1]
+        self.stats['size_pass'] += process_time_range_task(**kwargs)
+        self.stats['size_fail'] += 0
 
         stop_time = time.time()
 
         self.stats['rate'] = self.stats['size_pass']/(stop_time-self.start_time)
         self.stats['duration'] = (stop_time-self.start_time)
-        self.log.fatal("took %d secs" % (stop_time-self.start_time))
-        self.log.fatal('rate %f' % self.stats['rate'])
+        # self.log.fatal("took %d secs" % (stop_time-self.start_time))
+        self.log.fatal('rate %sps' % sizeof_fmt(self.stats['rate']))
 
 
     def send_stats(self):
         self.controldb.send_stats(self.stats)
-
-    def _startup(self):
-        self.start_time = time.time()
-
 
 
 class Celery(Base):
@@ -275,10 +271,12 @@ class Celery(Base):
     def _shutdown(self):
         self.log.fatal("Waiting for jobs to finish")
 
+        self.stats['size_pass'] = 0
+        self.stats['size_fail'] = 0
         start_time = time.time()
         for x in self.results.join(timeout=600):
-            self.stats['size_pass'] += x[0]
-            self.stats['size_fail'] += x[1]
+            self.stats['size_pass'] += x
+            self.stats['size_fail'] += 0
 
         stop_time = time.time()
         self.stats['rate'] = self.stats['size_pass']/(stop_time-start_time)

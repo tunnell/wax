@@ -8,11 +8,7 @@ import time
 from wax.Database import DBBase
 
 
-class MongoDBControl(DBBase.MongoDBBase):
-
-    """Read from MongoDB
-    """
-
+class DBStats(DBBase.MongoDBBase):
     def __init__(self, collection_name=None, hostname=DBBase.HOSTNAME):
         if collection_name == None:
             collection_name = 'stats'
@@ -39,4 +35,3 @@ class MongoDBControl(DBBase.MongoDBBase):
         data['expiresAfterSeconds'] = 43200
 
         self.get_collection().insert(data, w=0)
-

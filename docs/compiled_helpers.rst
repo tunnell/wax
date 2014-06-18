@@ -7,17 +7,21 @@ parts of the code are written in C to make them fast.
 
 There are essentially two steps to this code, which involves calls to three different functions.  This is `add_samples`, which is used to send occurences to the code.  Then event ranges are found using two function calls to `build_events` and `overlaps`.
 
-.. sourcecode:: ipython
 
-    In [69]: lines = plot([1,2,3])
+Times should be uint64_t.  Samples should be uint32_t.
 
-    In [70]: setp(lines)
-      alpha: float
-      animated: [True | False]
-      antialiased or aa: [True | False]
-      ...snip
+.. cpp:class:: waxcore
 
+    .. cpp:function:: int ProcessTimeRangeTask(uint64_t t0, uint64_t t1,
+                                               uint64_t max_drift,
+                                               uint64_t padding,
+                                               uint16_t threshold,
+                                               char* hostname,
+                                               char* mongo_input_location,
+                                               char* mongo_output_location)
 
-.. automodule:: _wax_compiled_helpers
-   :members:
-   :undoc-members:
+    .. cpp:function:: Shutdown()
+
+        Free all memory.  Call before destruction.
+
+        :return: None

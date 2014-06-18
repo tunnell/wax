@@ -139,30 +139,6 @@ class MongoDBInput(DBBase.MongoDBBase):
         """
         return self.get_control_document()['data_taking_ended']
 
-    def get_data_docs(self, time0, time1):
-        """Fetch from DB the documents within time range.
-
-        .. todo:: Must this know padding?  Maybe just hand cursor so can mock?
-
-        :param time0: Initial time to query.
-        :type time0: int.
-        :param time1: Final time.
-        :type time1: int.
-        :returns:  list -- Input documents see docs :ref:`data_format#input`
-        :raises: AssertionError
-        """
-
-        # $gte and $lt are special mongo functions for greater than and less than
-        subset_query = {"time": {'$gte': time0,
-                                 '$lt': time1}}
-
-        cursor = self.collection.find(subset_query, exhaust=True).hint(self.get_sort_key(1))
-
-        #self.log.fatal('index?', str(cursor.explain()['indexOnly']))
-        result = list(cursor)
-        logging.debug("Fetched %d input documents." % len(result))
-        return result
-
     @staticmethod
     def get_sort_key(order=-1):
         """Sort key used for MongoDB sorting and indexing.
@@ -170,8 +146,7 @@ class MongoDBInput(DBBase.MongoDBBase):
         :param order: Ascending or descending order.
         :type order: int
         :returns:  list -- Returns, per pymongo format, a list of (variable, order)
-                           pairs.
-
+                               pairs.
 
         """
         if order != -1 and order != 1:

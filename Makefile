@@ -4,6 +4,7 @@ help:
 	@echo "clean-build - remove build artifacts"
 	@echo "clean-pyc - remove Python file artifacts"
 	@echo "lint - check style with flake8"
+	@echo "develop - tell virtual env to run from here"
 	@echo "test - run tests quickly with the default Python"
 	@echo "testall - run tests on every Python version with tox"
 	@echo "coverage - check code coverage quickly with the default Python"
@@ -29,6 +30,9 @@ clean-pyc:
 
 lint:	clean
 	flake8 --ignore=E501 wax tests
+
+install: clean
+	python setup.py install
 
 test:
 	python setup.py test
