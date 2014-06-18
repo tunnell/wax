@@ -42,9 +42,9 @@ setup(
     test_suite='tests',
     ext_modules=[Extension("ebcore",
                            ["wax/EventBuilder/ebcore.cpp"],
-                           extra_compile_args=[],
+                           extra_compile_args=['-std=c++0x'],
                            library_dirs=['/opt/local/lib'],
-                           libraries=['mongoclient', 'boost_python-mt'],
-    )],
+                           libraries=['mongoclient', 'boost_python-mt'], # boost_python-py34
+                           )],
 
 )
