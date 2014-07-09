@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <cinttypes>
+//#include <cinttypes>
 
 #include <iostream>
 #include <string>
@@ -12,7 +12,7 @@
 #include <boost/python.hpp>
 #include <boost/python/def.hpp>
 #include <mongo/client/dbclient.h>
-#include <mongo/client/write_concern.h>
+//#include <mongo/client/write_concern.h>
 
 using namespace std;
 using namespace boost::python;
