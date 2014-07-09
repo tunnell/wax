@@ -16,7 +16,7 @@ from wax import Configuration
 from wax.EventAnalyzer.Samples import get_samples_from_doc
 from tqdm import tqdm
 from wax.Database import OutputDBInterface
-
+from wax.EventBuilder.Processor import sampletime_fmt as tfmt
 
 def main(config):
     values = config.values('__main__')
@@ -44,13 +44,25 @@ def main(config):
         event = next(cursor)
         print(event.keys())
 
+        t0 = event['range'][0]
+        t1 = event['range'][1]
+
+        plt.title('Time %s (till +%s)' % (tfmt(t0),
+                                   tfmt(t1 - t0)))
+        
         for doc in event['docs']:
             samples = get_samples_from_doc(doc, is_compressed=event['compressed'])
 
-            plt.plot(np.arange(doc['time'], doc['time'] + samples.size),
+            ti = doc['time'] - t0
+            print(doc['time'] / t0)
+            scale = 1/100 # microsecond
+
+            plt.plot(np.arange(ti, (ti + samples.size)) * scale,
                      samples,
                      label='%d_%d' % (doc['module'], doc['channel']))
 
+        plt.xlabel('Time in event [us]')
+        plt.ylabel("ADC counts on 14-bit digitizer")
         plt.show()
 
 if __name__ == '__main__':

@@ -183,7 +183,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                  builder_occurences_array,
                  padding);
 
-    conn.setWriteConcern(WriteConcern::unacknowledged);
+    //conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,
                 output_docs);
 
