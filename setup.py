@@ -22,7 +22,7 @@ setup(
                'bin/event-builder',
                ],
     packages=[
-        'wax', 'wax.EventBuilder',
+        'wax', 'wax.EventBuilder', 'wax.EventAnalyzer',
         'wax.Database',
     ],
     package_dir={'wax': 'wax'},
