@@ -67,7 +67,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     int64_t time;
 
     int64_t time_correction;
-    int reduction_factor = 10;
+    int reduction_factor = 100;
     int n = ceil((t1 - t0) / reduction_factor);
 
     // Setup the sum waveform
@@ -130,6 +130,12 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                   trigger_event_ranges,
                                   occurence_mapping_to_trigger_ranges);
 
+
+    for (int i=0; i < trigger_event_ranges.size(); i++) {
+        trigger_event_ranges[i] *= reduction_factor;
+        trigger_event_ranges[i] += t0;
+    }
+
     vector <mongo::BSONObj> output_docs;
 
     mongo::BSONObjBuilder* builder =  NULL;
@@ -163,8 +169,8 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
             builder->append("compressed", false);
 
             BSONArrayBuilder bab;
-            bab.append(trigger_event_ranges[2*builder_mapping] * reduction_factor);
-            bab.append(trigger_event_ranges[2*builder_mapping + 1] * reduction_factor);
+            bab.append(trigger_event_ranges[2*builder_mapping]);
+            bab.append(trigger_event_ranges[2*builder_mapping + 1]);
             builder->appendArray("range", bab.arr());
 
             current_size = 0;
@@ -183,11 +189,12 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                  builder_occurences_array,
                  padding);
 
+       cout<<"output_docs.size() "<<output_docs.size()<<endl;
     //conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,
                 output_docs);
 
-    //cerr<<"processed_size"<<processed_size<<" triggered_size "<<triggered_size<<endl;
+    cerr<<"processed_size"<<processed_size<<" triggered_size "<<triggered_size<<endl;
     return processed_size;
 }
 
@@ -251,7 +258,7 @@ void BuildTriggerEventRanges(vector<int64_t> &trigger_event_ranges,
         if (sum_waveform[index_of_sum_waveform_bin] > threshold) {
             // The start and stop time for for delta function at this bin
             trigger_event_start_time = index_of_sum_waveform_bin - gap;
-            trigger_event_stop_time = index_of_sum_waveform_bin + gap;
+            trigger_event_stop_time = index_of_sum_waveform_bin + gap + 1;
 
             // But these need to be compared to what has already been seen. If
             // the start time of this bin is within the last seen range, then
@@ -330,9 +337,18 @@ bool SaveDecision(vector <mongo::BSONObj> &output_docs,
         }
 
         // Save event
-        if (e0 > t0 + padding && e1 < t1) {
+        if (e0 >= t0 + padding && e1 <= t1) {
             output_docs.push_back(builder->obj());
+            cout<<"SUCCESS!!!";
         }
+        else {
+        cout<<"fail:"<<endl;
+                cout<<"\te0:"<<e0<<endl;
+                cout<<"\tt0:"<<t0<<endl;
+                cout<<"\tpadding:"<<padding<<endl;
+                cout<<"\te1:"<<e1<<endl;
+                cout<<"\tt1:"<<t1<<endl;
+                }
     }
     return true;
 }

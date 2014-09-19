@@ -195,8 +195,9 @@ class Base:
         self.send_stats()
 
         self._shutdown()
-        # self.drop_collection()
+
         self.send_stats()
+        self.drop_collection()
 
     def drop_collection(self):
         self.input.get_db().drop_collection(self.input.get_collection_name())
