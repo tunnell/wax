@@ -94,7 +94,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 
     // Construct a mongo query for a certain time range
     auto_ptr < mongo::DBClientCursor > cursor = conn.query(mongo_input_location,
-            QUERY("time" << mongo::GT << t0 << "time" << mongo::LT << t1).sort("time", 1));
+							   QUERY("time" << mongo::GT << (long long int) t0 << "time" << mongo::LT << (long long int)  t1).sort("time", 1));
 
     // Iterate over all data for this query
     while (cursor->more()) {
@@ -168,6 +168,8 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
             builder->append("cnt", occurence_mapping_to_trigger_ranges[i]);
             builder->append("compressed", false);
 
+	    // 'long' and 'long long' should be the same, but the Mongo API doesn't
+	    // seem to know about int64.  Therefore, we have to cast.
             BSONArrayBuilder bab;
             bab.append(trigger_event_ranges[2*builder_mapping]);
             bab.append(trigger_event_ranges[2*builder_mapping + 1]);
@@ -284,11 +286,16 @@ void AssignOccurenceToTriggerEvent(vector<uint32_t> &local_occurence_ranges,
     int i_occurence = 0;
     int i_trigger = 0;
 
+    if (trigger_event_ranges.size() == 0) {
+      return;
+    }
+
     // Note the divide by two.  Each range is two numbers.
     for (i_occurence = 0;
             i_occurence < (local_occurence_ranges.size()/2);
             i_occurence += 1) {
         // Sample is starting after our last event ends, thus try next event
+      printf("%d %d\n", trigger_event_ranges.size(), local_occurence_ranges.size());
         if (trigger_event_ranges[2 * i_trigger + 1] < local_occurence_ranges[2*i_occurence]) {
             // Move to next trigger event
             i_trigger += 1;
@@ -320,7 +327,7 @@ bool SaveDecision(vector <mongo::BSONObj> &output_docs,
                   int size,
                   BSONArrayBuilder* builder_occurences_array,
                   int padding) {
-    if(builder != NULL) {
+    if(builder != NULL && builder_occurences_array != NULL) {
         builder->append("size", size);
         builder->appendArray("docs", builder_occurences_array->arr());
 
