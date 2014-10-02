@@ -11,7 +11,7 @@ from wax.Database.ControlDBInterface import DBStats
 import ebcore
 
 # Specify mongodb host and datababse to connect to
-BROKER_URL = 'mongodb://127.0.0.1:27017/jobs'
+BROKER_URL = 'mongodb://xedaqtest2:27017/jobs'
 
 celery = Celery('EOD_TASKS',
                 broker=BROKER_URL,
