@@ -15,7 +15,6 @@ Installing system dependencies
 
 Here we install the basics required to compile code, and some dependencies such as math libraries for later codes.  All commands that include `sudo` require root access to your machine.  If you don't have it, talk to the system administrator.
 
-
 Be sure to have the basics required to install code::
 
     $ sudo apt-get install -y build-essential git libatlas-base-dev gfortran libsnappy-dev libsnappy1 #mongodb-dev libboost-all-dev
