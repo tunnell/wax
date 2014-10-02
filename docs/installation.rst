@@ -32,13 +32,22 @@ Installing system dependencies
 
 Here we install the basics required to compile code, and some dependencies such as math libraries for later codes.  All commands that include `sudo` require root access to your machine.  If you don't have it, talk to the system administrator.
 
-Compiler
+Compiler, boost, scons
 --------
 
 Be sure to have the basics required to install code::
 
-    $ sudo apt-get install build-essential
+    $ sudo apt-get install build-essential libboost1.55-all-dev scons
 
+Mongo
+-----
+
+Install mongo client::
+
+    $ git clone https://github.com/mongodb/mongo-cxx-driver.git
+    $ cd mongo-cxx-driver
+    $ git checkout 26compat
+    $ scons --full --libpath=/usr/lib/x86_64-linux-gnu --sharedclient --use-system-boost
 
 Fortran and linear algebra libraries
 ------------------------------------
