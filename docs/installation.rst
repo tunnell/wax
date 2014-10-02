@@ -15,21 +15,10 @@ Installing system dependencies
 
 Here we install the basics required to compile code, and some dependencies such as math libraries for later codes.  All commands that include `sudo` require root access to your machine.  If you don't have it, talk to the system administrator.
 
-Compiler
---------
 
 Be sure to have the basics required to install code::
 
-    $ sudo apt-get install build-essential
-
-
-Fortran and linear algebra libraries
-------------------------------------
-
-Install a ATLAS (linear algebra routine) and Fortran compiler::
-
-    $ sudo apt-get install -y libatlas-base-dev gfortran
-
+    $ sudo apt-get install -y build-essential git libatlas-base-dev gfortran libsnappy-dev libsnappy1 #mongodb-dev libboost-all-dev
 
 
 Numpy and Scipy dependencies
@@ -42,34 +31,6 @@ Install the dependencies for scientific libraries in python::
     $ sudo apt-get build-dep -y python-matplotlib
     $ sudo apt-get install python-scitools
 
-
-Install snappy
---------------
-
-Please install `snappy 1.0.2 <http://code.google.com/p/snappy/>`_, which is a compression library from Google.  The concept
-behind the library is when data is being transferred over a network, the CPU is normally doing nothing.  Therefore, if
-we use the CPU a little, we can reduce the data size and send the data quicker.
-
-.. hint::
-    For Ubuntu users, there is a package::
-
-
-    $ sudo apt-get install libsnappy-dev libsnappy1
-
-Installl Mongo dev
-------------------
-
-Mongo::
-
-    $  sudo apt-get install mongodb-dev
-
-
-Install boost
--------------
-
-Install boost for boost python::
-
-    $ sudo apt-get install libboost-all-dev
 
 
 Installing Wax
