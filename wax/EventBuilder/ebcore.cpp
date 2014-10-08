@@ -25,6 +25,8 @@ int subindex = 0;
 
 uint32_t baseline = 0;
 
+mongo::DBClientConnection conn;
+
 // This is called by ProcessTimeRangeTask
 void Setup(unsigned int n) {
     if (sum_waveform_n != 0 && sum_waveform_n != n) {
@@ -53,7 +55,6 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     // **************************
     // ** Initialization phase **
     // **************************
-    mongo::DBClientConnection conn;
     conn.connect(hostname);
 
     // Overall statistics, processed is all data read from DB, triggered is just saved
@@ -195,9 +196,12 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     cout<<"output_docs.size() "<<output_docs.size()<<endl;
     //conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,  output_docs);
+    string e = conn.getLastError();
+    if( !e.empty() ) {
+      cout << "insert failed: " << e << endl;
+    }
 
-    conn.done();
-    cerr<<"processed_size"<<processed_size<<" triggered_size "<<triggered_size<<endl;
+    //cerr<<"processed_size"<<processed_size<<" triggered_size "<<triggered_size<<endl;
     return processed_size;
 }
 
@@ -296,7 +300,7 @@ void AssignOccurenceToTriggerEvent(vector<uint32_t> &local_occurence_ranges,
             i_occurence < (local_occurence_ranges.size()/2);
             i_occurence += 1) {
         // Sample is starting after our last event ends, thus try next event
-      printf("%lu %lu\n", trigger_event_ranges.size(), local_occurence_ranges.size());
+      //printf("%lu %lu\n", trigger_event_ranges.size(), local_occurence_ranges.size());
         if (trigger_event_ranges[2 * i_trigger + 1] < local_occurence_ranges[2*i_occurence]) {
             // Move to next trigger event
             i_trigger += 1;
@@ -347,7 +351,7 @@ bool SaveDecision(vector <mongo::BSONObj> &output_docs,
         // Save event
         if (e0 >= t0 + padding && e1 <= t1) {
             output_docs.push_back(builder->obj());
-            cout<<"SUCCESS!!!";
+            //cout<<"SUCCESS!!!";
         }
         else {
         cout<<"fail:"<<endl;
