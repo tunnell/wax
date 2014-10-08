@@ -192,7 +192,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                  builder_occurences_array,
                  padding);
 
-       cout<<"output_docs.size() "<<output_docs.size()<<endl;
+    cout<<"output_docs.size() "<<output_docs.size()<<endl;
     //conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,
                 output_docs);

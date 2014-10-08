@@ -24,7 +24,8 @@ elif compiler.find_library_file(lib_dirs, 'boost_python'):
 else:
     raise RuntimeError("Cannot find boost")
 
-libs = [x for x in [boost_library, 'mongoclient', 'boost_thread', 'boost_filesystem', 'boost_program_options', 'boost_system', 'ssl', 'crypto', 'pthread'] if compiler.find_library_file(lib_dirs, x)]
+libs = ['mongoclient'] 
+libs += [x for x in [boost_library, 'boost_thread', 'boost_filesystem', 'boost_program_options', 'boost_system', 'ssl', 'crypto', 'pthread'] if compiler.find_library_file(lib_dirs, x)]
 print(libs)
 
 
