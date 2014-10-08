@@ -14,7 +14,7 @@
 uint32_t *sum_waveform = NULL;
 
 // length of sum_waveform
-int sum_waveform_n = 0;
+unsigned int sum_waveform_n = 0;
 
 uint32_t* ourranges= NULL;
 int ourrangeindex = 0;
@@ -26,7 +26,7 @@ int subindex = 0;
 uint32_t baseline = 0;
 
 // This is called by ProcessTimeRangeTask
-void Setup(int n) {
+void Setup(unsigned int n) {
     if (sum_waveform_n != 0 && sum_waveform_n != n) {
         printf("wax_compiled_helpers already initialized; will try to reinitialize...\n");
         Shutdown();
@@ -61,7 +61,8 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 
     // Fetch this per doc
     vector <uint32_t> occurence_samples;
-    int module, size;
+    int module;
+    int size;
     string id;
     bool zipped;
     int64_t time;
@@ -131,7 +132,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                   occurence_mapping_to_trigger_ranges);
 
 
-    for (int i=0; i < trigger_event_ranges.size(); i++) {
+    for (unsigned int i=0; i < trigger_event_ranges.size(); i++) {
         trigger_event_ranges[i] *= reduction_factor;
         trigger_event_ranges[i] += t0;
     }
@@ -144,7 +145,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     int current_size = 0;
 
     int reduced_count = 0;
-    for (int i = 0; i < occurence_mapping_to_trigger_ranges.size(); ++i) {
+    for (unsigned int i = 0; i < occurence_mapping_to_trigger_ranges.size(); ++i) {
         if (occurence_mapping_to_trigger_ranges[i] == -1) {
             reduced_count += 1;
             continue;
@@ -191,7 +192,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                  builder_occurences_array,
                  padding);
 
-       cout<<"output_docs.size() "<<output_docs.size()<<endl;
+    cout<<"output_docs.size() "<<output_docs.size()<<endl;
     //conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,
                 output_docs);
@@ -253,7 +254,7 @@ void BuildTriggerEventRanges(vector<int64_t> &trigger_event_ranges,
     int trigger_event_stop_time = 0;
 
     // For every bin in the sum waveform
-    for (int index_of_sum_waveform_bin = 0;
+    for (unsigned int index_of_sum_waveform_bin = 0;
             index_of_sum_waveform_bin < sum_waveform_n;
             ++index_of_sum_waveform_bin) {
         // Check if this bin is above threshold
@@ -283,8 +284,8 @@ void AssignOccurenceToTriggerEvent(vector<uint32_t> &local_occurence_ranges,
                                    vector<int64_t> &trigger_event_ranges,
                                    vector<int> &occurence_mapping_to_trigger_ranges) {
     // Need to multiply these by two to get location in vector
-    int i_occurence = 0;
-    int i_trigger = 0;
+    unsigned int i_occurence = 0;
+    unsigned int i_trigger = 0;
 
     if (trigger_event_ranges.size() == 0) {
       return;
@@ -295,7 +296,7 @@ void AssignOccurenceToTriggerEvent(vector<uint32_t> &local_occurence_ranges,
             i_occurence < (local_occurence_ranges.size()/2);
             i_occurence += 1) {
         // Sample is starting after our last event ends, thus try next event
-      printf("%d %d\n", trigger_event_ranges.size(), local_occurence_ranges.size());
+      printf("%lu %lu\n", trigger_event_ranges.size(), local_occurence_ranges.size());
         if (trigger_event_ranges[2 * i_trigger + 1] < local_occurence_ranges[2*i_occurence]) {
             // Move to next trigger event
             i_trigger += 1;
@@ -369,7 +370,7 @@ int GetDataFromBSON(mongo::BSONObj obj, vector <uint32_t> &buff, string & id,
     u_int32_t *raw = (u_int32_t*)(obj.getField("data").binData(size));
 
     // 'raw' contains two 14-bit numbers in every element
-    for (unsigned int x = 0; x < (size / 4); x++) {
+    for (int x = 0; x < (size / 4); x++) {
         buff.push_back(raw[x] & 0x3FFF);
         buff.push_back((raw[x] >> 16) & 0x3FFF);
     }

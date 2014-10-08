@@ -11,7 +11,7 @@ required = open('requirements.txt').read().splitlines()
 boost_library = ''
 
 compiler=distutils.ccompiler.new_compiler()
-lib_dirs=['/usr/lib','/usr/local/lib', '/opt/local/lib/', '/usr/lib/x86_64-linux-gnu/']
+lib_dirs=['/usr/lib', '/opt/local/lib/', '/usr/lib/x86_64-linux-gnu/']
 if compiler.find_library_file(lib_dirs, 'boost_python-py34'):
     boost_library = 'boost_python-py34'
 elif compiler.find_library_file(lib_dirs, 'boost_python3-mt'):
@@ -24,7 +24,8 @@ elif compiler.find_library_file(lib_dirs, 'boost_python'):
 else:
     raise RuntimeError("Cannot find boost")
 
-libs = [x for x in [boost_library, 'mongoclient', 'boost_thread', 'boost_filesystem', 'boost_program_options', 'boost_system', 'ssl', 'crypto', 'pthread'] if compiler.find_library_file(lib_dirs, x)]
+libs = ['mongoclient'] 
+libs += [x for x in [boost_library, 'boost_thread', 'boost_filesystem', 'boost_program_options', 'boost_system', 'ssl', 'crypto', 'pthread'] if compiler.find_library_file(lib_dirs, x)]
 print(libs)
 
 
