@@ -171,8 +171,8 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 	    // 'long' and 'long long' should be the same, but the Mongo API doesn't
 	    // seem to know about int64.  Therefore, we have to cast.
             BSONArrayBuilder bab;
-            bab.append((long long) trigger_event_ranges[2*builder_mapping]);
-            bab.append((long long) trigger_event_ranges[2*builder_mapping + 1]);
+            bab.append((long long int) trigger_event_ranges[2*builder_mapping]);
+            bab.append((long long int) trigger_event_ranges[2*builder_mapping + 1]);
             builder->appendArray("range", bab.arr());
 
             current_size = 0;

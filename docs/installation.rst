@@ -42,8 +42,7 @@ Numpy and Scipy dependencies
 Mongo driver::
 
   $ git clone git@github.com:mongodb/mongo-cxx-driver.git
-  $ #sudo scons install --sharedclient --prefix=/usr/local/
-  $ sudo scons install-mongoclient --full --use-system-boost --sharedclient
+  $ sudo scons install-mongoclient --full --use-system-boost --sharedclient --prefix=/usr/lib/
 
 
 Numpy and Scipy dependencies
