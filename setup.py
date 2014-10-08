@@ -11,7 +11,7 @@ required = open('requirements.txt').read().splitlines()
 boost_library = ''
 
 compiler=distutils.ccompiler.new_compiler()
-lib_dirs=['/usr/lib','/usr/local/lib', '/opt/local/lib/', '/usr/lib/x86_64-linux-gnu/']
+lib_dirs=['/usr/lib', '/opt/local/lib/', '/usr/lib/x86_64-linux-gnu/']
 if compiler.find_library_file(lib_dirs, 'boost_python-py34'):
     boost_library = 'boost_python-py34'
 elif compiler.find_library_file(lib_dirs, 'boost_python3-mt'):
