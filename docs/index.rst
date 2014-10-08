@@ -13,6 +13,8 @@ Contents:
 
    readme
    installation
+   celery
+   mongo
    usage
    analyze_data
    data_format
