@@ -9,6 +9,7 @@
  */
 #include "ebcore.h"
 
+mongo::DBClientConnection conn;
 
 // Data for sum waveform
 uint32_t *sum_waveform = NULL;
@@ -201,7 +202,6 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
       cout << "insert failed: " << e << endl;
     }
 
-    //cerr<<"processed_size"<<processed_size<<" triggered_size "<<triggered_size<<endl;
     return processed_size;
 }
 
