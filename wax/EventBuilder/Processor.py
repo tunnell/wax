@@ -70,6 +70,7 @@ class Base:
         """
 
         self.log = logging.getLogger(__name__)
+        self.log.setLevel(10)
         self.input = None
         self.output = None
         self.controldb = None
