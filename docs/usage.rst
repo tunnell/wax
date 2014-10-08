@@ -14,10 +14,6 @@ By default, the data processing is done continuously.  This means that (unless o
 
 However, this is meant to run as a daemon and should already be running.  This is what one must do to restart.
 
-Analyzing data in output database
-=================================
-
-See the `wax-on` and `wax-off` commands, where on is for online and off is for offline.  Currently, it just makes plots, but can be expanded to do whatever you want.
 
 
 

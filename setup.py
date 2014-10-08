@@ -2,10 +2,32 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, Extension
+import distutils.ccompiler # used for library checking
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 required = open('requirements.txt').read().splitlines()
+
+boost_library = ''
+
+compiler=distutils.ccompiler.new_compiler()
+lib_dirs=['/usr/lib', '/opt/local/lib/', '/usr/lib/x86_64-linux-gnu/']
+if compiler.find_library_file(lib_dirs, 'boost_python-py34'):
+    boost_library = 'boost_python-py34'
+elif compiler.find_library_file(lib_dirs, 'boost_python3-mt'):
+    boost_library = 'boost_python3-mt'
+elif compiler.find_library_file(lib_dirs, 'boost_python3'):
+    boost_library = 'boost_python3'
+elif compiler.find_library_file(lib_dirs, 'boost_python'):
+    print("Warning: using non-py3 specific boost")
+    boost_library = 'boost_python'
+else:
+    raise RuntimeError("Cannot find boost")
+
+libs = ['mongoclient'] 
+libs += [x for x in [boost_library, 'boost_thread', 'boost_filesystem', 'boost_program_options', 'boost_system', 'ssl', 'crypto', 'pthread'] if compiler.find_library_file(lib_dirs, x)]
+print(libs)
+
 
 setup(
     name='wax',
@@ -42,9 +64,10 @@ setup(
     test_suite='tests',
     ext_modules=[Extension("ebcore",
                            ["wax/EventBuilder/ebcore.cpp"],
-                           extra_compile_args=['-m64', '-g', '-Wl,--export-dynamic'],
-                           extra_link_args=['-Wl,--export-dynamic'],
-                           libraries=['boost_python-py34', 'mongoclient', 'boost_thread', 'boost_filesystem', 'boost_program_options', 'boost_system', 'ssl', 'crypto', 'pthread'],
+                           extra_compile_args=['-m64', '-g',],
+                           extra_link_args=[],
+                           libraries=libs,
+                           library_dirs=lib_dirs,
                            )],
 
 )
