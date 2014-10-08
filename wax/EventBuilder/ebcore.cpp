@@ -194,8 +194,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 
     cout<<"output_docs.size() "<<output_docs.size()<<endl;
     //conn.setWriteConcern(WriteConcern::unacknowledged);
-    conn.insert(mongo_output_location,
-                output_docs);
+    conn.insert(mongo_output_location,  output_docs);
 
     conn.done();
     cerr<<"processed_size"<<processed_size<<" triggered_size "<<triggered_size<<endl;

@@ -83,37 +83,16 @@ class MongoDBInput(DBBase.MongoDBBase):
         """
         sort_key = self.get_sort_key()
 
-        if self.has_run_ended():
-            doc = self.collection.find_one({},
-                                           fields=['time'],
-                                           sort=sort_key)
-            if doc is None or doc['time'] is None:
-                return self.get_min_time()
-            return doc['time']
-
-        modules = self.get_modules()
-        times = {}
-
-        for module in modules:
-            query = {'module': module}
-            doc = self.collection.find_one(query,
-                                           fields=['time', 'module'],
-                                           limit=1,
-                                           sort=sort_key)
-
-            if doc is None:
-                return self.get_min_time()
-            # See if cursor is fast with cursor.explain()['indexOnly']
-
-            times[module] = doc['time']
-
-        # Want the earliest time (i.e., the min) of all the max times
-        # for the boards.
-        if len(list(times.values())) == 0:
+        doc = self.collection.find_one({},
+                                       fields=['time'],
+                                       sort=sort_key)
+        if doc is None or doc['time'] is None:
             return self.get_min_time()
-        time = min(times.values())
-
-        return time
+        
+        if self.has_run_ended():
+            return doc['time']
+        else:
+            return doc['time'] - 1e8
 
     def get_min_time(self):
         """Get minumum time
