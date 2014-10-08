@@ -26,8 +26,6 @@ int subindex = 0;
 
 uint32_t baseline = 0;
 
-mongo::DBClientConnection conn;
-
 // This is called by ProcessTimeRangeTask
 void Setup(unsigned int n) {
     if (sum_waveform_n != 0 && sum_waveform_n != n) {
