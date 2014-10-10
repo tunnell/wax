@@ -114,7 +114,6 @@ class Base:
                  "starttime": {'$exists': True},
                  "runmode": {'$exists': True},
                  "reader": {'$exists': True},
-                 "trigger": {'$exists': True},
                 'trigger.status' : 'waiting_to_be_processed',
                      "trigger.mode": {'$exists': True},
                  "processor": {'$exists': True},
@@ -129,8 +128,10 @@ class Base:
                 self.log.warning("No dataset available to process; waiting %d second." % self.waittime)
                 time.sleep(self.waittime)
             else:
-                self.log.info("Processing %s" % str([x['name'] for x in to_process]))
-                map(lambda x: self._process_chosen_run(x), to_process)
+                for run in to_process:
+                    self.log.fatal("Processing %s" % run['name'])
+
+                    self._process_chosen_run(run)
 
 
     def get_connection(self, hostname):
