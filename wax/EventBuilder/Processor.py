@@ -157,66 +157,81 @@ class Base:
     def _process_chosen_run(self, run_doc):
         """This will process the dataset in chunks, but will wait until end of run
         chunks -1 means go forever"""
+
+        # Setup logging
         buffer = StringIO()
-
         log = logging.getLogger()
-
         mongoHandler = logging.StreamHandler(buffer)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         mongoHandler.setFormatter(formatter)
         mongoHandler.setLevel(logging.WARNING)
         log.addHandler(mongoHandler)
 
-        log.info(run_doc)
+        log.info("Processing: %s (%s)" % (run_doc['name'],
+                                          run_doc['_id']))
+
         data_location = run_doc['reader']['storage_buffer']
+        self.log.info("Data stored on: %s %s.%s" % (data_location["dbaddr"],
+                                                    data_location["dbname"],
+                                                    data_location["dbcollection"]))
         conn = self.get_connection(data_location["dbaddr"])
-        db = conn[data_location["dbaddr"]]
+        db = conn[data_location["dbname"]]
         collection = db[data_location["dbcollection"]]
 
         sort_key = [('time', -1),
                     ('module', -1),
                      ('_id', -1)]
 
+        log.info("Ensuring index")
         collection.ensure_index(sort_key,
                                 background=True)
 
         # int rounds down
-        min_time_index = 0 # int(self.input.get_min_time() / self.chunksize)
+        min_time_index = 0
 
         current_time_index = min_time_index
         search_for_more_data = True
 
-        log.fatal("GOT HERE")
-
+        log.info("Starting data search")
         while (search_for_more_data):
+            log.info("Start of while loop that searches for data")
 
+            # Find maximum time
+            log.info("Identifying maximum time")
             doc = collection.find_one({},
-                                           fields=['time'],
-                                           sort=sort_key)
+                                      fields=['time'],
+                                       sort=sort_key)
 
             max_time = 0
-            if doc is not None and doc['time'] is not None:
-                max_time = doc['time']
+            if doc is None or doc['time'] is None:
+                log.warning("Cannot find maximum time; wait %d s and try again" % self.waittime)
+                time.sleep(self.waittime)
+
+            max_time = doc['time']
+            log.info("Maximum time is %d" % max_time)
 
             if run_doc['reader']['data_taking_ended']:
                 # Round up
-                self.log.info("Data taking has ended; processing remaining data.")
+                log.info("Data taking has ended; processing remaining data.")
                 max_time_index = math.ceil(max_time / self.chunksize)
                 search_for_more_data = False
             else:
+                log.info("Data taking has NOT ended.")
                 # Round down
                 max_time -= 1e8
                 max_time_index = int(max_time / self.chunksize) - 1
                 max_time_index = max(max_time_index, 0)
 
+            log.info("Check if data to process (%d > %d)" % (max_time_index,
+                                                             current_time_index))
             if max_time_index > current_time_index:
                 for i in tqdm(range(current_time_index, max_time_index)):
                     t0 = (i * self.chunksize)
                     t1 = (i + 1) * self.chunksize
 
                     self.process(t0=t0, t1=t1 + self.padding,
-                                 collection_name=self.input.get_collection_name(),
-                                 hostname=self.input.get_hostname())
+                                 collection_name=collection,
+                                 hostname=data_location["dbaddr"])
 
                 processed_time = (max_time_index - current_time_index)
                 processed_time *= self.chunksize / 1e8
@@ -224,16 +239,16 @@ class Base:
 
                 current_time_index = max_time_index
             else:
-                self.log.debug('Waiting %f seconds' % self.waittime)
+                log.info("No data to process")
+                log.info('Waiting %f seconds' % self.waittime)
                 time.sleep(self.waittime)
 
-            self.log.fatal('before')
-            self.log.fatal(run_doc)
+            log.info("Updating run doc")
             run_doc = self.run_collection.find_one({'_id' : run_doc['_id']})
-            self.log.fatal('after')
-            self.log.fatal(run_doc)
 
 
+        log.info("Run processed!")
+        log.info("Shutting down MongoDB log handler for this run")
         log.removeHandler(mongoHandler)
 
         mongoHandler.flush()
