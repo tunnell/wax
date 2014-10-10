@@ -29,5 +29,6 @@ def process_time_range_task(t0, t1,
                                           Configuration.PADDING,
                                           threshold,
                                           hostname,
-                                          "%s.%s" % (MongoDBInput.get_db_name(), collection_name),
-                                          "%s.%s" % (MongoDBOutput.get_db_name(), collection_name))
+                                          "input.dataset", "output.dataset")
+#                                          "%s.%s" % (MongoDBInput.get_db_name(), collection_name),
+#                                          "%s.%s" % (MongoDBOutput.get_db_name(), collection_name))
