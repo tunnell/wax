@@ -39,6 +39,8 @@ from wax.EventBuilder.Tasks import process_time_range_task
 from celery import result
 
 __author__ = 'tunnell'
+CONNECTION = None
+
 
 
 def sizeof_fmt(num):
@@ -61,33 +63,37 @@ def sampletime_fmt(num):
 
 
 class Base:
+    """Base class processor
 
+    This is the base class of the single-threaded and Celery-based processors.
+    """
     def __init__(self,
                  chunksize=Configuration.CHUNKSIZE,
                  padding=Configuration.PADDING,
-                 threshold=Configuration.THRESHOLD):
-        """None dataset means it will find it
-        """
-
+                 threshold=Configuration.THRESHOLD,
+                 run_hostname=Configuration.HOSTNAME):
+        # Logging
         self.log = logging.getLogger(__name__)
         self.log.setLevel(10)
-        self.input = None
-        self.output = None
-        self.controldb = None
 
+        # Chunksize
         if chunksize <= 0:
             raise ValueError("chunksize <= 0: cannot analyze negative number of samples.")
         self.log.info("Using chunk size of %s" % sampletime_fmt(chunksize))
         self.chunksize = chunksize
 
+        # Padding
         if padding < 0:
             raise ValueError("padding < 0: cannot analyze negative number of samples.")
         if padding >= chunksize:
             self.warning("Padding is bigger than chunk?")
         self.log.info("Using padding of %s" % sampletime_fmt(padding))
         self.padding = padding
+
+        # Threshold
         self.threshold = threshold
 
+        # Time to wait if no data found
         self.waittime = 1  # Wait 1 second, if no data around
 
         self.stats = {'type': 'waxster',
@@ -100,78 +106,104 @@ class Base:
                       'delay_longest': 0.0
                       }
 
-    def _initialize(self, dataset=None, hostname='127.0.0.1'):
-        """If dataset == None, finds a collection on its own"""
-        self.controldb = ControlDBInterface.DBStats(collection_name='stats',
-                                                    hostname=hostname)
+        run_port = 27017
+        run_db_name = 'online'
+        run_collection_name = 'runs'
 
-        self.input = InputDBInterface.MongoDBInput(collection_name=dataset,
-                                                   hostname=hostname)
-        if self.input.initialized:
-            self.output = OutputDBInterface.MongoDBOutput(collection_name=self.input.get_collection_name(),
-                                                          hostname=hostname)
-        else:
-            self.log.debug("Cannot setup output DB.")
-            self.output = None
+        # We have a few DB connections:
+        #  - run control
+        #  - input
+        #  - output
+        #  - stats
 
-    def process_single_dataset(self, hostname, dataset):
-        # def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):
-        """This function makes lots of processing classes"""
+        self.connections = {}
 
-        try:
-            self._initialize(dataset=dataset,
-                             hostname=hostname)
-        except Exception as e:
-            self.log.exception(e)
-            self.log.fatal("Exception resulted in fatal error; quiting.")
-            raise
+        self.run_collection = self.get_connection(run_hostname)[run_db_name][run_collection_name]
 
-        if not self.input.initialized:
-            self.log.fatal("No dataset available to process; exiting.")
-            return
-        else:
-            self._process_chosen_dataset()
+        self.query = {"name": {'$exists': True},
+                 "starttime": {'$exists': True},
+                 "runmode": {'$exists': True},
+                 "reader": {'$exists': True},
+                 "trigger": {'$exists': True,
+                             'status' : 'waiting_to_be_processed',
+                             "mode": {'$exists': True},
+                             },
+                 "processor": {'$exists': True,
+                               "mode": {'$exists': True}},
+                 "comments": {'$exists': True},
+                 }
 
-    def loop_and_find_new_datasets(self, hostname):
-        """This function makes lots of processing classes"""
-        while True:
-            try:
-                self._initialize(hostname=hostname)  # Dataset=None means it finds one
-            except pymongo.errors.ConnectionFailure as e:
-                self.log.error(e)
-                self.log.error("Cannot connect to mongodb.  Will retry in 10 seconds.")
-                time.sleep(10)
-                continue
+        self.log.info("Entering endless loop")
+        while 1:
+            to_process = list(self.run_collection.find(self.query))
 
-            if not self.input.initialized:
-                self.log.warning("No dataset available to process; waiting one second.")
-                time.sleep(1)
+            if len(to_process) == 0:
+                self.log.warning("No dataset available to process; waiting %d second." % self.waittime)
+                time.sleep(self.waittime)
             else:
-                self._process_chosen_dataset()
+                self.log.info("Processing %s" % str([x['name'] for x in to_process]))
+                map(lambda x: self._process_chosen_run(x), to_process)
 
-    def _process_chosen_dataset(self):
+
+    def get_connection(self, hostname):
+        if hostname not in self.connections:
+            try:
+                self.connections[hostname] = pymongo.Connection(hostname)
+
+            except pymongo.errors.ConnectionFailure as e:
+                self.log.fatal("Cannot connect to mongo at %s" % hostname)
+
+        return self.connections[hostname]
+
+
+    def process(self, **kwargs):
+        raise NotImplementedError()
+
+
+
+    def _process_chosen_run(self, run_doc):
         """This will process the dataset in chunks, but will wait until end of run
         chunks -1 means go forever"""
+        self.log.info(run_doc)
+        data_location = run_doc['reader']['storage_buffer']
+        conn = self.get_connection(data_location["dbaddr"])
+        db = conn[data_location["dbaddr"]]
+        collection = db[data_location["dbcollection"]]
 
-        self._startup()
+        sort_key = [('time', -1),
+                    ('module', -1),
+                     ('_id', -1)]
+
+        self.collection.ensure_index(sort_key,
+                                     background=True)
 
         # int rounds down
-        min_time_index = int(self.input.get_min_time() / self.chunksize)
+        min_time_index = 0 # int(self.input.get_min_time() / self.chunksize)
 
         current_time_index = min_time_index
         search_for_more_data = True
 
         while (search_for_more_data):
-            if self.input.has_run_ended():
+
+            doc = self.collection.find_one({},
+                                           fields=['time'],
+                                           sort=sort_key)
+
+            max_time = 0
+            if doc is not None and doc['time'] is not None:
+                max_time = doc['time']
+
+            if run_doc['reader']['data_taking_ended']:
                 # Round up
                 self.log.info("Data taking has ended; processing remaining data.")
-                max_time_index = math.ceil(self.input.get_max_time() / self.chunksize)
+                max_time_index = math.ceil(max_time / self.chunksize)
                 search_for_more_data = False
             else:
                 # Round down
-                max_time_index = int(self.input.get_max_time() / self.chunksize)
+                max_time -= 1e8
+                max_time_index = int(max_time / self.chunksize) - 1
+                max_time_index = max(max_time_index, 0)
 
-            # Rates should be posted by tasks to mongo?
             if max_time_index > current_time_index:
                 for i in tqdm(range(current_time_index, max_time_index)):
                     t0 = (i * self.chunksize)
@@ -181,7 +213,6 @@ class Base:
                                  collection_name=self.input.get_collection_name(),
                                  hostname=self.input.get_hostname())
 
-                self.send_stats()
                 processed_time = (max_time_index - current_time_index)
                 processed_time *= self.chunksize / 1e8
                 self.log.info("Processed %d seconds; searching for more data." % processed_time)
@@ -189,71 +220,22 @@ class Base:
                 current_time_index = max_time_index
             else:
                 self.log.debug('Waiting %f seconds' % self.waittime)
-                self.send_stats()
                 time.sleep(self.waittime)
-                self.send_stats()
 
-        self.send_stats()
+            run_doc = self.run_collection.find_one(run_doc)
 
-        self._shutdown()
+        run_doc['trigger']['status'] = 'processed'
 
-        self.send_stats()
-        self.drop_collection()
-
-    def drop_collection(self):
-        self.input.get_db().drop_collection(self.input.get_collection_name())
-
-    def get_processing_function(self):
-        raise NotImplementedError()
-
-    def _print_stats(self, amount_data_processed, dt):
-
-        self.log.debug("%d bytes processed in %d seconds" % (amount_data_processed,
-                                                             dt))
-        if dt < 1.0:
-            self.log.debug("Rate: N/A")
-        else:
-            data_rate = amount_data_processed / dt
-            rate_string = sizeof_fmt(data_rate) + 'ps'
-            self.log.debug("Rate: %s" % (rate_string))
-
-    def process(self, **kwargs):
-        raise NotImplementedError()
-
-    def send_stats(self, **kwargs):
-        raise NotImplementedError()
-
-    def _startup(self):
-        self.start_time = time.time()
-        self.stats['size_pass'] = 0
-        self.stats['size_fail'] = 0
-
-    def _shutdown(self):
-        pass
 
 
 class SingleThreaded(Base):
 
     def __init__(self, **kwargs):
         Base.__init__(self, **kwargs)
-        self.start_time = None
+
 
     def process(self, **kwargs):
-        self.stats['count_completed'] += 1
-
-        self.stats['count_completed'] += 1
-        self.stats['size_pass'] += process_time_range_task(**kwargs)
-        self.stats['size_fail'] += 0
-
-        stop_time = time.time()
-
-        self.stats['rate'] = self.stats['size_pass'] / (stop_time - self.start_time)
-        self.stats['duration'] = (stop_time - self.start_time)
-        # self.log.fatal("took %d secs" % (stop_time-self.start_time))
-        self.log.fatal('rate %sps' % sizeof_fmt(self.stats['rate']))
-
-    def send_stats(self):
-        self.controldb.send_stats(self.stats)
+        process_time_range_task(**kwargs)
 
 
 class Celery(Base):
@@ -264,25 +246,3 @@ class Celery(Base):
 
     def process(self, **kwargs):
         self.results.add(process_time_range_task.delay(**kwargs))
-
-    def send_stats(self):
-        self.stats['count_completed'] = self.results.completed_count()
-        self.stats['failed'] = self.results.failed()
-        self.controldb.send_stats(self.stats)
-
-    def _shutdown(self):
-        self.log.fatal("Waiting for jobs to finish")
-
-        self.stats['size_pass'] = 0
-        self.stats['size_fail'] = 0
-        start_time = time.time()
-        for x in self.results.join(timeout=600):
-            self.stats['size_pass'] += x
-            self.stats['size_fail'] += 0
-
-        stop_time = time.time()
-        self.stats['rate'] = self.stats['size_pass'] / (stop_time - start_time)
-        self.stats['duration'] = (stop_time - start_time)
-
-        self.log.fatal("took %d secs" % (stop_time - start_time))
-        self.log.fatal('rate %sps' % sizeof_fmt(self.stats['rate']))
