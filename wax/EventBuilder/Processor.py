@@ -32,16 +32,13 @@ import time
 
 import pymongo
 from tqdm import tqdm
-from wax.Database import InputDBInterface, OutputDBInterface, ControlDBInterface
 from wax import Configuration
 from wax.EventBuilder.Tasks import process_time_range_task
+from StringIO import StringIO
 
 from celery import result
 
 __author__ = 'tunnell'
-CONNECTION = None
-
-
 
 def sizeof_fmt(num):
     """input is bytes"""
@@ -73,9 +70,12 @@ class Base:
                  threshold=Configuration.THRESHOLD,
                  run_hostname=Configuration.HOSTNAME):
         # Logging
+        self.buffer = StringIO()
         logging.basicConfig(filename='example.log',level=logging.DEBUG)
+        logging.StreamHandler(self.buffer)
         self.log = logging.getLogger(__name__)
-        
+
+
         # Chunksize
         if chunksize <= 0:
             raise ValueError("chunksize <= 0: cannot analyze negative number of samples.")
@@ -155,6 +155,20 @@ class Base:
     def _process_chosen_run(self, run_doc):
         """This will process the dataset in chunks, but will wait until end of run
         chunks -1 means go forever"""
+        self.buffer = StringIO()
+
+        #print >> self.buffer, "Log output"
+
+        rootLogger = logging.getLogger()
+
+        self.logHandler = logging.StreamHandler(self.buffer)
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        self.logHandler.setFormatter(formatter)
+        rootLogger.addHandler(self.logHandler)
+
+        self.logHandler = logging.StreamHandler(self.buffer)
+        self.log.addHandler(self.logHandler)
+
         self.log.info(run_doc)
         data_location = run_doc['reader']['storage_buffer']
         conn = self.get_connection(data_location["dbaddr"])
@@ -165,8 +179,8 @@ class Base:
                     ('module', -1),
                      ('_id', -1)]
 
-        self.collection.ensure_index(sort_key,
-                                     background=True)
+        collection.ensure_index(sort_key,
+                                background=True)
 
         # int rounds down
         min_time_index = 0 # int(self.input.get_min_time() / self.chunksize)
@@ -217,7 +231,17 @@ class Base:
 
             run_doc = self.run_collection.find_one(run_doc)
 
+
+        rootLogger.removeHandler(self.logHandler)
+
+        self.logHandler.flush()
+        self.buffer.flush()
+        x = self.buffer.getvalue()
+        self.log.fatal(x)
+
         run_doc['trigger']['status'] = 'processed'
+        run_doc['trigger']['log'] = x
+        self.run_collection(run_doc)
 
 
 
