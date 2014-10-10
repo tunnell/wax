@@ -208,7 +208,8 @@ class Base:
                 time.sleep(self.waittime)
 
             max_time = doc['time']
-            log.info("Maximum time is %d" % max_time)
+            log.info("Maximum time is %d { '_id' : %s}" % (max_time,
+                                                           doc['_id']))
 
             if run_doc['reader']['data_taking_ended']:
                 # Round up
