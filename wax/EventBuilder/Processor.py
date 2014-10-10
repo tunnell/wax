@@ -73,9 +73,9 @@ class Base:
                  threshold=Configuration.THRESHOLD,
                  run_hostname=Configuration.HOSTNAME):
         # Logging
+        logging.basicConfig(filename='example.log',level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
-        self.log.setLevel(10)
-
+        
         # Chunksize
         if chunksize <= 0:
             raise ValueError("chunksize <= 0: cannot analyze negative number of samples.")
@@ -111,7 +111,7 @@ class Base:
         self.run_collection = self.get_connection(run_hostname)[run_db_name][run_collection_name]
 
         self.query = {"name": {'$exists': True},
-                 "starttime": {'$exists': True},
+                 "starttimestamp": {'$exists': True},
                  "runmode": {'$exists': True},
                  "reader": {'$exists': True},
                  "trigger": {'$exists': True},
@@ -123,7 +123,9 @@ class Base:
 
         self.log.info("Entering endless loop")
         while 1:
+            self.log.fatal("WTF")
             to_process = list(self.run_collection.find(self.query))
+            self.log.fatal(to_process)
 
             if len(to_process) == 0:
                 self.log.warning("No dataset available to process; waiting %d second." % self.waittime)
@@ -170,6 +172,8 @@ class Base:
 
         current_time_index = min_time_index
         search_for_more_data = True
+
+        self.log.fatal("GOT HERE")
 
         while (search_for_more_data):
 
