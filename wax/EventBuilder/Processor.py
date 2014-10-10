@@ -165,7 +165,7 @@ class Base:
                     ('module', -1),
                      ('_id', -1)]
 
-        self.collection.ensure_index(sort_key,
+        collection.ensure_index(sort_key,
                                      background=True)
 
         # int rounds down
@@ -178,7 +178,7 @@ class Base:
 
         while (search_for_more_data):
 
-            doc = self.collection.find_one({},
+            doc = collection.find_one({},
                                            fields=['time'],
                                            sort=sort_key)
 
@@ -215,9 +215,14 @@ class Base:
                 self.log.debug('Waiting %f seconds' % self.waittime)
                 time.sleep(self.waittime)
 
-            run_doc = self.run_collection.find_one(run_doc)
+            self.log.fatal('before')
+            self.log.fatal(run_doc)
+            run_doc = self.run_collection.find_one({'_id' : run_doc['_id']})
+            self.log.fatal('after')
+            self.log.fatal(run_doc)
 
         run_doc['trigger']['status'] = 'processed'
+        self.run_collection.save(run_doc)
 
 
 
