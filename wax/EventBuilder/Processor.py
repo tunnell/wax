@@ -206,6 +206,7 @@ class Base:
             if doc is None or doc['time'] is None:
                 log.warning("Cannot find maximum time; wait %d s and try again" % self.waittime)
                 time.sleep(self.waittime)
+                continue
 
             max_time = doc['time']
             log.info("Maximum time is %d { '_id' : %s}" % (max_time,
