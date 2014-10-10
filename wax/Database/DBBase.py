@@ -53,9 +53,6 @@ class MongoDBBase():
         dummy_doc = {}
         self.collection.insert(dummy_doc)
         self.collection.remove(dummy_doc)
-        if self.db.previous_error() is not None:
-            self.log.fatal(self.db.previous_error())
-            raise RuntimeError(self.db.previous_error())
         
     @staticmethod
     def get_db_name():
