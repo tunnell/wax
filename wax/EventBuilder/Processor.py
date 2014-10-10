@@ -70,10 +70,12 @@ class Base:
                  threshold=Configuration.THRESHOLD,
                  run_hostname=Configuration.HOSTNAME):
         # Logging
-        self.buffer = StringIO()
-        logging.basicConfig(filename='example.log',level=logging.DEBUG)
-        logging.StreamHandler(self.buffer)
-        self.log = logging.getLogger(__name__)
+        logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s %(message)s',
+                            handlers=[logging.handlers.TimedRotatingFileHandler("trigger.log",
+                                                                                when='D'),
+                                      logging.StreamHandler()])
+        self.log = logging.getLogger()
 
 
         # Chunksize
@@ -155,21 +157,17 @@ class Base:
     def _process_chosen_run(self, run_doc):
         """This will process the dataset in chunks, but will wait until end of run
         chunks -1 means go forever"""
-        self.buffer = StringIO()
+        buffer = StringIO()
 
-        #print >> self.buffer, "Log output"
+        log = logging.getLogger()
 
-        rootLogger = logging.getLogger()
-
-        self.logHandler = logging.StreamHandler(self.buffer)
+        mongoHandler = logging.StreamHandler(buffer)
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        self.logHandler.setFormatter(formatter)
-        rootLogger.addHandler(self.logHandler)
+        mongoHandler.setFormatter(formatter)
+        mongoHandler.setLevel(logging.WARNING)
+        log.addHandler(mongoHandler)
 
-        self.logHandler = logging.StreamHandler(self.buffer)
-        self.log.addHandler(self.logHandler)
-
-        self.log.info(run_doc)
+        log.info(run_doc)
         data_location = run_doc['reader']['storage_buffer']
         conn = self.get_connection(data_location["dbaddr"])
         db = conn[data_location["dbaddr"]]
@@ -188,7 +186,7 @@ class Base:
         current_time_index = min_time_index
         search_for_more_data = True
 
-        self.log.fatal("GOT HERE")
+        log.fatal("GOT HERE")
 
         while (search_for_more_data):
 
@@ -222,7 +220,7 @@ class Base:
 
                 processed_time = (max_time_index - current_time_index)
                 processed_time *= self.chunksize / 1e8
-                self.log.info("Processed %d seconds; searching for more data." % processed_time)
+                log.info("Processed %d seconds; searching for more data." % processed_time)
 
                 current_time_index = max_time_index
             else:
@@ -236,12 +234,12 @@ class Base:
             self.log.fatal(run_doc)
 
 
-        rootLogger.removeHandler(self.logHandler)
+        log.removeHandler(mongoHandler)
 
-        self.logHandler.flush()
-        self.buffer.flush()
-        x = self.buffer.getvalue()
-        self.log.fatal(x)
+        mongoHandler.flush()
+        buffer.flush()
+        x = buffer.getvalue()
+        log.fatal(x)
 
         run_doc['trigger']['status'] = 'processed'
         run_doc['trigger']['log'] = x
