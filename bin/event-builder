@@ -21,7 +21,6 @@ from wax.EventBuilder import Processor
 def main(chunksize,
          padding,
          threshold,
-         dataset,
          hostname,
          celery,
          **kwargs):
@@ -30,16 +29,10 @@ def main(chunksize,
     if celery:
         processing_class = Processor.Celery
 
-    p = processing_class(chunksize=chunksize,
-                         padding=padding,
-                         threshold=threshold)
-
-    if dataset == None:
-        p.loop_and_find_new_datasets(hostname=hostname)
-    else:
-        p.process_single_dataset(hostname=hostname,
-                                 dataset=dataset)
-
+    processing_class(chunksize=chunksize,
+                     padding=padding,
+                     threshold=threshold,
+                     run_hostname=hostname)
 
 if __name__ == '__main__':
 
