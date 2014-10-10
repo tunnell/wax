@@ -34,7 +34,7 @@ import pymongo
 from tqdm import tqdm
 from wax import Configuration
 from wax.EventBuilder.Tasks import process_time_range_task
-from StringIO import StringIO
+from io import StringIO
 
 from celery import result
 
@@ -225,7 +225,7 @@ class Base:
             log.info("Check if data to process (%d > %d)" % (max_time_index,
                                                              current_time_index))
             if max_time_index > current_time_index:
-                for i in tqdm(range(current_time_index, max_time_index)):
+                for i in tqdm(list(range(current_time_index, max_time_index))):
                     t0 = (i * self.chunksize)
                     t1 = (i + 1) * self.chunksize
 
