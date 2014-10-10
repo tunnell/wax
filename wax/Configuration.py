@@ -7,8 +7,6 @@ HOSTNAME = '127.0.0.1'
 
 CHUNKSIZE = 2 ** 28
 PADDING = (5 * MAX_DRIFT)
-# Samples are actually 14 bit unsigned, so 16 bit signed fine
-SAMPLE_TYPE = np.int16
 
 # 1 ADC count = 2.2 V / 2^14
 # 10 ns samples
