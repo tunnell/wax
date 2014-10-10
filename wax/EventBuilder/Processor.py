@@ -96,16 +96,6 @@ class Base:
         # Time to wait if no data found
         self.waittime = 1  # Wait 1 second, if no data around
 
-        self.stats = {'type': 'waxster',
-                      'count_completed': 0,
-                      'count_failed': 0,
-                      'count_processing': 0,
-                      'size_pass': 0,
-                      'size_fail': 0,
-                      'delay_average': 0.0,
-                      'delay_longest': 0.0
-                      }
-
         run_port = 27017
         run_db_name = 'online'
         run_collection_name = 'runs'
@@ -124,12 +114,10 @@ class Base:
                  "starttime": {'$exists': True},
                  "runmode": {'$exists': True},
                  "reader": {'$exists': True},
-                 "trigger": {'$exists': True,
-                             'status' : 'waiting_to_be_processed',
-                             "mode": {'$exists': True},
-                             },
-                 "processor": {'$exists': True,
-                               "mode": {'$exists': True}},
+                 "trigger": {'$exists': True},
+                'trigger.status' : 'waiting_to_be_processed',
+                     "trigger.mode": {'$exists': True},
+                 "processor": {'$exists': True},
                  "comments": {'$exists': True},
                  }
 
