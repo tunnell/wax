@@ -202,9 +202,9 @@ class Base:
                                       fields=['time'],
                                        sort=sort_key)
 
-            max_time = 0
             if doc is None or doc['time'] is None:
                 log.warning("Cannot find maximum time; wait %d s and try again" % self.waittime)
+                log.debug(doc)
                 time.sleep(self.waittime)
                 continue
 
