@@ -90,33 +90,42 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     // ** Fetch data phase **
     // **********************
 
-    // 'p' will be the fetched object
-    mongo::BSONObj p;
+    // 'p' and 'q' will be the fetched documents
+    mongo::BSONObj p, q;
 
     // Construct a mongo query for a certain time range
     auto_ptr < mongo::DBClientCursor > cursor = conn.query(mongo_input_location,
-							   QUERY("time" << mongo::GT << (long long int) t0 << "time" << mongo::LT << (long long int)  t1).sort("time", 1));
+							   QUERY("time_min" << mongo::LT << (long long int) t1 << "time_max" << mongo::GT << (long long int)  t0).sort("time_min", 1));
 
     // Iterate over all data for this query
     while (cursor->more()) {
+
+        // Each document that the cursor returns has embedded documents within.
         p = cursor->next();
-        occurence_samples.clear();
-        GetDataFromBSON(p, occurence_samples, id, module, zipped, time, size);
 
-        time_correction = time - t0;
+        std::vector<BSONElement> be = p.getField("embedded_docs").Array();
 
-        // Take note of the time range corresponding to this occurence
-        local_occurence_ranges.push_back(time_correction / reduction_factor);
-        local_occurence_ranges.push_back((time_correction + occurence_samples.size()) / reduction_factor);
+        for (unsigned int i = 0; i<be.size(); i++) {
+            q = be[i].embeddedObject();
 
-        input_docs.push_back(p.copy());
+            occurence_samples.clear();
+            GetDataFromBSON(p, occurence_samples, id, module, zipped, time, size);
 
-        // Add samples to sum waveform
-        AddSamplesFromOccurence(occurence_samples,
-                                time_correction,
-                                reduction_factor);
+            time_correction = time - t0;
 
-        processed_size += size;
+            // Take note of the time range corresponding to this occurence
+            local_occurence_ranges.push_back(time_correction / reduction_factor);
+            local_occurence_ranges.push_back((time_correction + occurence_samples.size()) / reduction_factor);
+
+            input_docs.push_back(q.copy());
+
+            // Add samples to sum waveform
+            AddSamplesFromOccurence(occurence_samples,
+                                    time_correction,
+                                    reduction_factor);
+
+            processed_size += size;
+        }
     }
 
     // Here we build the event ranges

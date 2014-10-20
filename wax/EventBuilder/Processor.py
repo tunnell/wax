@@ -113,20 +113,18 @@ class Base:
         self.run_collection = self.get_connection(run_hostname)[run_db_name][run_collection_name]
 
         self.query = {"name": {'$exists': True},
-                 "starttimestamp": {'$exists': True},
-                 "runmode": {'$exists': True},
-                 "reader": {'$exists': True},
-                'trigger.status' : 'waiting_to_be_processed',
-                     "trigger.mode": {'$exists': True},
-                 "processor": {'$exists': True},
-                 "comments": {'$exists': True},
-                 }
+                      "starttimestamp": {'$exists': True},
+                      "runmode": {'$exists': True},
+                      "reader": {'$exists': True},
+                      'trigger.status' : 'waiting_to_be_processed',
+                      "trigger.mode": {'$exists': True},
+                      "processor": {'$exists': True},
+                      "comments": {'$exists': True},
+                      }
 
         self.log.info("Entering endless loop")
         while 1:
-            self.log.fatal("WTF")
             to_process = list(self.run_collection.find(self.query))
-            self.log.fatal(to_process)
 
             if len(to_process) == 0:
                 self.log.warning("No dataset available to process; waiting %d second." % self.waittime)
@@ -201,6 +199,7 @@ class Base:
             doc = collection.find_one({},
                                       fields=['time'],
                                        sort=sort_key)
+
 
             if doc is None or doc['time'] is None:
                 log.warning("Cannot find maximum time; wait %d s and try again" % self.waittime)
