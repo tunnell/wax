@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Overview: module code &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
+  <title>wax package &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -138,8 +138,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>Overview: module code</li>
+    <li>wax package</li>
       <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/docs/wax.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -147,15 +149,118 @@
 </div>
           <div role="main">
             
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="wax/Configuration.html">wax.Configuration</a></li>
-<li><a href="wax/Database/ControlDBInterface.html">wax.Database.ControlDBInterface</a></li>
-<li><a href="wax/Database/DBBase.html">wax.Database.DBBase</a></li>
-<li><a href="wax/Database/InputDBInterface.html">wax.Database.InputDBInterface</a></li>
-<li><a href="wax/Database/OutputDBInterface.html">wax.Database.OutputDBInterface</a></li>
-<li><a href="wax/EventAnalyzer/Offline.html">wax.EventAnalyzer.Offline</a></li>
-<li><a href="wax/EventBuilder/Processor.html">wax.EventBuilder.Processor</a></li>
+  <div class="section" id="wax-package">
+<h1>wax package<a class="headerlink" href="#wax-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="wax.Database.html">wax.Database package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wax.Database.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.Database.html#module-wax.Database.ControlDBInterface">wax.Database.ControlDBInterface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.Database.html#module-wax.Database.DBBase">wax.Database.DBBase module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.Database.html#module-wax.Database.InputDBInterface">wax.Database.InputDBInterface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.Database.html#module-wax.Database.OutputDBInterface">wax.Database.OutputDBInterface module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.Database.html#module-wax.Database">Module contents</a></li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wax.EventAnalyzer.html">wax.EventAnalyzer package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventAnalyzer.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventAnalyzer.html#module-wax.EventAnalyzer.Offline">wax.EventAnalyzer.Offline module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventAnalyzer.html#wax-eventanalyzer-samples-module">wax.EventAnalyzer.Samples module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventAnalyzer.html#module-wax.EventAnalyzer">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wax.EventBuilder.html">wax.EventBuilder package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventBuilder.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventBuilder.html#module-wax.EventBuilder.Processor">wax.EventBuilder.Processor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="wax.EventBuilder.html#cito-core-eventbuilding">cito.core.EventBuilding</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventBuilder.html#module-wax.EventBuilder.Tasks">wax.EventBuilder.Tasks module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wax.EventBuilder.html#module-wax.EventBuilder">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-wax.Configuration">
+<span id="wax-configuration-module"></span><h2>wax.Configuration module<a class="headerlink" href="#module-wax.Configuration" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wax.Configuration.EventBuilder">
+<em class="property">class </em><tt class="descclassname">wax.Configuration.</tt><tt class="descname">EventBuilder</tt><big>(</big><em>name=''</em><big>)</big><a class="reference internal" href="../_modules/wax/Configuration.html#EventBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.Configuration.EventBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">configglue.schema.Section</span></tt></p>
+<dl class="attribute">
+<dt id="wax.Configuration.EventBuilder.celery">
+<tt class="descname">celery</tt><em class="property"> = &lt;BoolOption&gt;</em><a class="headerlink" href="#wax.Configuration.EventBuilder.celery" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wax.Configuration.EventBuilder.chunks">
+<tt class="descname">chunks</tt><em class="property"> = &lt;IntOption&gt;</em><a class="headerlink" href="#wax.Configuration.EventBuilder.chunks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wax.Configuration.EventBuilder.chunksize">
+<tt class="descname">chunksize</tt><em class="property"> = &lt;IntOption&gt;</em><a class="headerlink" href="#wax.Configuration.EventBuilder.chunksize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wax.Configuration.EventBuilder.dataset">
+<tt class="descname">dataset</tt><em class="property"> = &lt;StringOption&gt;</em><a class="headerlink" href="#wax.Configuration.EventBuilder.dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wax.Configuration.EventBuilder.padding">
+<tt class="descname">padding</tt><em class="property"> = &lt;IntOption&gt;</em><a class="headerlink" href="#wax.Configuration.EventBuilder.padding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wax.Configuration.EventBuilder.profile">
+<tt class="descname">profile</tt><em class="property"> = &lt;BoolOption&gt;</em><a class="headerlink" href="#wax.Configuration.EventBuilder.profile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wax.Configuration.EventBuilder.threshold">
+<tt class="descname">threshold</tt><em class="property"> = &lt;IntOption&gt;</em><a class="headerlink" href="#wax.Configuration.EventBuilder.threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wax.Configuration.File">
+<em class="property">class </em><tt class="descclassname">wax.Configuration.</tt><tt class="descname">File</tt><big>(</big><em>name=''</em><big>)</big><a class="reference internal" href="../_modules/wax/Configuration.html#File"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.Configuration.File" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">configglue.schema.Section</span></tt></p>
+<dl class="attribute">
+<dt id="wax.Configuration.File.filename">
+<tt class="descname">filename</tt><em class="property"> = &lt;StringOption&gt;</em><a class="headerlink" href="#wax.Configuration.File.filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wax.Configuration.Mongo">
+<em class="property">class </em><tt class="descclassname">wax.Configuration.</tt><tt class="descname">Mongo</tt><big>(</big><em>name=''</em><big>)</big><a class="reference internal" href="../_modules/wax/Configuration.html#Mongo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.Configuration.Mongo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">configglue.schema.Section</span></tt></p>
+<dl class="attribute">
+<dt id="wax.Configuration.Mongo.hostname">
+<tt class="descname">hostname</tt><em class="property"> = &lt;StringOption&gt;</em><a class="headerlink" href="#wax.Configuration.Mongo.hostname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="wax-wax-compiled-helpers-module">
+<h2>wax.wax_compiled_helpers module<a class="headerlink" href="#wax-wax-compiled-helpers-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-wax">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wax" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
 
           </div>
           <footer>

@@ -66,16 +66,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../installation.html#installing-system-dependencies">Installing system dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../installation.html#preparing-python-environment">Preparing Python environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../installation.html#installing-wax">Installing Wax</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../celery.html">Starting Celery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mongo.html">Starting Mongo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../data_format.html">Internal data formats</a><ul>
@@ -157,18 +155,17 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="n">MAX_ADC_VALUE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">14</span>  <span class="c"># 14 bit ADC samples</span>
-<span class="n">MAX_DRIFT</span> <span class="o">=</span> <span class="mi">18000</span>  <span class="c"># units of 10 ns</span>
+<span class="n">MAX_DRIFT</span> <span class="o">=</span> <span class="mi">30000</span> <span class="c"># units of 10 ns</span>
 <span class="n">HOSTNAME</span> <span class="o">=</span> <span class="s">&#39;127.0.0.1&#39;</span>
 
 <span class="n">CHUNKSIZE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">28</span>
 <span class="n">PADDING</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">MAX_DRIFT</span><span class="p">)</span>
-<span class="c"># Samples are actually 14 bit unsigned, so 16 bit signed fine</span>
-<span class="n">SAMPLE_TYPE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
 
 <span class="c"># 1 ADC count = 2.2 V / 2^14</span>
 <span class="c"># 10 ns samples</span>
 <span class="c"># 2.4 mV * us = 150 pe   -&gt;  0.2 V 10 ns</span>
-<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mi">10000</span> <span class="c"># ADC counts, 10 ADC counts / pe</span>
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mi">10000</span>  <span class="c"># ADC counts, 10 ADC counts / pe</span>
+
 
 <div class="viewcode-block" id="Mongo"><a class="viewcode-back" href="../../wax.html#wax.Configuration.Mongo">[docs]</a><span class="k">class</span> <span class="nc">Mongo</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">Section</span><span class="p">):</span>
     <span class="n">hostname</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">StringOption</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">HOSTNAME</span><span class="p">,</span>

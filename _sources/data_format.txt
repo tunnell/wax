@@ -23,7 +23,6 @@ keys are expected:
 * `_id`: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.
 * `compressed`: Binary value that determines if the data is compressed using `snappy <https://code.google.com/p/snappy/>`_
 * `data_taking_ended`: Tells cito if data is still to be reported.  This is set to false during aquisition, and true at the end of the run. `cito` uses this to know when it should just process the rest of the data and not wait for new data.
-* `modules`: List of modules.
 * `runtype`
 * `starttime`: the 64-bit start time in units of 10 ns.  This must be the smallest time seem in any of the input data documents.
 
@@ -35,7 +34,6 @@ Said differently, expect:
         "_id": hex_string,
         "compressed": bool,
         "data_taking_ended": bool,
-        "modules" : [int]
         "runtype": string,
         "starttime": int,
     }

@@ -1,0 +1,30 @@
+wax.EventAnalyzer package
+=========================
+
+Submodules
+----------
+
+wax.EventAnalyzer.Offline module
+--------------------------------
+
+.. automodule:: wax.EventAnalyzer.Offline
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+wax.EventAnalyzer.Samples module
+--------------------------------
+
+.. automodule:: wax.EventAnalyzer.Samples
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: wax.EventAnalyzer
+    :members:
+    :undoc-members:
+    :show-inheritance:

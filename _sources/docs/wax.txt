@@ -6,6 +6,8 @@ Subpackages
 
 .. toctree::
 
+    wax.Database
+    wax.EventAnalyzer
     wax.EventBuilder
 
 Submodules

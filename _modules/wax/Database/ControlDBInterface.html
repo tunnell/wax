@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.Database.OutputDBInterface &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
+  <title>wax.Database.ControlDBInterface &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -141,7 +141,7 @@
       
           <li><a href="../../index.html">Module code</a> &raquo;</li>
       
-    <li>wax.Database.OutputDBInterface</li>
+    <li>wax.Database.ControlDBInterface</li>
       <li class="wy-breadcrumbs-aside">
         
       </li>
@@ -150,17 +150,45 @@
 </div>
           <div role="main">
             
-  <h1>Source code for wax.Database.OutputDBInterface</h1><div class="highlight"><pre>
-<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;tunnell&#39;</span>
+  <h1>Source code for wax.Database.ControlDBInterface</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Interface code to the stats data in MongoDB</span>
 
+<span class="sd">Mainly used for django website</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">wax.Database</span> <span class="kn">import</span> <span class="n">DBBase</span>
 
 
-<div class="viewcode-block" id="MongoDBOutput"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput">[docs]</a><span class="k">class</span> <span class="nc">MongoDBOutput</span><span class="p">(</span><span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="p">):</span>
+<div class="viewcode-block" id="DBStats"><a class="viewcode-back" href="../../../docs/wax.Database.html#wax.Database.ControlDBInterface.DBStats">[docs]</a><span class="k">class</span> <span class="nc">DBStats</span><span class="p">(</span><span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="n">DBBase</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">collection_name</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">collection_name</span> <span class="o">=</span> <span class="s">&#39;stats&#39;</span>
+
+        <span class="n">DBBase</span><span class="o">.</span><span class="n">MongoDBBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">hostname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Cannot initialize control DB.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
 
     <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="MongoDBOutput.get_db_name"><a class="viewcode-back" href="../../../wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput.get_db_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_name</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s">&#39;output&#39;</span></div></div>
+<div class="viewcode-block" id="DBStats.get_db_name"><a class="viewcode-back" href="../../../docs/wax.Database.html#wax.Database.ControlDBInterface.DBStats.get_db_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_name</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s">&#39;online&#39;</span>
+</div>
+<div class="viewcode-block" id="DBStats.send_stats"><a class="viewcode-back" href="../../../docs/wax.Database.html#wax.Database.ControlDBInterface.DBStats.send_stats">[docs]</a>    <span class="k">def</span> <span class="nf">send_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;createdAt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;expiresAfterSeconds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">43200</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_collection</span><span class="p">()</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

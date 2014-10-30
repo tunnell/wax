@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>wax.EventBuilder.Processor &mdash; Code for Intelligent Triggering Online 2.2.0 documentation</title>
+  <title>wax.EventBuilder.Processor &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -28,7 +28,9 @@
   
 
   
-    <link rel="top" title="Code for Intelligent Triggering Online 2.2.0 documentation" href="../../../index.html"/>
+    <link rel="stylesheet" href="../../../_static/breathe.css" type="text/css" />
+  
+    <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="../../../index.html"/>
         <link rel="up" title="Module code" href="../../index.html"/> 
 
   
@@ -64,16 +66,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-system-dependencies">Installing system dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#preparing-python-environment">Preparing Python environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../installation.html#installing-wax">Installing Wax</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../celery.html">Starting Celery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../mongo.html">Starting Mongo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data_format.html">Internal data formats</a><ul>
@@ -185,15 +185,16 @@
 
 <span class="kn">import</span> <span class="nn">pymongo</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">wax.Database</span> <span class="kn">import</span> <span class="n">InputDBInterface</span><span class="p">,</span> <span class="n">OutputDBInterface</span><span class="p">,</span> <span class="n">ControlDBInterface</span>
 <span class="kn">from</span> <span class="nn">wax</span> <span class="kn">import</span> <span class="n">Configuration</span>
-<span class="kn">from</span> <span class="nn">wax.EventBuilder.Tasks</span> <span class="kn">import</span> <span class="n">process_time_range</span>
+<span class="kn">from</span> <span class="nn">wax.EventBuilder.Tasks</span> <span class="kn">import</span> <span class="n">process_time_range_task</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="kn">from</span> <span class="nn">celery</span> <span class="kn">import</span> <span class="n">result</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;tunnell&#39;</span>
 
-
-
 <div class="viewcode-block" id="sizeof_fmt"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.sizeof_fmt">[docs]</a><span class="k">def</span> <span class="nf">sizeof_fmt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;input is bytes&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;KB&#39;</span><span class="p">,</span> <span class="s">&#39;MB&#39;</span><span class="p">,</span> <span class="s">&#39;GB&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mf">1024.0</span><span class="p">:</span>
             <span class="k">return</span> <span class="s">&quot;</span><span class="si">%3.1f</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
@@ -202,6 +203,7 @@
 
 </div>
 <div class="viewcode-block" id="sampletime_fmt"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.sampletime_fmt">[docs]</a><span class="k">def</span> <span class="nf">sampletime_fmt</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;num is in 10s of ns&quot;&quot;&quot;</span>
     <span class="n">num</span> <span class="o">*=</span> <span class="mi">10</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;ns&#39;</span><span class="p">,</span> <span class="s">&#39;us&#39;</span><span class="p">,</span> <span class="s">&#39;ms&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mf">1000.0</span><span class="p">:</span>
@@ -211,159 +213,226 @@
 
 </div>
 <div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base class processor</span>
+
+<span class="sd">    This is the base class of the single-threaded and Celery-based processors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">chunksize</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">CHUNKSIZE</span><span class="p">,</span>
                  <span class="n">padding</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">PADDING</span><span class="p">,</span>
-                 <span class="n">threshold</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">THRESHOLD</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;None dataset means it will find it</span>
+                 <span class="n">threshold</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">THRESHOLD</span><span class="p">,</span>
+                 <span class="n">run_hostname</span><span class="o">=</span><span class="n">Configuration</span><span class="o">.</span><span class="n">HOSTNAME</span><span class="p">):</span>
+        <span class="c"># Logging</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+                            <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%(asctime)s</span><span class="s"> </span><span class="si">%(message)s</span><span class="s">&#39;</span><span class="p">,</span>
+                            <span class="n">handlers</span><span class="o">=</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">(</span><span class="s">&quot;trigger.log&quot;</span><span class="p">,</span>
+                                                                                <span class="n">when</span><span class="o">=</span><span class="s">&#39;D&#39;</span><span class="p">),</span>
+                                      <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_input</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_output</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_controldb</span> <span class="o">=</span> <span class="bp">None</span>
-
+        <span class="c"># Chunksize</span>
         <span class="k">if</span> <span class="n">chunksize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;chunksize &lt;= 0: cannot analyze negative number of samples.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Using chunk size of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sampletime_fmt</span><span class="p">(</span><span class="n">chunksize</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span> <span class="o">=</span> <span class="n">chunksize</span>
 
+        <span class="c"># Padding</span>
         <span class="k">if</span> <span class="n">padding</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;padding &lt; 0: cannot analyze negative number of samples.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">padding</span> <span class="o">&gt;=</span> <span class="n">chunksize</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Padding is bigger than chunk?&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Using padding of </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">sampletime_fmt</span><span class="p">(</span><span class="n">padding</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
+
+        <span class="c"># Threshold</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span> <span class="o">=</span> <span class="mi">1</span> <span class="c"># Wait 1 second, if no data around</span>
+        <span class="c"># Time to wait if no data found</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c"># Wait 1 second, if no data around</span>
 
-    <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;If dataset == None, finds a collection on its own&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_controldb</span> <span class="o">=</span> <span class="n">ControlDBInterface</span><span class="o">.</span><span class="n">MongoDBControl</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="s">&#39;triggerrate&#39;</span><span class="p">,</span>
-                                                            <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>
+        <span class="n">run_port</span> <span class="o">=</span> <span class="mi">27017</span>
+        <span class="n">run_db_name</span> <span class="o">=</span> <span class="s">&#39;online&#39;</span>
+        <span class="n">run_collection_name</span> <span class="o">=</span> <span class="s">&#39;runs&#39;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">delete_collection_when_done</span> <span class="o">=</span> <span class="bp">True</span>
-        <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="c"># We&#39;ve chosen a dataset to process, probably for testing so don&#39;t</span>
-            <span class="c"># delete</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">delete_collection_when_done</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">InputDBInterface</span><span class="o">.</span><span class="n">MongoDBInput</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
-                                                   <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">OutputDBInterface</span><span class="o">.</span><span class="n">MongoDBOutput</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">(),</span>
-                                                          <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Cannot setup output DB.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c"># We have a few DB connections:</span>
+        <span class="c">#  - run control</span>
+        <span class="c">#  - input</span>
+        <span class="c">#  - output</span>
+        <span class="c">#  - stats</span>
 
-<div class="viewcode-block" id="Base.process_single_dataset"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.process_single_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">process_single_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
-        <span class="c"># def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):</span>
-        <span class="sd">&quot;&quot;&quot;This function makes lots of processing classes&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
-                             <span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;Exception resulted in fatal error; quiting.&quot;</span><span class="p">)</span>
-            <span class="k">raise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_connection</span><span class="p">(</span><span class="n">run_hostname</span><span class="p">)[</span><span class="n">run_db_name</span><span class="p">][</span><span class="n">run_collection_name</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;No dataset available to process; exiting.&quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_process_chosen_dataset</span><span class="p">()</span>
-</div>
-<div class="viewcode-block" id="Base.loop_and_find_new_datasets"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.loop_and_find_new_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">loop_and_find_new_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
-        <span class="c"># def EventBuilderDatasetLooper(hostname, dataset, chunks, chunksize, padding):</span>
-        <span class="sd">&quot;&quot;&quot;This function makes lots of processing classes&quot;&quot;&quot;</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">(</span><span class="n">hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>  <span class="c"># Dataset=None means it finds one</span>
-            <span class="k">except</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">ConnectionFailure</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Cannot connect to mongodb.  Will retry in 10 seconds.&quot;</span><span class="p">)</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-                <span class="k">continue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                      <span class="s">&quot;starttimestamp&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                      <span class="s">&quot;runmode&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                      <span class="s">&quot;reader&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                      <span class="s">&#39;trigger.status&#39;</span> <span class="p">:</span> <span class="s">&#39;waiting_to_be_processed&#39;</span><span class="p">,</span>
+                      <span class="s">&quot;trigger.mode&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                      <span class="s">&quot;processor&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                      <span class="s">&quot;comments&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;$exists&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">},</span>
+                      <span class="p">}</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No dataset available to process; waiting one second.&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_controldb</span><span class="o">.</span><span class="n">send_stats</span><span class="p">()</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Entering endless loop&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">to_process</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_process</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;No dataset available to process; waiting </span><span class="si">%d</span><span class="s"> second.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_process_chosen_dataset</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">to_process</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;Processing </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">run</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_process_chosen_run</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Base.get_connection"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.get_connection">[docs]</a>    <span class="k">def</span> <span class="nf">get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">hostname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">ConnectionFailure</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s">&quot;Cannot connect to mongo at </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">hostname</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">hostname</span><span class="p">]</span>
+
 </div>
-    <span class="k">def</span> <span class="nf">_process_chosen_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.process"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+
+</div>
+    <span class="k">def</span> <span class="nf">_process_chosen_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_doc</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This will process the dataset in chunks, but will wait until end of run</span>
 <span class="sd">        chunks -1 means go forever&quot;&quot;&quot;</span>
 
+        <span class="c"># Setup logging</span>
+        <span class="nb">buffer</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="n">mongoHandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%(asctime)s</span><span class="s"> - </span><span class="si">%(name)s</span><span class="s"> - </span><span class="si">%(levelname)s</span><span class="s"> - </span><span class="si">%(message)s</span><span class="s">&quot;</span><span class="p">)</span>
+        <span class="n">mongoHandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="n">mongoHandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">mongoHandler</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processing: </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">run_doc</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">],</span>
+                                          <span class="n">run_doc</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]))</span>
+
+        <span class="n">data_location</span> <span class="o">=</span> <span class="n">run_doc</span><span class="p">[</span><span class="s">&#39;reader&#39;</span><span class="p">][</span><span class="s">&#39;storage_buffer&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Data stored on: </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">data_location</span><span class="p">[</span><span class="s">&quot;dbaddr&quot;</span><span class="p">],</span>
+                                                    <span class="n">data_location</span><span class="p">[</span><span class="s">&quot;dbname&quot;</span><span class="p">],</span>
+                                                    <span class="n">data_location</span><span class="p">[</span><span class="s">&quot;dbcollection&quot;</span><span class="p">]))</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_connection</span><span class="p">(</span><span class="n">data_location</span><span class="p">[</span><span class="s">&quot;dbaddr&quot;</span><span class="p">])</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">conn</span><span class="p">[</span><span class="n">data_location</span><span class="p">[</span><span class="s">&quot;dbname&quot;</span><span class="p">]]</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="n">data_location</span><span class="p">[</span><span class="s">&quot;dbcollection&quot;</span><span class="p">]]</span>
+
+        <span class="n">sort_key</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s">&#39;module&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s">&#39;_id&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Ensuring index&quot;</span><span class="p">)</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">ensure_index</span><span class="p">(</span><span class="n">sort_key</span><span class="p">,</span>
+                                <span class="n">background</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
         <span class="c"># int rounds down</span>
-        <span class="n">min_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_min_time</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+        <span class="n">min_time_index</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">min_time_index</span>
         <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">True</span>
 
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Starting data search&quot;</span><span class="p">)</span>
         <span class="k">while</span> <span class="p">(</span><span class="n">search_for_more_data</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">has_run_ended</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Start of while loop that searches for data&quot;</span><span class="p">)</span>
+
+            <span class="c"># Find maximum time</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Identifying maximum time&quot;</span><span class="p">)</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({},</span>
+                                      <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span>
+                                       <span class="n">sort</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+
+
+            <span class="k">if</span> <span class="n">doc</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Cannot find maximum time; wait </span><span class="si">%d</span><span class="s"> s and try again&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">max_time</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Maximum time is </span><span class="si">%d</span><span class="s"> { &#39;_id&#39; : </span><span class="si">%s</span><span class="s">}&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">max_time</span><span class="p">,</span>
+                                                           <span class="n">doc</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]))</span>
+
+            <span class="k">if</span> <span class="n">run_doc</span><span class="p">[</span><span class="s">&#39;reader&#39;</span><span class="p">][</span><span class="s">&#39;data_taking_ended&#39;</span><span class="p">]:</span>
                 <span class="c"># Round up</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Data taking has ended; processing remaining data.&quot;</span><span class="p">)</span>
-                <span class="n">max_time_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Data taking has ended; processing remaining data.&quot;</span><span class="p">)</span>
+                <span class="n">max_time_index</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">max_time</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
                 <span class="n">search_for_more_data</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Data taking has NOT ended.&quot;</span><span class="p">)</span>
                 <span class="c"># Round down</span>
-                <span class="n">max_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_max_time</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
+                <span class="n">max_time</span> <span class="o">-=</span> <span class="mf">1e8</span>
+                <span class="n">max_time_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_time</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">max_time_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_time_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-            <span class="c"># Rates should be posted by tasks to mongo?</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Check if data to process (</span><span class="si">%d</span><span class="s"> &gt; </span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">max_time_index</span><span class="p">,</span>
+                                                             <span class="n">current_time_index</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">max_time_index</span> <span class="o">&gt;</span> <span class="n">current_time_index</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">current_time_index</span><span class="p">,</span> <span class="n">max_time_index</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">current_time_index</span><span class="p">,</span> <span class="n">max_time_index</span><span class="p">))):</span>
                     <span class="n">t0</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">)</span>
                     <span class="n">t1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span>
 
-                    <span class="n">process_time_range</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
-                                       <span class="n">collection_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">(),</span>
-                                       <span class="n">hostname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_hostname</span><span class="p">())</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="n">t1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
+                                 <span class="n">collection_name</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                                 <span class="n">hostname</span><span class="o">=</span><span class="n">data_location</span><span class="p">[</span><span class="s">&quot;dbaddr&quot;</span><span class="p">])</span>
 
                 <span class="n">processed_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_time_index</span> <span class="o">-</span> <span class="n">current_time_index</span><span class="p">)</span>
                 <span class="n">processed_time</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span> <span class="o">/</span> <span class="mf">1e8</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Processed </span><span class="si">%d</span><span class="s"> seconds; searching for more data.&quot;</span> <span class="o">%</span> <span class="n">processed_time</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Processed </span><span class="si">%d</span><span class="s"> seconds; searching for more data.&quot;</span> <span class="o">%</span> <span class="n">processed_time</span><span class="p">)</span>
 
                 <span class="n">current_time_index</span> <span class="o">=</span> <span class="n">max_time_index</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Waiting </span><span class="si">%f</span><span class="s"> seconds&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;No data to process&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Waiting </span><span class="si">%f</span><span class="s"> seconds&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
 
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Updating run doc&quot;</span><span class="p">)</span>
+            <span class="n">run_doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s">&#39;_id&#39;</span> <span class="p">:</span> <span class="n">run_doc</span><span class="p">[</span><span class="s">&#39;_id&#39;</span><span class="p">]})</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_collection_when_done</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">()</span>
 
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Run processed!&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Shutting down MongoDB log handler for this run&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">mongoHandler</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Base.get_processing_function"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.get_processing_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_processing_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+        <span class="n">mongoHandler</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="nb">buffer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">run_doc</span><span class="p">[</span><span class="s">&#39;trigger&#39;</span><span class="p">][</span><span class="s">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;processed&#39;</span>
+        <span class="n">run_doc</span><span class="p">[</span><span class="s">&#39;trigger&#39;</span><span class="p">][</span><span class="s">&#39;log&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_collection</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">run_doc</span><span class="p">)</span>
+
 </div>
-    <span class="k">def</span> <span class="nf">_print_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount_data_processed</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s"> bytes processed in </span><span class="si">%d</span><span class="s"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">amount_data_processed</span><span class="p">,</span>
-                                                             <span class="n">dt</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Rate: N/A&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data_rate</span> <span class="o">=</span> <span class="n">amount_data_processed</span> <span class="o">/</span> <span class="n">dt</span>
-            <span class="n">rate_string</span> <span class="o">=</span> <span class="n">sizeof_fmt</span><span class="p">(</span><span class="n">data_rate</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;ps&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Rate: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rate_string</span><span class="p">))</span>
-
-<div class="viewcode-block" id="Base.drop_collection"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Base.drop_collection">[docs]</a>    <span class="k">def</span> <span class="nf">drop_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_db</span><span class="p">()</span><span class="o">.</span><span class="n">drop_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get_collection_name</span><span class="p">())</span>
-
-</div></div>
 <div class="viewcode-block" id="SingleThreaded"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded">[docs]</a><span class="k">class</span> <span class="nc">SingleThreaded</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<div class="viewcode-block" id="SingleThreaded.get_processing_function"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded.get_processing_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_processing_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">process_time_range</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">Base</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SingleThreaded.process"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">process_time_range_task</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
 </div></div>
 <div class="viewcode-block" id="Celery"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Celery">[docs]</a><span class="k">class</span> <span class="nc">Celery</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<div class="viewcode-block" id="Celery.get_processing_function"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Celery.get_processing_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_processing_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">process_time_range</span><span class="o">.</span><span class="n">delay</span></div></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">Base</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">ResultSet</span><span class="p">([])</span>
+
+<div class="viewcode-block" id="Celery.process"><a class="viewcode-back" href="../../../wax.EventBuilder.html#wax.EventBuilder.Processor.Celery.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">process_time_range_task</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div></div>
 </pre></div>
 
           </div>
@@ -394,7 +463,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'2.2.0',
+            VERSION:'2.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

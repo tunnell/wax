@@ -65,16 +65,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-system-dependencies">Installing system dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#preparing-python-environment">Preparing Python environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-wax">Installing Wax</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="celery.html">Starting Celery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongo.html">Starting Mongo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_format.html">Internal data formats</a><ul>
@@ -156,8 +154,81 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="wax-eventbuilder-processor-module">
-<h2>wax.EventBuilder.Processor module<a class="headerlink" href="#wax-eventbuilder-processor-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-wax.EventBuilder.Processor">
+<span id="wax-eventbuilder-processor-module"></span><h2>wax.EventBuilder.Processor module<a class="headerlink" href="#module-wax.EventBuilder.Processor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cito-core-eventbuilding">
+<h3>cito.core.EventBuilding<a class="headerlink" href="#cito-core-eventbuilding" title="Permalink to this headline">¶</a></h3>
+<p>Event building converts time blocks of data (from different digitizer boards) into DAQ events.</p>
+<p>Event building (see jargon) occurs by taking all the data from all the boards recorded during a time window and,
+using some trigger logic, identifying independent events within this time window.  An EventBuilder class is defined
+that performs the following sequential operations:</p>
+<ul class="simple">
+<li>Build sum waveform</li>
+<li>Using trigger algorithm, identify peaks in time.</li>
+<li>If there is no pileup (read further for pileup details), an event corresponds to a predefined time range before
+and after each peak.</li>
+</ul>
+<p>More technically, a boolean array is created for each time sample, where True corresponds to a sample being saved
+and false corresponds to an event being discarded.  These values default to false.  Two variables are defined by the
+user: t_pre and t_post.  For each peak that the triggering algorithm identifies (e.g., charge above 100 pe), the
+range [peak_i - t_pre, peak_i + t_post] is set to true  (see get_index_mask_for_trigger).  Subsequently, continuous
+blocks of &#8216;true&#8217; are called an event.</p>
+<p>In other words, if two particles interact in the detector within a typical &#8216;event window&#8217;, then these two
+interactions are saved as one event.  Identifying how to break up the event is thus left for postprocessing.  For
+example, for peak_k &gt; peak_i, if peak_i + t_post &gt; peak_k - t_pre, these are one event.</p>
+<dl class="class">
+<dt id="wax.EventBuilder.Processor.Base">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">Base</tt><big>(</big><em>chunksize=268435456</em>, <em>padding=150000</em>, <em>threshold=10000</em>, <em>run_hostname='127.0.0.1'</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Base class processor</p>
+<p>This is the base class of the single-threaded and Celery-based processors.</p>
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.Base.get_connection">
+<tt class="descname">get_connection</tt><big>(</big><em>hostname</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.get_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.get_connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.Base.process">
+<tt class="descname">process</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Base.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Base.process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wax.EventBuilder.Processor.Celery">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">Celery</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Celery"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Celery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wax.EventBuilder.Processor.Base" title="wax.EventBuilder.Processor.Base"><tt class="xref py py-class docutils literal"><span class="pre">wax.EventBuilder.Processor.Base</span></tt></a></p>
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.Celery.process">
+<tt class="descname">process</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#Celery.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.Celery.process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wax.EventBuilder.Processor.SingleThreaded">
+<em class="property">class </em><tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">SingleThreaded</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#SingleThreaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.SingleThreaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wax.EventBuilder.Processor.Base" title="wax.EventBuilder.Processor.Base"><tt class="xref py py-class docutils literal"><span class="pre">wax.EventBuilder.Processor.Base</span></tt></a></p>
+<dl class="method">
+<dt id="wax.EventBuilder.Processor.SingleThreaded.process">
+<tt class="descname">process</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#SingleThreaded.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.SingleThreaded.process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wax.EventBuilder.Processor.sampletime_fmt">
+<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">sampletime_fmt</tt><big>(</big><em>num</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#sampletime_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.sampletime_fmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>num is in 10s of ns</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="wax.EventBuilder.Processor.sizeof_fmt">
+<tt class="descclassname">wax.EventBuilder.Processor.</tt><tt class="descname">sizeof_fmt</tt><big>(</big><em>num</em><big>)</big><a class="reference internal" href="_modules/wax/EventBuilder/Processor.html#sizeof_fmt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wax.EventBuilder.Processor.sizeof_fmt" title="Permalink to this definition">¶</a></dt>
+<dd><p>input is bytes</p>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="module-wax.EventBuilder">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-wax.EventBuilder" title="Permalink to this headline">¶</a></h2>

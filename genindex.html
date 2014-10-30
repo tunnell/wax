@@ -66,16 +66,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-system-dependencies">Installing system dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#preparing-python-environment">Preparing Python environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-wax">Installing Wax</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="celery.html">Starting Celery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongo.html">Starting Mongo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_format.html">Internal data formats</a><ul>
@@ -154,7 +152,8 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#C"><strong>C</strong></a>
+ <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
@@ -162,25 +161,40 @@
  | <a href="#H"><strong>H</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.Base">Base (class in wax.EventBuilder.Processor)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.Base">[1]</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder.celery">celery (wax.Configuration.EventBuilder attribute)</a>
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.Celery">Celery (class in wax.EventBuilder.Processor)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.Celery">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder.chunks">chunks (wax.Configuration.EventBuilder attribute)</a>
+  <dt><a href="wax.html#wax.Configuration.EventBuilder.celery">celery (wax.Configuration.EventBuilder attribute)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder.celery">[1]</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder.chunksize">chunksize (wax.Configuration.EventBuilder attribute)</a>
+  <dt><a href="wax.html#wax.Configuration.EventBuilder.chunks">chunks (wax.Configuration.EventBuilder attribute)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder.chunks">[1]</a>
+  </dt>
+
+      
+  <dt><a href="wax.html#wax.Configuration.EventBuilder.chunksize">chunksize (wax.Configuration.EventBuilder attribute)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder.chunksize">[1]</a>
   </dt>
 
   </dl></td>
@@ -190,13 +204,17 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder.dataset">dataset (wax.Configuration.EventBuilder attribute)</a>
+  <dt><a href="wax.html#wax.Configuration.EventBuilder.dataset">dataset (wax.Configuration.EventBuilder attribute)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder.dataset">[1]</a>
+  </dt>
+
+      
+  <dt><a href="docs/wax.Database.html#wax.Database.ControlDBInterface.DBStats">DBStats (class in wax.Database.ControlDBInterface)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.discover_collection">discover_collection() (wax.Database.DBBase.MongoDBBase method)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.discover_collection">discover_collection() (wax.Database.DBBase.MongoDBBase method)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase.discover_collection">[1]</a>
   </dt>
 
   </dl></td>
@@ -206,7 +224,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder">EventBuilder (class in wax.Configuration)</a>
+  <dt><a href="wax.html#wax.Configuration.EventBuilder">EventBuilder (class in wax.Configuration)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder">[1]</a>
   </dt>
 
   </dl></td>
@@ -216,17 +234,17 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.File">File (class in wax.Configuration)</a>
+  <dt><a href="wax.html#wax.Configuration.File">File (class in wax.Configuration)</a>, <a href="docs/wax.html#wax.Configuration.File">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.html#wax.Configuration.File.filename">filename (wax.Configuration.File attribute)</a>
+  <dt><a href="wax.html#wax.Configuration.File.filename">filename (wax.Configuration.File attribute)</a>, <a href="docs/wax.html#wax.Configuration.File.filename">[1]</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.find_control_doc">find_control_doc() (wax.Database.InputDBInterface.MongoDBInput method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.find_control_doc">find_control_doc() (wax.Database.InputDBInterface.MongoDBInput method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.find_control_doc">[1]</a>
   </dt>
 
   </dl></td>
@@ -236,76 +254,76 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_collection">get_collection() (wax.Database.DBBase.MongoDBBase method)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_collection">get_collection() (wax.Database.DBBase.MongoDBBase method)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase.get_collection">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_collection_name">get_collection_name() (wax.Database.DBBase.MongoDBBase method)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_collection_name">get_collection_name() (wax.Database.DBBase.MongoDBBase method)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase.get_collection_name">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_control_document">get_control_document() (wax.Database.InputDBInterface.MongoDBInput method)</a>
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.Base.get_connection">get_connection() (wax.EventBuilder.Processor.Base method)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.Base.get_connection">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_data_docs">get_data_docs() (wax.Database.InputDBInterface.MongoDBInput method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_control_document">get_control_document() (wax.Database.InputDBInterface.MongoDBInput method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_control_document">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_db">get_db() (wax.Database.DBBase.MongoDBBase method)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_db">get_db() (wax.Database.DBBase.MongoDBBase method)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase.get_db">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_db_name">get_db_name() (wax.Database.DBBase.MongoDBBase static method)</a>
+  <dt><a href="docs/wax.Database.html#wax.Database.ControlDBInterface.DBStats.get_db_name">get_db_name() (wax.Database.ControlDBInterface.DBStats static method)</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_db_name">(wax.Database.InputDBInterface.MongoDBInput static method)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_db_name">(wax.Database.DBBase.MongoDBBase static method)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase.get_db_name">[1]</a>
   </dt>
 
         
-  <dt><a href="wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput.get_db_name">(wax.Database.OutputDBInterface.MongoDBOutput static method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_db_name">(wax.Database.InputDBInterface.MongoDBInput static method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_db_name">[1]</a>
+  </dt>
+
+        
+  <dt><a href="wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput.get_db_name">(wax.Database.OutputDBInterface.MongoDBOutput static method)</a>, <a href="docs/wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput.get_db_name">[1]</a>
   </dt>
 
       </dl></dd>
       
-  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.get_description">get_description() (wax.EventAnalyzer.Offline.ProcessCommand method)</a>
+  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.get_description">get_description() (wax.EventAnalyzer.Offline.ProcessCommand method)</a>, <a href="docs/wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.get_description">[1]</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_hostname">get_hostname() (wax.Database.DBBase.MongoDBBase method)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_hostname">get_hostname() (wax.Database.DBBase.MongoDBBase method)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase.get_hostname">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_max_time">get_max_time() (wax.Database.InputDBInterface.MongoDBInput method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_max_time">get_max_time() (wax.Database.InputDBInterface.MongoDBInput method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_max_time">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_min_time">get_min_time() (wax.Database.InputDBInterface.MongoDBInput method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_min_time">get_min_time() (wax.Database.InputDBInterface.MongoDBInput method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_min_time">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_modules">get_modules() (wax.Database.InputDBInterface.MongoDBInput method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_modules">get_modules() (wax.Database.InputDBInterface.MongoDBInput method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_modules">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.get_parser">get_parser() (wax.EventAnalyzer.Offline.ProcessCommand method)</a>
+  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.get_parser">get_parser() (wax.EventAnalyzer.Offline.ProcessCommand method)</a>, <a href="docs/wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.get_parser">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Samples.get_samples_from_doc">get_samples_from_doc() (in module wax.EventAnalyzer.Samples)</a>
-  </dt>
-
-      
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_sort_key">get_sort_key() (wax.Database.DBBase.MongoDBBase static method)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase.get_sort_key">get_sort_key() (wax.Database.DBBase.MongoDBBase static method)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase.get_sort_key">[1]</a>
   </dt>
 
       <dd><dl>
         
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_sort_key">(wax.Database.InputDBInterface.MongoDBInput static method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_sort_key">(wax.Database.InputDBInterface.MongoDBInput static method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.get_sort_key">[1]</a>
   </dt>
 
       </dl></dd>
@@ -316,13 +334,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.has_run_ended">has_run_ended() (wax.Database.InputDBInterface.MongoDBInput method)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.has_run_ended">has_run_ended() (wax.Database.InputDBInterface.MongoDBInput method)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput.has_run_ended">[1]</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.Mongo.hostname">hostname (wax.Configuration.Mongo attribute)</a>
+  <dt><a href="wax.html#wax.Configuration.Mongo.hostname">hostname (wax.Configuration.Mongo attribute)</a>, <a href="docs/wax.html#wax.Configuration.Mongo.hostname">[1]</a>
   </dt>
 
   </dl></td>
@@ -332,21 +350,21 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.Mongo">Mongo (class in wax.Configuration)</a>
+  <dt><a href="wax.html#wax.Configuration.Mongo">Mongo (class in wax.Configuration)</a>, <a href="docs/wax.html#wax.Configuration.Mongo">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase">MongoDBBase (class in wax.Database.DBBase)</a>
+  <dt><a href="wax.Database.html#wax.Database.DBBase.MongoDBBase">MongoDBBase (class in wax.Database.DBBase)</a>, <a href="docs/wax.Database.html#wax.Database.DBBase.MongoDBBase">[1]</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput">MongoDBInput (class in wax.Database.InputDBInterface)</a>
+  <dt><a href="wax.Database.html#wax.Database.InputDBInterface.MongoDBInput">MongoDBInput (class in wax.Database.InputDBInterface)</a>, <a href="docs/wax.Database.html#wax.Database.InputDBInterface.MongoDBInput">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput">MongoDBOutput (class in wax.Database.OutputDBInterface)</a>
+  <dt><a href="wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput">MongoDBOutput (class in wax.Database.OutputDBInterface)</a>, <a href="docs/wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput">[1]</a>
   </dt>
 
   </dl></td>
@@ -356,17 +374,55 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder.padding">padding (wax.Configuration.EventBuilder attribute)</a>
+  <dt><a href="wax.html#wax.Configuration.EventBuilder.padding">padding (wax.Configuration.EventBuilder attribute)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder.padding">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand">ProcessCommand (class in wax.EventAnalyzer.Offline)</a>
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.Base.process">process() (wax.EventBuilder.Processor.Base method)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.Base.process">[1]</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.Celery.process">(wax.EventBuilder.Processor.Celery method)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.Celery.process">[1]</a>
+  </dt>
+
+        
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded.process">(wax.EventBuilder.Processor.SingleThreaded method)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded.process">[1]</a>
+  </dt>
+
+      </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand">ProcessCommand (class in wax.EventAnalyzer.Offline)</a>, <a href="docs/wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand">[1]</a>
+  </dt>
+
+      
+  <dt><a href="wax.html#wax.Configuration.EventBuilder.profile">profile (wax.Configuration.EventBuilder attribute)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder.profile">[1]</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.sampletime_fmt">sampletime_fmt() (in module wax.EventBuilder.Processor)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.sampletime_fmt">[1]</a>
+  </dt>
+
+      
+  <dt><a href="docs/wax.Database.html#wax.Database.ControlDBInterface.DBStats.send_stats">send_stats() (wax.Database.ControlDBInterface.DBStats method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder.profile">profile (wax.Configuration.EventBuilder attribute)</a>
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded">SingleThreaded (class in wax.EventBuilder.Processor)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.SingleThreaded">[1]</a>
+  </dt>
+
+      
+  <dt><a href="docs/wax.EventBuilder.html#wax.EventBuilder.Processor.sizeof_fmt">sizeof_fmt() (in module wax.EventBuilder.Processor)</a>, <a href="wax.EventBuilder.html#wax.EventBuilder.Processor.sizeof_fmt">[1]</a>
   </dt>
 
   </dl></td>
@@ -376,13 +432,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.take_action">take_action() (wax.EventAnalyzer.Offline.ProcessCommand method)</a>
+  <dt><a href="wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.take_action">take_action() (wax.EventAnalyzer.Offline.ProcessCommand method)</a>, <a href="docs/wax.EventAnalyzer.html#wax.EventAnalyzer.Offline.ProcessCommand.take_action">[1]</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#wax.Configuration.EventBuilder.threshold">threshold (wax.Configuration.EventBuilder attribute)</a>
+  <dt><a href="wax.html#wax.Configuration.EventBuilder.threshold">threshold (wax.Configuration.EventBuilder attribute)</a>, <a href="docs/wax.html#wax.Configuration.EventBuilder.threshold">[1]</a>
   </dt>
 
   </dl></td>
@@ -392,45 +448,53 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.html#module-wax">wax (module)</a>
+  <dt><a href="wax.html#module-wax">wax (module)</a>, <a href="docs/wax.html#module-wax">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.html#module-wax.Configuration">wax.Configuration (module)</a>
+  <dt><a href="wax.html#module-wax.Configuration">wax.Configuration (module)</a>, <a href="docs/wax.html#module-wax.Configuration">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#module-wax.Database">wax.Database (module)</a>
+  <dt><a href="wax.Database.html#module-wax.Database">wax.Database (module)</a>, <a href="docs/wax.Database.html#module-wax.Database">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#module-wax.Database.DBBase">wax.Database.DBBase (module)</a>
+  <dt><a href="docs/wax.Database.html#module-wax.Database.ControlDBInterface">wax.Database.ControlDBInterface (module)</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#module-wax.Database.InputDBInterface">wax.Database.InputDBInterface (module)</a>
+  <dt><a href="wax.Database.html#module-wax.Database.DBBase">wax.Database.DBBase (module)</a>, <a href="docs/wax.Database.html#module-wax.Database.DBBase">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.Database.html#module-wax.Database.OutputDBInterface">wax.Database.OutputDBInterface (module)</a>
+  <dt><a href="wax.Database.html#module-wax.Database.InputDBInterface">wax.Database.InputDBInterface (module)</a>, <a href="docs/wax.Database.html#module-wax.Database.InputDBInterface">[1]</a>
+  </dt>
+
+      
+  <dt><a href="wax.Database.html#module-wax.Database.OutputDBInterface">wax.Database.OutputDBInterface (module)</a>, <a href="docs/wax.Database.html#module-wax.Database.OutputDBInterface">[1]</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="wax.EventAnalyzer.html#module-wax.EventAnalyzer">wax.EventAnalyzer (module)</a>
+  <dt><a href="wax.EventAnalyzer.html#module-wax.EventAnalyzer">wax.EventAnalyzer (module)</a>, <a href="docs/wax.EventAnalyzer.html#module-wax.EventAnalyzer">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.EventAnalyzer.html#module-wax.EventAnalyzer.Offline">wax.EventAnalyzer.Offline (module)</a>
+  <dt><a href="wax.EventAnalyzer.html#module-wax.EventAnalyzer.Offline">wax.EventAnalyzer.Offline (module)</a>, <a href="docs/wax.EventAnalyzer.html#module-wax.EventAnalyzer.Offline">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.EventAnalyzer.html#module-wax.EventAnalyzer.Samples">wax.EventAnalyzer.Samples (module)</a>
+  <dt><a href="docs/wax.EventBuilder.html#module-wax.EventBuilder">wax.EventBuilder (module)</a>, <a href="wax.EventBuilder.html#module-wax.EventBuilder">[1]</a>
   </dt>
 
       
-  <dt><a href="wax.EventBuilder.html#module-wax.EventBuilder">wax.EventBuilder (module)</a>
+  <dt><a href="docs/wax.EventBuilder.html#module-wax.EventBuilder.Processor">wax.EventBuilder.Processor (module)</a>, <a href="wax.EventBuilder.html#module-wax.EventBuilder.Processor">[1]</a>
+  </dt>
+
+      
+  <dt><a href="docs/wax.EventBuilder.html#module-wax.EventBuilder.Tasks">wax.EventBuilder.Tasks (module)</a>
   </dt>
 
       
@@ -438,7 +502,7 @@
   </dt>
 
       
-  <dt><a href="wax.Database.html#wax.Database.OutputDBInterface.MongoDBOutput.write_events">write_events() (wax.Database.OutputDBInterface.MongoDBOutput method)</a>
+  <dt><a href="compiled_helpers.html#waxcore::Shutdown">waxcore::Shutdown (C++ function)</a>
   </dt>
 
   </dl></td>

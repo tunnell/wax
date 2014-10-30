@@ -67,16 +67,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-system-dependencies">Installing system dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#preparing-python-environment">Preparing Python environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-wax">Installing Wax</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="celery.html">Starting Celery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongo.html">Starting Mongo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Internal data formats</a><ul>
@@ -172,7 +170,6 @@ keys are expected:</p>
 <li><cite>_id</cite>: a hex string used for internal bookkeeping within MongoDB.  It is different for every document.</li>
 <li><cite>compressed</cite>: Binary value that determines if the data is compressed using <a class="reference external" href="https://code.google.com/p/snappy/">snappy</a></li>
 <li><cite>data_taking_ended</cite>: Tells cito if data is still to be reported.  This is set to false during aquisition, and true at the end of the run. <cite>cito</cite> uses this to know when it should just process the rest of the data and not wait for new data.</li>
-<li><cite>modules</cite>: List of modules.</li>
 <li><cite>runtype</cite></li>
 <li><cite>starttime</cite>: the 64-bit start time in units of 10 ns.  This must be the smallest time seem in any of the input data documents.</li>
 </ul>
@@ -181,7 +178,6 @@ keys are expected:</p>
     <span class="s2">&quot;_id&quot;</span><span class="o">:</span> <span class="nx">hex_string</span><span class="p">,</span>
     <span class="s2">&quot;compressed&quot;</span><span class="o">:</span> <span class="nx">bool</span><span class="p">,</span>
     <span class="s2">&quot;data_taking_ended&quot;</span><span class="o">:</span> <span class="nx">bool</span><span class="p">,</span>
-    <span class="s2">&quot;modules&quot;</span> <span class="o">:</span> <span class="p">[</span><span class="kr">int</span><span class="p">]</span>
     <span class="s2">&quot;runtype&quot;</span><span class="o">:</span> <span class="nx">string</span><span class="p">,</span>
     <span class="s2">&quot;starttime&quot;</span><span class="o">:</span> <span class="kr">int</span><span class="p">,</span>
 <span class="p">}</span>

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Compiled Helpers &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
+  <title>Starting Celery &mdash; Code for Intelligent Triggering Online 2.2.1 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
     <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
   
     <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="index.html"/>
-        <link rel="next" title="Contributing" href="contributing.html"/>
-        <link rel="prev" title="Frequently Asked Questions" href="faq.html"/> 
+        <link rel="next" title="Starting Mongo" href="mongo.html"/>
+        <link rel="prev" title="Installation" href="installation.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -71,7 +71,7 @@
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-wax">Installing Wax</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="celery.html">Starting Celery</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Starting Celery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongo.html">Starting Mongo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
@@ -89,7 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-mega-event">What is the mega event?</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Compiled Helpers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="compiled_helpers.html">Compiled Helpers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#types-of-contributions">Types of Contributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#get-started">Get Started!</a></li>
@@ -140,10 +140,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Compiled Helpers</li>
+    <li>Starting Celery</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/compiled_helpers.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/celery.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -151,48 +151,14 @@
 </div>
           <div role="main">
             
-  <div class="section" id="compiled-helpers">
-<h1>Compiled Helpers<a class="headerlink" href="#compiled-helpers" title="Permalink to this headline">¶</a></h1>
-<p>To make the software trigger run quick enough to keep up with high data rates,
-parts of the code are written in C to make them fast.</p>
-<p>There are essentially two steps to this code, which involves calls to three different functions.  This is <cite>add_samples</cite>, which is used to send occurences to the code.  Then event ranges are found using two function calls to <cite>build_events</cite> and <cite>overlaps</cite>.</p>
-<p>Times should be uint64_t.  Samples should be uint32_t.</p>
-<dl class="class">
-<dt id="waxcore">
-<em class="property">class </em><tt class="descname">waxcore</tt><a class="headerlink" href="#waxcore" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="function">
-<dt>
-<tt class="descname">int ProcessTimeRangeTask(uint64_t t0, uint64_t t1,</tt></dt>
-<dt>
-<tt class="descname">uint64_t max_drift,</tt></dt>
-<dt>
-<tt class="descname">uint64_t padding,</tt></dt>
-<dt>
-<tt class="descname">uint16_t threshold,</tt></dt>
-<dt>
-<tt class="descname">char* hostname,</tt></dt>
-<dt>
-<tt class="descname">char* mongo_input_location,</tt></dt>
-<dt>
-<tt class="descname">char* mongo_output_location)</tt></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="waxcore::Shutdown">
- <tt class="descname">Shutdown</tt><big>(</big><big>)</big><a class="headerlink" href="#waxcore::Shutdown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Free all memory.  Call before destruction.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="starting-celery">
+<h1>Starting Celery<a class="headerlink" href="#starting-celery" title="Permalink to this headline">¶</a></h1>
+<p>When Celery is running, all wax does is ship jobs off to Celery.  Celery nodes
+must pick these events up.</p>
+<p>To start Celery once <cite>wax</cite> is installed, run:</p>
+<div class="highlight-python"><div class="highlight"><pre>celery -A wax.EventBuilder.Tasks worker
+</pre></div>
+</div>
 </div>
 
 
@@ -201,10 +167,10 @@ parts of the code are written in C to make them fast.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contributing.html" class="btn btn-neutral float-right" title="Contributing"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mongo.html" class="btn btn-neutral float-right" title="Starting Mongo"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="faq.html" class="btn btn-neutral" title="Frequently Asked Questions"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral" title="Installation"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

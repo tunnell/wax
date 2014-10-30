@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="_static/breathe.css" type="text/css" />
   
     <link rel="top" title="Code for Intelligent Triggering Online 2.2.1 documentation" href="index.html"/>
-        <link rel="next" title="Usage" href="usage.html"/>
+        <link rel="next" title="Starting Celery" href="celery.html"/>
         <link rel="prev" title="WAX" href="readme.html"/> 
 
   
@@ -67,16 +67,14 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installing-python3-3">Installing Python3.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-system-dependencies">Installing system dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#preparing-python-environment">Preparing Python environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-wax">Installing Wax</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#optional-installing-own-mongodb-database">(Optional) Installing own MongoDB database</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="celery.html">Starting Celery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongo.html">Starting Mongo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#starting-the-event-builder-and-software-trigger">Starting the event builder and software trigger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage.html#analyzing-data-in-output-database">Analyzing data in output database</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_format.html">Internal data formats</a><ul>
@@ -155,94 +153,47 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Every attempt is made to make wax` as portable as possible and install in a wide range of environments.  However,
-installation instructions are given for Ubuntu 12 LTS.</p>
-<div class="section" id="installing-python3-3">
-<h2>Installing Python3.3<a class="headerlink" href="#installing-python3-3" title="Permalink to this headline">¶</a></h2>
-<p>If you have Python 3.3, skip this.  This requires root access.</p>
-<p><cite>wax</cite>, due to the dependencies, is only tested on Python3.3.  To install this on Ubuntu 12 LTS, please run the
-following, which is inspired from
-<a class="reference external" href="http://linuxg.net/how-to-install-python-3-3-on-ubuntu-13-04-12-10-and-12-04/">here</a>:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install python-software-properties
-sudo add-apt-repository ppa:fkrull/deadsnakes
-sudo apt-get update
-sudo apt-get install -y python3.3-complete
-wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py -O /tmp/ez_setup.py
-sudo python3.3 /tmp/ez_setup.py
-sudo easy_install-3.3 pip virtualenv==1.10
+<p>Every attempt is made to make wax` as portable as possible and install in a wide
+range of environments.  However, installation instructions are given for Ubuntu
+14 LTS.</p>
+<p><a class="reference external" href="https://store.continuum.io/cshop/anaconda/">Anaconda</a> is a bundle of
+scientific software.  Install anaconda with Python3.4:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ wget http://repo.continuum.io/anaconda3/Anaconda3-2.1.0-Linux-x86_64.sh
+$ bash Anaconda3-2.1.0-Linux-x86_64.sh
+$ export PATH=~/anaconda3/bin:$PATH  # If installed in default location
 </pre></div>
 </div>
-<p>These commands need only be run once.</p>
+<p>Follow the instructions presented to the screen.  These commands need only be
+run once.</p>
+<p>Be sure to activate this Python environment to proceed.  If you type:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python -V
+$ which python
+</pre></div>
 </div>
+<p>You should see Python 3.4 as the version installed and that the location of
+Python is whereever you installed Anaconda.</p>
 <div class="section" id="installing-system-dependencies">
 <h2>Installing system dependencies<a class="headerlink" href="#installing-system-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>Here we install the basics required to compile code, and some dependencies such as math libraries for later codes.  All commands that include <cite>sudo</cite> require root access to your machine.  If you don&#8217;t have it, talk to the system administrator.</p>
-<div class="section" id="compiler">
-<h3>Compiler<a class="headerlink" href="#compiler" title="Permalink to this headline">¶</a></h3>
 <p>Be sure to have the basics required to install code:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install build-essential
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install -y build-essential git libatlas-base-dev gfortran libsnappy-dev libsnappy1 libboost-all-dev
 </pre></div>
-</div>
-</div>
-<div class="section" id="fortran-and-linear-algebra-libraries">
-<h3>Fortran and linear algebra libraries<a class="headerlink" href="#fortran-and-linear-algebra-libraries" title="Permalink to this headline">¶</a></h3>
-<p>Install a ATLAS (linear algebra routine) and Fortran compiler:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install -y libatlas-base-dev gfortran
-</pre></div>
-</div>
 </div>
 <div class="section" id="numpy-and-scipy-dependencies">
 <h3>Numpy and Scipy dependencies<a class="headerlink" href="#numpy-and-scipy-dependencies" title="Permalink to this headline">¶</a></h3>
+<p>Mongo driver:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git clone git@github.com:mongodb/mongo-cxx-driver.git
+$ sudo scons install-mongoclient --full --use-system-boost --sharedclient --prefix=/usr/lib/
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h3>Numpy and Scipy dependencies<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Install the dependencies for scientific libraries in python:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get build-dep -y python3-numpy
-$ sudo apt-get build-dep -y python3-scipy
-$ sudo apt-get build-dep -y python-matplotlib
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get build-dep -y python-numpy python-scipy python-matplotlib
 $ sudo apt-get install python-scitools
 </pre></div>
 </div>
-</div>
-<div class="section" id="install-snappy">
-<h3>Install snappy<a class="headerlink" href="#install-snappy" title="Permalink to this headline">¶</a></h3>
-<p>Please install <a class="reference external" href="http://code.google.com/p/snappy/">snappy 1.0.2</a>, which is a compression library from Google.  The concept
-behind the library is when data is being transferred over a network, the CPU is normally doing nothing.  Therefore, if
-we use the CPU a little, we can reduce the data size and send the data quicker.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p>For Ubuntu users, there is a package:</p>
-<div class="last highlight-python"><div class="highlight"><pre>$ sudo apt-get install libsnappy-dev libsnappy1
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="install-mongoclient">
-<h3>Install mongoclient<a class="headerlink" href="#install-mongoclient" title="Permalink to this headline">¶</a></h3>
-<p>Install mongo c++ client:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ git clone https://github.com/mongodb/mongo-cxx-driver.git
-$ cd mongo-cxx-driver
-$ sudo scons install-mongoclient --sharedclient
-</pre></div>
-</div>
-</div>
-<div class="section" id="install-boost">
-<h3>Install boost<a class="headerlink" href="#install-boost" title="Permalink to this headline">¶</a></h3>
-<p>Install boost for boost python:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get install libboost-all-dev
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="preparing-python-environment">
-<h2>Preparing Python environment<a class="headerlink" href="#preparing-python-environment" title="Permalink to this headline">¶</a></h2>
-<p>It is advised to install within a virtualenv:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ virtualenv-3.3 -p python3.3 waxenv
-$ cd waxenv
-$ source bin/activate
-</pre></div>
-</div>
-<p>To avoid potential complications with the order in which python packages are installed, we recommend installing numpy
-explicitly (i.e., scipy can be <a href="#id1"><span class="problematic" id="id2">`annoying &lt;annoying`:http:</span></a>//github.com/scipy/scipy/pull/453&gt;`_):</p>
-<div class="highlight-python"><div class="highlight"><pre>$ easy_install numpy
-</pre></div>
 </div>
 </div>
 <div class="section" id="installing-wax">
@@ -254,18 +205,6 @@ command line, using &#8216;easy_install&#8217; or &#8216;pip&#8217;, install <ci
 </div>
 <p>This line also installs all the Python dependencies of <cite>wax</cite>. If you observe a problem, please submit a bug report.</p>
 </div>
-<div class="section" id="optional-installing-own-mongodb-database">
-<h2>(Optional) Installing own MongoDB database<a class="headerlink" href="#optional-installing-own-mongodb-database" title="Permalink to this headline">¶</a></h2>
-<p>You must install MongoDB or use an existing installation.  Please refer to their docs, but hints are here for Ubuntu:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get -y install screen openssh-server
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
-echo &#39;deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen&#39; | sudo tee /etc/apt/sources.list.d/10gen.list
-sudo apt-get update
-sudo apt-get -y install mongodb-10gen
-sudo service mongodb restart
-</pre></div>
-</div>
-</div>
 </div>
 
 
@@ -274,7 +213,7 @@ sudo service mongodb restart
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="usage.html" class="btn btn-neutral float-right" title="Usage"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="celery.html" class="btn btn-neutral float-right" title="Starting Celery"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="readme.html" class="btn btn-neutral" title="WAX"><span class="fa fa-arrow-circle-left"></span> Previous</a>
