@@ -69,6 +69,10 @@ class Base:
                  padding=Configuration.PADDING,
                  threshold=Configuration.THRESHOLD,
                  run_hostname=Configuration.HOSTNAME):
+        self.start_time_key = 'time_min'
+        self.stop_time_key = 'time_max'
+        self.bulk_key = 'bulk'
+
         # Logging
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(message)s',
@@ -176,13 +180,13 @@ class Base:
         db = conn[data_location["dbname"]]
         collection = db[data_location["dbcollection"]]
 
-        sort_key = [('time', -1),
+        sort_key = [(self.start_time_key, -1),
                     ('module', -1),
                      ('_id', -1)]
 
         log.info("Ensuring index")
-        collection.ensure_index(sort_key,
-                                background=True)
+        collection.ensure_index(sort_key)
+        #background=True)
 
         # int rounds down
         min_time_index = 0
@@ -197,17 +201,17 @@ class Base:
             # Find maximum time
             log.info("Identifying maximum time")
             doc = collection.find_one({},
-                                      fields=['time'],
-                                       sort=sort_key)
+                                      fields=[self.stop_time_key],
+                                      sort=sort_key)
 
 
-            if doc is None or doc['time'] is None:
+            if doc is None or doc[self.stop_time_key] is None:
                 log.warning("Cannot find maximum time; wait %d s and try again" % self.waittime)
                 log.debug(doc)
                 time.sleep(self.waittime)
                 continue
 
-            max_time = doc['time']
+            max_time = doc[self.stop_time_key]
             log.info("Maximum time is %d { '_id' : %s}" % (max_time,
                                                            doc['_id']))
 
@@ -231,7 +235,7 @@ class Base:
                     t1 = (i + 1) * self.chunksize
 
                     self.process(t0=t0, t1=t1 + self.padding,
-                                 collection_name=collection,
+                                 collection_name=data_location["dbcollection"],
                                  hostname=data_location["dbaddr"])
 
                 processed_time = (max_time_index - current_time_index)
@@ -275,8 +279,9 @@ class SingleThreaded(Base):
 class Celery(Base):
 
     def __init__(self, **kwargs):
-        Base.__init__(self, **kwargs)
         self.results = result.ResultSet([])
+        Base.__init__(self, **kwargs)
 
     def process(self, **kwargs):
+        self.log.fatal(str(kwargs))
         self.results.add(process_time_range_task.delay(**kwargs))

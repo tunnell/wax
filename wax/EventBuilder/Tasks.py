@@ -5,9 +5,9 @@ from celery import Celery
 import logging
 import snappy
 from wax import Configuration
-from wax.Database.InputDBInterface import MongoDBInput
-from wax.Database.OutputDBInterface import MongoDBOutput
-from wax.Database.ControlDBInterface import DBStats
+#from wax.Database.InputDBInterface import MongoDBInput
+#from wax.Database.OutputDBInterface import MongoDBOutput
+#from wax.Database.ControlDBInterface import DBStats
 import ebcore
 
 # Specify mongodb host and datababse to connect to
@@ -23,11 +23,13 @@ def process_time_range_task(t0, t1,
                             collection_name, hostname,
                             threshold=Configuration.THRESHOLD):
 
+    reduction_factor = 100
     return ebcore.process_time_range_task(t0,
                                           t1,
                                           Configuration.MAX_DRIFT,
                                           Configuration.PADDING,
                                           threshold,
+                                          reduction_factor,
                                           hostname,
                                           "input.dataset", "output.dataset")
 #                                          "%s.%s" % (MongoDBInput.get_db_name(), collection_name),

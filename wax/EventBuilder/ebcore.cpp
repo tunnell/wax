@@ -47,6 +47,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                int64_t max_drift,
                                int64_t padding,
                                uint32_t threshold,
+			       int reduction_factor,
                                char *hostname,
                                char *mongo_input_location,
                                char *mongo_output_location) {
@@ -55,9 +56,9 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     // ** Initialization phase **
     // **************************
     conn.connect(hostname);
-
+    
     // Overall statistics, processed is all data read from DB, triggered is just saved
-    u_int32_t processed_size = 0, triggered_size = 0;
+    u_int32_t stats_processed_size = 0, stats_triggered_size = 0;
 
     // Fetch this per doc
     vector <uint32_t> occurence_samples;
@@ -68,7 +69,6 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     int64_t time;
 
     int64_t time_correction;
-    int reduction_factor = 100;
     int n = ceil((t1 - t0) / reduction_factor);
 
     // Setup the sum waveform
@@ -97,34 +97,50 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     auto_ptr < mongo::DBClientCursor > cursor = conn.query(mongo_input_location,
 							   QUERY("time_min" << mongo::LT << (long long int) t1 << "time_max" << mongo::GT << (long long int)  t0).sort("time_min", 1));
 
+    if (!cursor.get()) {
+      cerr << "query failure" << endl;
+      exit(-1);
+    }
+
     // Iterate over all data for this query
     while (cursor->more()) {
-
         // Each document that the cursor returns has embedded documents within.
         p = cursor->next();
 
-        std::vector<BSONElement> be = p.getField("embedded_docs").Array();
+	// Check that document actually contains occurences.
+	if ( p.hasField("bulk") == false ) {
+	  cerr << "No field containing bulk documents."<<endl;
+	  exit(-1);
+	}
+
+        std::vector<BSONElement> be = p.getField("bulk").Array();
 
         for (unsigned int i = 0; i<be.size(); i++) {
-            q = be[i].embeddedObject();
+	  q = be[i].embeddedObject();
+	  
+	  occurence_samples.clear();
+	  GetDataFromBSON(q, occurence_samples, id, module, zipped, time, size);
 
-            occurence_samples.clear();
-            GetDataFromBSON(p, occurence_samples, id, module, zipped, time, size);
+	  // Sometimes the documents that are bundled along don't actually fall within the trigger window.
+	  // In this case, just skip it.
+	  if (time + occurence_samples.size() < t0 || time > t1) {
+	    continue;
+	  }
 
-            time_correction = time - t0;
+	  time_correction = time - t0;
+	  
+	  // Take note of the time range corresponding to this occurence
+	  local_occurence_ranges.push_back(time_correction / reduction_factor);
+	  local_occurence_ranges.push_back((time_correction + occurence_samples.size()) / reduction_factor);
+	  
+	  input_docs.push_back(q.copy());
+	  
+	  // Add samples to sum waveform
+	  AddSamplesFromOccurence(occurence_samples,
+				  time_correction,
+				  reduction_factor);
 
-            // Take note of the time range corresponding to this occurence
-            local_occurence_ranges.push_back(time_correction / reduction_factor);
-            local_occurence_ranges.push_back((time_correction + occurence_samples.size()) / reduction_factor);
-
-            input_docs.push_back(q.copy());
-
-            // Add samples to sum waveform
-            AddSamplesFromOccurence(occurence_samples,
-                                    time_correction,
-                                    reduction_factor);
-
-            processed_size += size;
+	  stats_processed_size += size;
         }
     }
 
@@ -191,7 +207,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
         indoc_builder.appendElements(input_docs[i]);
         builder_occurences_array->append(indoc_builder.obj());
         current_size += input_docs[i].getIntField("size");
-        triggered_size += input_docs[i].getIntField("size");
+        stats_triggered_size += input_docs[i].getIntField("size");
     }
     SaveDecision(output_docs,
                  builder,
@@ -201,7 +217,6 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                  builder_occurences_array,
                  padding);
 
-    cout<<"output_docs.size() "<<output_docs.size()<<endl;
     //conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,  output_docs);
     string e = conn.getLastError();
@@ -209,7 +224,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
       cout << "insert failed: " << e << endl;
     }
 
-    return processed_size;
+    return stats_processed_size;
 }
 
 void Shutdown() {
@@ -352,7 +367,7 @@ bool SaveDecision(vector <mongo::BSONObj> &output_docs,
             cerr << "Event spans two search blocks (mega-event?)" << endl;
             cerr<<"e1 "<<e1 << " t1 " << t1 <<" "<<(e1 > t1)<<endl;
             cerr<<"e0 "<<e0 << " t1 - padding" << t1 - padding<<" "<< (e0 < t1 - padding) << endl;
-            return false;
+	    exit(-1);
         }
 
         // Save event
@@ -361,7 +376,7 @@ bool SaveDecision(vector <mongo::BSONObj> &output_docs,
             //cout<<"SUCCESS!!!";
         }
         else {
-        cout<<"fail:"<<endl;
+	  cout<<"fail:"<<endl;
                 cout<<"\te0:"<<e0<<endl;
                 cout<<"\tt0:"<<t0<<endl;
                 cout<<"\tpadding:"<<padding<<endl;
