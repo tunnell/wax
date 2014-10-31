@@ -76,7 +76,7 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 
     // Overall statistics, processed is all data read from DB, triggered is just
     // saved
-    u_int32_t stats_processed_size = GetDataAndUpdateSumWaveform(t0, t1,
+    int32_t stats_processed_size = GetDataAndUpdateSumWaveform(t0, t1,
                                                                  cursor,
                                                                  reduction_factor);
 
@@ -109,7 +109,7 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
         trigger_event_ranges[i] += t0;
     }
     
-    u_int32_t stats_triggered_size = BuildEvent(t0, t1, padding);
+    int32_t stats_triggered_size = BuildEvent(t0, t1, padding);
 
     //conn.setWriteConcern(WriteConcern::unacknowledged);
     conn.insert(mongo_output_location,  output_event_docs);
