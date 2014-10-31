@@ -32,7 +32,7 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 
 int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
                                       auto_ptr < mongo::DBClientCursor > cursor,
-                                      int reduction_factor);
+                                      uint32_t reduction_factor);
 
 void AddSamplesFromOccurence(std::vector<uint32_t>& occurence_samples,
                              int64_t t0, uint32_t reduction);
