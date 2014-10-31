@@ -46,7 +46,7 @@ bool SaveDecision(mongo::BSONObjBuilder* builder,
                   int64_t e0, int64_t e1,
                   int size,
                   mongo::BSONArrayBuilder* builder_occurences_array,
-                  int padding);
+                  int64_t padding);
 
 int GetDataFromBSON(mongo::BSONObj obj, std::vector<uint32_t>&buff,
                     std::string &id, int &module, bool &zipped, int64_t &ttime,
