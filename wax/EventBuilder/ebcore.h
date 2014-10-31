@@ -21,7 +21,7 @@ using namespace mongo;
 
 void Setup(uint32_t n);
 
-u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
+int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                int64_t max_drift,
                                int64_t padding,
                                uint32_t threshold,
@@ -30,7 +30,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                char *mongo_input_location,
                                char *mongo_output_location);
 
-u_int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
+int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
                                       auto_ptr < mongo::DBClientCursor > cursor,
                                       int reduction_factor);
 
@@ -39,7 +39,7 @@ void AddSamplesFromOccurence(std::vector<uint32_t>& occurence_samples,
 void BuildTriggerEventRanges(uint32_t threshold, int64_t gap);
 void AssignOccurenceToTriggerEvent();
 
-u_int32_t BuildEvent(int64_t t0, int64_t t1, int64_t padding);
+int32_t BuildEvent(int64_t t0, int64_t t1, int64_t padding);
 
 bool SaveDecision(mongo::BSONObjBuilder* builder,
                   int64_t t0, int64_t t1,

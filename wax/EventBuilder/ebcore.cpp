@@ -49,7 +49,7 @@ void Setup(uint32_t n) {
     trigger_event_ranges.clear();
 }
 
-u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
+int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                int64_t max_drift,
                                int64_t padding,
                                uint32_t threshold,
@@ -122,7 +122,7 @@ u_int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 }
 
 // Fetch the data from MongoDB and update our calculated sum waveform
-u_int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
+int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
                                       auto_ptr < mongo::DBClientCursor > cursor,
                                       uint32_t reduction_factor) {
     // doc_bulk and doc_single are the MongoDB documents corresponding to a
@@ -314,7 +314,7 @@ void AssignOccurenceToTriggerEvent() {
     }
 }
 
-u_int32_t BuildEvent(int64_t t0, int64_t t1, int64_t padding) {
+int32_t BuildEvent(int64_t t0, int64_t t1, int64_t padding) {
     // Create a buffer of occurences, then determine if these should be saved
     // since maybe they fall in an overlap region.
     
