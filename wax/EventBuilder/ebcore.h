@@ -15,6 +15,8 @@
 #include <boost/python/def.hpp>
 #include <mongo/client/dbclient.h>
 
+#define DEBUG 0
+
 using namespace std;
 using namespace boost::python;
 using namespace mongo;

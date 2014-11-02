@@ -5,7 +5,7 @@ MAX_ADC_VALUE = 2 ** 14  # 14 bit ADC samples
 MAX_DRIFT = 30000 # units of 10 ns
 HOSTNAME = '127.0.0.1'
 
-CHUNKSIZE = 2 ** 30
+CHUNKSIZE = 2 ** 29
 PADDING = (5 * MAX_DRIFT)
 
 # 1 ADC count = 2.2 V / 2^14

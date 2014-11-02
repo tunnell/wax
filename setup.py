@@ -60,7 +60,7 @@ setup(
     test_suite='tests',
     ext_modules=[Extension("ebcore",
                            ["wax/EventBuilder/ebcore.cpp"],
-                           extra_compile_args=['-m64', '-g',],
+                           extra_compile_args=['-m64', '-O3',],
                            extra_link_args=[],
                            libraries=libs,
                            library_dirs=lib_dirs,

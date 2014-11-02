@@ -15,7 +15,6 @@
  */
 #include "./ebcore.h"
 
-mongo::DBClientConnection conn;  // Connection to MongoDB
 std::vector<uint32_t> sum_waveform;  // Downsampled sum waveform
 
 vector <mongo::BSONObj> output_event_docs; // Output.
@@ -36,10 +35,14 @@ vector<int> input_occurence_docs_mapping; // units: trigger event number in [0, 
 
 // This is called by ProcessTimeRangeTask
 void Setup(uint32_t n) {
+  #if DEBUG
+  cout << "Setup assuming " << n << " summed waveform bins" << endl;
+  #endif
+
     sum_waveform.resize(n);
     std::fill(sum_waveform.begin(),
-                      sum_waveform.end(),
-                      0);
+	      sum_waveform.end(),
+	      0);
 
 
     output_event_docs.clear();
@@ -63,7 +66,18 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 
     // Construct a mongo query for a certain time range.  The 'long long int'
     // types are required from the Mongo API.
-    conn.connect(hostname);
+#if DEBUG
+    cout << "Setting up connection" << endl;
+#endif
+    ScopedDbConnection conn(hostname); 
+    if(!conn.ok()) {
+	cerr << "Connection not okay" << endl;
+	return -1;
+      }
+    
+#if DEBUG
+    cout << "Starting query" << endl;
+#endif
     mongo::Query qry = QUERY("time_min" <<
                              mongo::LT <<
                              (long long int) t1 <<
@@ -71,8 +85,12 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                              mongo::GT <<
                              (long long int) t0).sort("time_min",
                                                       1);
-    auto_ptr < mongo::DBClientCursor > cursor = conn.query(mongo_input_location,
-                                                           qry);
+    auto_ptr < mongo::DBClientCursor > cursor = conn.conn().query(mongo_input_location,
+								 qry);
+
+#if DEBUG
+    cout << "Query built, about to fetch data and update sum waveform" << endl;
+#endif
 
     // Overall statistics, processed is all data read from DB, triggered is just
     // saved
@@ -112,11 +130,14 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
     int32_t stats_triggered_size = BuildEvent(t0, t1, padding);
 
     //conn.setWriteConcern(WriteConcern::unacknowledged);
-    conn.insert(mongo_output_location,  output_event_docs);
-    string e = conn.getLastError();
+    cout << "writing this many events" << output_event_docs.size() << endl;
+    conn.conn().insert(mongo_output_location,  output_event_docs);
+    string e = conn.conn().getLastError();
     if ( !e.empty() ) {
       cout << "insert failed: " << e << endl;
     }
+
+    conn.done();
 
     return stats_processed_size;
 }
@@ -330,24 +351,35 @@ int32_t BuildEvent(int64_t t0, int64_t t1, int64_t padding) {
     
     // For every occurence we've read in, see what event it is assigned to
     for (unsigned int i = 0; i < input_occurence_docs_mapping.size(); ++i) {
-        // If occurence is not assigned to event, skip
-        if (input_occurence_docs_mapping[i] == -1) {
-            reduced_count += 1;
-            continue;
-        }
-        
-        // If first time building BSON, or new event
-        if (builder == NULL || builder_mapping != input_occurence_docs_mapping[i]) {
-            SaveDecision(builder,
-                         t0, t1,
-                         trigger_event_ranges[2*builder_mapping],
-                         trigger_event_ranges[2*builder_mapping + 1],
-                         current_size,
-                         builder_occurences_array,
-                         padding);
+#if DEBUG
+      cout<<"occurence" << i << "mapping" << input_occurence_docs_mapping[i] <<endl;
+#endif
+      // If occurence is not assigned to event, skip
+      if (input_occurence_docs_mapping[i] == -1) {
+	reduced_count += 1;
+	continue;
+      }
+      
+      // If first time building BSON, or new event
+      if (builder == NULL || builder_mapping != input_occurence_docs_mapping[i]) {
+#if DEBUG
+	cout << "First time..." << endl;
+#endif
+
+	SaveDecision(builder,
+		     t0, t1,
+		     trigger_event_ranges[2*builder_mapping],
+		     trigger_event_ranges[2*builder_mapping + 1],
+		     current_size,
+		     builder_occurences_array,
+		     padding);
             
             
             builder_mapping = input_occurence_docs_mapping[i];
+
+#if DEBUG
+	    cout << "Working on trigger event" << builder_mapping << endl;
+#endif
             
             if (builder != NULL) {  // TODO
                 delete builder;
@@ -370,6 +402,10 @@ int32_t BuildEvent(int64_t t0, int64_t t1, int64_t padding) {
             bab.append((long long int) trigger_event_ranges[2*builder_mapping]);
             bab.append((long long int) trigger_event_ranges[2*builder_mapping + 1]);
             builder->appendArray("range", bab.arr());
+#if DEBUG   
+            cout << "Range: [" << trigger_event_ranges[2*builder_mapping] << ", " <<
+	      trigger_event_ranges[2*builder_mapping + 1] << endl;
+#endif
             
             current_size = 0;
         }
