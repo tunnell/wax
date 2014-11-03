@@ -2,12 +2,8 @@
 import numpy as np
 
 from celery import Celery
-import logging
-import snappy
+import pymongo
 from wax import Configuration
-#from wax.Database.InputDBInterface import MongoDBInput
-#from wax.Database.OutputDBInterface import MongoDBOutput
-#from wax.Database.ControlDBInterface import DBStats
 import ebcore
 
 # Specify mongodb host and datababse to connect to
@@ -36,3 +32,12 @@ def process_time_range_task(t0, t1,
                                           compressed)
 #                                          "%s.%s" % (MongoDBInput.get_db_name(), collection_name),
 #                                          "%s.%s" % (MongoDBOutput.get_db_name(), collection_name))
+
+@celery.task
+def clear_processed(t0, collection_name, hostname='127.0.0.1'):
+    """Delete data up to t0
+    """
+
+    c = pymongo.MongoClient(hostname)
+    c['input'][collection_name].remove({"time_max": {"$lt": t0}})
+
