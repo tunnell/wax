@@ -10,6 +10,7 @@
 
 #include <assert.h>
 
+#include <snappy.h>
 #include <boost/python/module.hpp>
 #include <boost/python.hpp>
 #include <boost/python/def.hpp>
@@ -30,11 +31,13 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                uint32_t reduction_factor,
                                char *hostname,
                                char *mongo_input_location,
-                               char *mongo_output_location);
+                               char *mongo_output_location,
+                               bool compressed);
 
 int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
-                                      auto_ptr < mongo::DBClientCursor > cursor,
-                                      uint32_t reduction_factor);
+                                    auto_ptr < mongo::DBClientCursor > cursor,
+                                    uint32_t reduction_factor,
+                                    bool compressed);
 
 void AddSamplesFromOccurence(std::vector<uint32_t>& occurence_samples,
                              int64_t t0, uint32_t reduction);
@@ -51,8 +54,8 @@ bool SaveDecision(mongo::BSONObjBuilder* builder,
                   int64_t padding);
 
 int GetDataFromBSON(mongo::BSONObj obj, std::vector<uint32_t>&buff,
-                    std::string &id, int &module, bool &zipped, int64_t &ttime,
-                    int &size);
+                    std::string &id, int &module, int64_t &ttime,
+                    int &size, bool compressed);
 
 
 

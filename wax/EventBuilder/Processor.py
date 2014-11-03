@@ -180,6 +180,12 @@ class Base:
         db = conn[data_location["dbname"]]
         collection = db[data_location["dbcollection"]]
 
+        self.run_compressed = run_doc['reader']['compressed']
+        if self.run_compressed:
+            self.log.info("Run data is compressed")
+        else:
+            self.log.info("Run data is NOT compressed")
+
         sort_key = [(self.start_time_key, -1),
                     ('module', -1),
                      ('_id', -1)]
@@ -236,7 +242,8 @@ class Base:
 
                     self.process(t0=t0, t1=t1 + self.padding,
                                  collection_name=data_location["dbcollection"],
-                                 hostname=data_location["dbaddr"])
+                                 hostname=data_location["dbaddr"],
+                                 compressed=self.run_compressed)
 
                 processed_time = (max_time_index - current_time_index)
                 processed_time *= self.chunksize / 1e8
