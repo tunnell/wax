@@ -59,7 +59,8 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
                                uint32_t reduction_factor,
                                char *hostname,
                                char *mongo_input_location,
-                               char *mongo_output_location) {
+                               char *mongo_output_location,
+                               bool compressed) {
     // Allocates space in the sum waveform sum_waveform and whatever ourranges
     // is
     Setup(ceil((t1 - t0) / reduction_factor));
@@ -90,13 +91,15 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 
 #if DEBUG
     cout << "Query built, about to fetch data and update sum waveform" << endl;
+    cout << "Compressed " << compressed <<endl;
 #endif
 
     // Overall statistics, processed is all data read from DB, triggered is just
     // saved
     int32_t stats_processed_size = GetDataAndUpdateSumWaveform(t0, t1,
                                                                  cursor,
-                                                                 reduction_factor);
+                                                                 reduction_factor,
+                                                                 compressed);
 
     if (stats_processed_size == -1) {  // Error reported
         return -1;
@@ -145,7 +148,8 @@ int32_t ProcessTimeRangeTask(int64_t t0, int64_t t1,
 // Fetch the data from MongoDB and update our calculated sum waveform
 int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
                                       auto_ptr < mongo::DBClientCursor > cursor,
-                                      uint32_t reduction_factor) {
+                                      uint32_t reduction_factor,
+                                      bool compressed) {
     // doc_bulk and doc_single are the MongoDB documents corresponding to a
     // 'bulk' document containing many occurences and a 'single' document
     // containing just one occurence.
@@ -160,7 +164,6 @@ int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
     int module;
     int size;
     string id;
-    bool zipped;
     int64_t time;
 
     // Collect size of all data
@@ -195,7 +198,7 @@ int32_t GetDataAndUpdateSumWaveform(int64_t t0, int64_t t1,
 
             // This fills from 'doc_single' all the other arguments
             GetDataFromBSON(doc_single, occurence_samples, id, module,
-                            zipped, time, size);
+                            time, size, compressed);
 
             // Sometimes the documents that are bundled along don't actually fall
             // within the trigger window. In this case, just skip it.
@@ -484,12 +487,26 @@ bool SaveDecision(mongo::BSONObjBuilder* builder,
 }
 
 int GetDataFromBSON(mongo::BSONObj obj, vector <uint32_t> &buff, string & id,
-                    int &module, bool & zipped, int64_t &ttime, int &size) {
+                    int &module, int64_t &ttime, int &size, bool compressed) {
     module = obj.getIntField("module");
     ttime = obj.getField("time").numberLong();
 
-    // 'size' is in bytes
-    u_int32_t *raw = (u_int32_t*)(obj.getField("data").binData(size));
+
+
+
+    u_int32_t *raw = NULL;
+    if (compressed) {
+        string decompressed_data = "";
+        const char* data = obj.getField("data").binData(size);
+        if (! snappy::Uncompress(data, size, &decompressed_data)) {
+            cout<<"DECOMPRESSION FAILED!";
+            return -1;
+         }
+         raw = (u_int32_t*) decompressed_data.c_str();
+    } else {
+        // 'size' is in bytes
+        raw = (u_int32_t*)(obj.getField("data").binData(size));
+    }
 
     // 'raw' contains two 14-bit numbers in every element
     for (int x = 0; x < (size / 4); x++) {

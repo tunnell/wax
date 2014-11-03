@@ -21,7 +21,8 @@ celery = Celery('EOD_TASKS',
 @celery.task
 def process_time_range_task(t0, t1,
                             collection_name, hostname,
-                            threshold=Configuration.THRESHOLD):
+                            threshold=Configuration.THRESHOLD,
+                            compressed=True):
 
     reduction_factor = 100
     return ebcore.process_time_range_task(t0,
@@ -31,6 +32,7 @@ def process_time_range_task(t0, t1,
                                           threshold,
                                           reduction_factor,
                                           hostname,
-                                          "input.dataset", "output.dataset")
+                                          "input.dataset", "output.dataset",
+                                          compressed)
 #                                          "%s.%s" % (MongoDBInput.get_db_name(), collection_name),
 #                                          "%s.%s" % (MongoDBOutput.get_db_name(), collection_name))
