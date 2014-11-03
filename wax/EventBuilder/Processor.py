@@ -33,7 +33,7 @@ import time
 import pymongo
 from tqdm import tqdm
 from wax import Configuration
-from wax.EventBuilder.Tasks import process_time_range_task
+from wax.EventBuilder import Tasks
 from io import StringIO
 
 from celery import result
@@ -278,10 +278,9 @@ class SingleThreaded(Base):
     def __init__(self, **kwargs):
         Base.__init__(self, **kwargs)
 
-
     def process(self, **kwargs):
-        process_time_range_task(**kwargs)
-
+        Tasks.process_time_range_task(**kwargs)
+        Tasks.clear_processed(**kwargs)
 
 class Celery(Base):
 
@@ -291,4 +290,5 @@ class Celery(Base):
 
     def process(self, **kwargs):
         self.log.fatal(str(kwargs))
-        self.results.add(process_time_range_task.delay(**kwargs))
+        self.results.add(Tasks.process_time_range_task.delay(**kwargs))
+        # Tasks.clear_processed(**kwargs)

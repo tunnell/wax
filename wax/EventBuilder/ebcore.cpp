@@ -491,9 +491,6 @@ int GetDataFromBSON(mongo::BSONObj obj, vector <uint32_t> &buff, string & id,
     module = obj.getIntField("module");
     ttime = obj.getField("time").numberLong();
 
-
-
-
     u_int32_t *raw = NULL;
     if (compressed) {
         string decompressed_data = "";
