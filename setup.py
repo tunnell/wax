@@ -24,7 +24,7 @@ elif compiler.find_library_file(lib_dirs, 'boost_python'):
 else:
     raise RuntimeError("Cannot find boost")
 
-libs = ['mongoclient'] 
+libs = ['mongoclient', 'snappy'] 
 libs += [x for x in [boost_library, 'boost_thread', 'boost_filesystem', 'boost_program_options', 'boost_system', 'ssl', 'crypto', 'pthread'] if compiler.find_library_file(lib_dirs, x)]
 print(libs)
 
@@ -38,14 +38,10 @@ setup(
     author_email='ctunnell@nikhef.nl',
     url='https://github.com/tunnell/wax',
     download_url='https://github.com/tunnell/wax/tarball/master',
-    scripts = ['bin/wax-on',
-               'bin/wax-off',
-               'bin/file-builder',
-               'bin/event-builder',
+    scripts = [ 'bin/event-builder',
                ],
     packages=[
-        'wax', 'wax.EventBuilder', 'wax.EventAnalyzer',
-        'wax.Database',
+        'wax', 'wax.EventBuilder', 
     ],
     package_dir={'wax': 'wax'},
     include_package_data=True,
@@ -64,10 +60,11 @@ setup(
     test_suite='tests',
     ext_modules=[Extension("ebcore",
                            ["wax/EventBuilder/ebcore.cpp"],
-                           extra_compile_args=['-m64', '-g',],
+                           extra_compile_args=['-m64', '-O3'],
                            extra_link_args=[],
                            libraries=libs,
                            library_dirs=lib_dirs,
+                           include_dirs=['/opt/local/include'],
                            )],
 
 )
