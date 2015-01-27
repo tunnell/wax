@@ -23,7 +23,7 @@ Usage
 To run `wax`::
 
     $ pip install git+https://github.com/tunnell/wax.git
-    $ wax-off --help
+    $ event-builder --help
 
 See the usage section in the documentation for more information.
 
